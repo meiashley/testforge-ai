@@ -1,0 +1,49 @@
+version: '3.9'
+
+services:
+  mock-banking-api:
+    build:
+      context: ./mock-banking-api
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: testforge
+      POSTGRES_USER: testforge
+      POSTGRES_PASSWORD: testforge
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  # TODO: Enable api-gateway service when the module is implemented (see roadmap in README.md)
+  # api-gateway:
+  #   build:
+  #     context: ./api-gateway
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8080:8080"
+  #   environment:
+  #     - SPRING_PROFILES_ACTIVE=docker
+  #     - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/testforge
+  #     - SPRING_DATASOURCE_USERNAME=testforge
+  #     - SPRING_DATASOURCE_PASSWORD=testforge
+  #     - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+  #   depends_on:
+  #     postgres:
+  #       condition: service_started
+  #     mock-banking-api:
+  #       condition: service_healthy
+
+volumes:
+  postgres-data:
