@@ -321,8 +321,7 @@ Reports written to:
 - `com.fasterxml.jackson.core:jackson-databind` (report serialization)
 - `com.squareup.okhttp3:okhttp` (HTTP execution in HttpExecutor)
 - `com.github.tomakehurst:wiremock-jre8` (HttpExecutorTest, test scope)
-- `org.springframework.boot:spring-boot-test` (test scope, for @SpringBootTest)
-- `org.springframework.boot:spring-boot-starter-test` (test scope)
+- `org.springframework.boot:spring-boot-starter-test` (test scope; includes spring-boot-test, Mockito, JsonPath)
 - Surefire plugin config: inject `project.basedir` (identical to ai-engine/pom.xml)
 
 **Keep:**
