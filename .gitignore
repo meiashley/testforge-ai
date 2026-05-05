@@ -40,3 +40,7 @@ allure-results/
 
 # ai-engine V1 test output (generated, not tracked)
 ai-engine/target/v1-output.json
+
+# test-runner V1 execution reports (generated, not tracked)
+test-runner/target/v1-execution-report.json
+test-runner/target/v1-execution-report.md
