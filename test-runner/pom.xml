@@ -52,7 +52,6 @@
         <dependency>
             <groupId>com.testforge</groupId>
             <artifactId>ai-engine</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.testforge</groupId>
