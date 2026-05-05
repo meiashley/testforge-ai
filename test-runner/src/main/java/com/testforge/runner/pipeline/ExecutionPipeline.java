@@ -14,10 +14,18 @@ import java.util.List;
 
 public class ExecutionPipeline {
 
-    private final HttpExecutor httpExecutor = new HttpExecutor();
-    private final AssertionEvaluator assertionEvaluator = new AssertionEvaluator();
-    private final ReportBuilder reportBuilder = new ReportBuilder();
-    private final ReportWriter reportWriter = new ReportWriter();
+    private final HttpExecutor httpExecutor;
+    private final AssertionEvaluator assertionEvaluator;
+    private final ReportBuilder reportBuilder;
+    private final ReportWriter reportWriter;
+
+    public ExecutionPipeline(HttpExecutor httpExecutor, AssertionEvaluator assertionEvaluator,
+                             ReportBuilder reportBuilder, ReportWriter reportWriter) {
+        this.httpExecutor = httpExecutor;
+        this.assertionEvaluator = assertionEvaluator;
+        this.reportBuilder = reportBuilder;
+        this.reportWriter = reportWriter;
+    }
 
     public ExecutionReport run(List<GenerationResult> generationResults, String baseUrl) {
         List<TestCaseResult> results = new ArrayList<>();
@@ -29,7 +37,8 @@ public class ExecutionPipeline {
         }
 
         ExecutionReport report = reportBuilder.build(results);
-        reportWriter.write(report, Path.of("target"));
+        Path outputDir = Path.of(System.getProperty("project.basedir", "."), "target");
+        reportWriter.write(report, outputDir);
         return report;
     }
 
