@@ -1,65 +1,79 @@
 # TestForge AI
 
-AI-driven API testing platform that automatically generates functional, boundary, exception, and security test cases from OpenAPI/Swagger specs using Anthropic Claude.
+AI-powered API test generation platform. Java 21 + Spring Boot + Anthropic Claude.
+
+## What It Does
+
+Reads an OpenAPI 3.0 specification, generates structured test cases using Anthropic Claude, then executes them against the live API and produces structured execution reports.
+
+Pipeline: OpenAPI YAML → AI Engine (Claude) → List of TestCases → Test Runner → ExecutionReport (JSON + Markdown)
+
+## V1 Baseline Results
+
+Pass rate: 55.6% (5/9) — see docs/baseline-results-v1.md
+
+V1 uses an intentionally naive prompt to establish a baseline. Failure patterns:
+- 3 cases: Resource not found (likely hardcoded id)
+- 1 case: Hardcoded dynamic value
+
+These patterns drive V2 prompt iteration (documented in the report).
 
 ## Architecture
 
-```
-testforge-ai/
-├── core/               # Domain models and service interfaces
-├── ai-engine/          # Claude API integration and test generation
-├── swagger-parser/     # OpenAPI spec parsing
-├── test-runner/        # BDD test execution engine (JUnit 5 + Cucumber)
-├── mock-banking-api/   # Demo target: mock financial payment API
-└── api-gateway/        # REST API entrypoint for the platform
-```
+| Module | Status | Description |
+|--------|--------|-------------|
+| mock-banking-api | V1 | 3-endpoint payment service (the test target) |
+| ai-engine | V1 | OpenAPI to Claude prompt to structured TestCases |
+| test-runner | V1 | Executes TestCases, evaluates assertions, generates reports |
+| api-gateway | Planned | REST entry point for the full pipeline |
+
+## Testing
+
+- ai-engine: 12 tests (TDD throughout)
+- test-runner: 18 tests (11 unit + 2 WireMock + 4 categorization + 1 integration)
+- mock-banking-api: 5 controller tests
+- Total: 35 tests passing
 
 ## Quick Start
 
-### Prerequisites
-- Java 21+
-- Maven 3.9+
-- Docker & Docker Compose
-
-### Run the Mock Banking API
-
-```bash
-cd mock-banking-api
-mvn spring-boot:run
-```
-
-Swagger UI: http://localhost:8081/swagger-ui.html
-OpenAPI JSON: http://localhost:8081/v3/api-docs
-
-### Run with Docker Compose
-
-```bash
-docker-compose up
-```
-
-## Mock Banking API Endpoints
-
-| Method | Path | Description |
-|--------|------|-------------|
-| POST | /api/payments | Create a payment |
-| GET | /api/payments/{id} | Get payment by ID |
-| POST | /api/payments/{id}/refund | Refund a payment |
+git clone https://github.com/meiashley/testforge-ai.git
+cd testforge-ai
+mvn install -DskipTests
+mvn test -pl test-runner -Dtest=V1ExecutionPipelineTest
+cat test-runner/target/v1-execution-report.md
 
 ## Tech Stack
 
-- **Java 21** + Spring Boot 3.2
-- **JUnit 5** + RestAssured + Cucumber-JVM (BDD)
-- **springdoc-openapi** for OpenAPI 3.0 spec generation
-- **swagger-parser** for spec ingestion
-- **Anthropic Claude API** for AI test generation
-- **PostgreSQL** + Spring Data JPA
-- **Docker** + Docker Compose
+- Language: Java 21
+- Framework: Spring Boot 3.2 (mock service only; library code is plain Java)
+- AI: Anthropic Claude API (Sonnet 4.5)
+- Test: JUnit 5, RestAssured, WireMock, Spring Boot Test
+- Build: Maven 3 (multi-module)
+- Other: Jackson, OkHttp, Lombok, swagger-parser
+
+## Engineering Practices
+
+- TDD throughout — every feature has tests written before implementation (RED-GREEN-REFACTOR)
+- Spec-driven development — design spec, then implementation plan, then execute
+- Conventional commits — type(scope): subject format
+- Strategy Pattern for AI client — MockClaudeClient and RealClaudeClient are interchangeable
+- YAGNI on shared abstractions — domain models stay in their owning module until cross-module need is proven
 
 ## Roadmap
 
-- [x] Mock Banking API with OpenAPI 3.0 spec
-- [ ] OpenAPI parser module
-- [ ] Claude AI test case generator
-- [ ] BDD test runner
-- [ ] Platform API gateway
-- [ ] Web UI dashboard
+- [ ] V2 prompt iteration (target 85%+ pass rate)
+- [ ] Real Claude API integration (currently MockClaudeClient backed)
+- [ ] api-gateway REST entry point
+- [ ] Migrate integration tests to Testcontainers
+- [ ] Quality metrics: schema validity, coverage, diversity
+
+## Design Documents
+
+- ai-engine V1 Spec: docs/superpowers/specs/2026-05-01-ai-engine-v1-design.md
+- test-runner V1 Spec: docs/superpowers/specs/2026-05-04-test-runner-v1-design.md
+- V1 Baseline Results: docs/baseline-results-v1.md
+- Architecture: docs/architecture.md
+
+## License
+
+MIT
