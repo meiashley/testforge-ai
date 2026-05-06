@@ -3,6 +3,7 @@ package com.testforge.runner;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.testforge.ai.client.MockClaudeClient;
+import com.testforge.ai.client.RealClaudeClient;
 import com.testforge.ai.model.GenerationResult;
 import com.testforge.ai.parser.ResponseParser;
 import com.testforge.ai.pipeline.SwaggerOpenApiLoader;
@@ -40,7 +41,7 @@ class V1ExecutionPipelineTest {
         // 1. Build ai-engine pipeline
         TestGenerationPipeline aiPipeline = new TestGenerationPipeline(
                 new SwaggerOpenApiLoader(), new PromptBuilder(),
-                new MockClaudeClient(), new ResponseParser());
+                new RealClaudeClient(System.getenv("ANTHROPIC_API_KEY")), new ResponseParser());
 
         // 2. Load openapi.yaml and generate test cases
         String yaml = TestFixtures.loadMockBankingApiSpec();
@@ -54,7 +55,8 @@ class V1ExecutionPipelineTest {
         ).run(generationResults, baseUrl);
 
         // 4. Assertions
-        assertEquals(9, report.getSummary().getTotal());
+        int total = report.getSummary().getTotal();
+        assertTrue(total >= 9, "Expected at least 9 test cases, got: " + total);
         assertTrue(report.getSummary().getPassed() >= 1, "at least 1 test must PASS");
         assertTrue(report.getSummary().getFailed() >= 1, "at least 1 test must FAIL (V1 baseline)");
 
