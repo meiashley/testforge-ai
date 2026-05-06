@@ -11,15 +11,16 @@ import okhttp3.Response;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class RealClaudeClient implements ClaudeClient {
 
     private static final String API_URL = "https://api.anthropic.com/v1/messages";
-    private static final String MODEL = "claude-sonnet-4-5";
-    private static final int MAX_TOKENS = 4096;
+    private static final String MODEL = "claude-sonnet-4-6";
+    private static final int MAX_TOKENS = 16384;
 
     // TODO: Set to true and configure ANTHROPIC_API_KEY to enable real API calls
-    private static final boolean ENABLED = false;
+    private static final boolean ENABLED = true;
 
     private final OkHttpClient httpClient;
     private final ObjectMapper mapper;
@@ -27,7 +28,11 @@ public class RealClaudeClient implements ClaudeClient {
 
     public RealClaudeClient(String apiKey) {
         this.apiKey = apiKey;
-        this.httpClient = new OkHttpClient();
+        this.httpClient = new OkHttpClient.Builder()
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .readTimeout(120, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .build();
         this.mapper = new ObjectMapper();
     }
 
@@ -43,6 +48,7 @@ public class RealClaudeClient implements ClaudeClient {
             jsonBody = mapper.writeValueAsString(Map.of(
                     "model", MODEL,
                     "max_tokens", MAX_TOKENS,
+                    "system", "You output only raw valid JSON. No markdown fences, no comments, no asterisks, no explanation. Your entire response must be parseable by JSON.parse().",
                     "messages", List.of(Map.of("role", "user", "content", prompt))
             ));
         } catch (JsonProcessingException e) {
