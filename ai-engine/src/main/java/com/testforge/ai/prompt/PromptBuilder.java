@@ -4,7 +4,7 @@ import com.testforge.ai.model.EndpointSpec;
 
 import java.util.stream.Collectors;
 
-public class PromptBuilder {
+public class PromptBuilder implements EndpointPromptBuilder {
 
     private static final String TEMPLATE = """
             You are an expert API test engineer. Given the following REST API endpoint specification,

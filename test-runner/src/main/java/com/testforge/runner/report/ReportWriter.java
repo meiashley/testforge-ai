@@ -21,6 +21,16 @@ public class ReportWriter {
     private static final ObjectMapper MAPPER = new ObjectMapper()
             .enable(SerializationFeature.INDENT_OUTPUT);
 
+    private final String prefix;
+
+    public ReportWriter() {
+        this.prefix = "v1";
+    }
+
+    public ReportWriter(String prefix) {
+        this.prefix = prefix;
+    }
+
     public void write(ExecutionReport report, Path outputDir) {
         writeConsole(report, outputDir);
         writeJson(report, outputDir);
@@ -31,7 +41,7 @@ public class ReportWriter {
 
     private void writeConsole(ExecutionReport report, Path outputDir) {
         ExecutionSummary s = report.getSummary();
-        System.out.println("===== V1 EXECUTION REPORT =====");
+        System.out.println("===== " + prefix.toUpperCase() + " EXECUTION REPORT =====");
         System.out.printf("Total: %d | Passed: %d | Failed: %d | Errors: %d | Pass Rate: %.1f%%%n",
                 s.getTotal(), s.getPassed(), s.getFailed(), s.getErrored(), s.getPassRate() * 100);
         System.out.printf("Duration: %dms | Executed: %s%n", s.getTotalDurationMs(), s.getExecutedAt());
@@ -51,8 +61,8 @@ public class ReportWriter {
 
         System.out.println();
         System.out.println("Reports written to:");
-        System.out.println("  " + outputDir.resolve("v1-execution-report.json"));
-        System.out.println("  " + outputDir.resolve("v1-execution-report.md"));
+        System.out.println("  " + outputDir.resolve(prefix + "-execution-report.json"));
+        System.out.println("  " + outputDir.resolve(prefix + "-execution-report.md"));
         System.out.println("================================");
     }
 
@@ -69,7 +79,7 @@ public class ReportWriter {
     // ── JSON ─────────────────────────────────────────────────────────────────
 
     private void writeJson(ExecutionReport report, Path outputDir) {
-        Path file = outputDir.resolve("v1-execution-report.json");
+        Path file = outputDir.resolve(prefix + "-execution-report.json");
         try {
             Files.createDirectories(outputDir);
             MAPPER.writeValue(file.toFile(), report);
@@ -81,7 +91,7 @@ public class ReportWriter {
     // ── Markdown ──────────────────────────────────────────────────────────────
 
     private void writeMarkdown(ExecutionReport report, Path outputDir) {
-        Path file = outputDir.resolve("v1-execution-report.md");
+        Path file = outputDir.resolve(prefix + "-execution-report.md");
         try {
             Files.createDirectories(outputDir);
             Files.writeString(file, buildMarkdown(report));
@@ -95,7 +105,7 @@ public class ReportWriter {
         PrintWriter out = new PrintWriter(sw);
 
         ExecutionSummary s = report.getSummary();
-        out.println("# V1 Execution Report");
+        out.println("# " + prefix.toUpperCase() + " Execution Report");
         out.println();
         out.printf("Executed: %s | Duration: %dms%n", s.getExecutedAt(), s.getTotalDurationMs());
         out.println();
