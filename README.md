@@ -6,41 +6,49 @@ AI-powered API test generation platform. Java 21 + Spring Boot + Anthropic Claud
 
 Reads an OpenAPI 3.0 specification, generates structured test cases using Anthropic Claude, then executes them against the live API and produces structured execution reports.
 
-Pipeline: OpenAPI YAML → AI Engine (Claude) → List of TestCases → Test Runner → ExecutionReport (JSON + Markdown)
+Pipeline: OpenAPI YAML -> AI Engine (Claude) -> List<TestCase> -> Test Runner -> ExecutionReport (JSON + Markdown)
 
-## V1 Baseline Results
+## Real Claude Baseline: 100% Pass Rate
 
-Pass rate: 55.6% (5/9) — see docs/baseline-results-v1.md
+V3.1 hits 100% (9/9) against real Anthropic Claude Sonnet 4.5 API. Achieved through 3 iterations of prompt and pipeline design:
 
-V1 uses an intentionally naive prompt to establish a baseline. Failure patterns:
-- 3 cases: Resource not found (likely hardcoded id)
-- 1 case: Hardcoded dynamic value
+| Version | Pass Rate | Key Change |
+|---------|-----------|------------|
+| V1 | 55.6% (5/9) | Naive baseline prompt |
+| V2 | 77.8% (7/9) | + State machine context (+22.2pp) |
+| V3 | 88.9% (8/9) | + Fixture lifecycle (+11.1pp) |
+| V3.1 | 100% (9/9) | + Per-test lazy fixtures (+11.1pp) |
 
-These patterns drive V2 prompt iteration (documented in the report).
+Total improvement: +44.4pp from V1 baseline.
+
+Detailed iteration story: [docs/v1-to-v3.1-iteration-comparison.md](docs/v1-to-v3.1-iteration-comparison.md)
+
+Real baseline reports for each version under [docs/](docs/).
 
 ## Architecture
 
 | Module | Status | Description |
 |--------|--------|-------------|
 | mock-banking-api | V1 | 3-endpoint payment service (the test target) |
-| ai-engine | V1 | OpenAPI to Claude prompt to structured TestCases |
-| test-runner | V1 | Executes TestCases, evaluates assertions, generates reports |
+| ai-engine | V3.1 | OpenAPI to Claude prompt to structured TestCases (4 prompt versions) |
+| test-runner | V3.1 | HTTP execution + assertion + fixture lifecycle + reporting |
 | api-gateway | Planned | REST entry point for the full pipeline |
 
 ## Testing
 
-- ai-engine: 12 tests (TDD throughout)
-- test-runner: 18 tests (11 unit + 2 WireMock + 4 categorization + 1 integration)
+- ai-engine: 18 tests (TDD throughout, 4 prompt builder versions tested)
+- test-runner: 24 tests (assertion, HTTP, report, pipeline, fixtures, integration)
 - mock-banking-api: 5 controller tests
-- Total: 35 tests passing
+- Total: 47 tests passing
 
 ## Quick Start
 
 git clone https://github.com/meiashley/testforge-ai.git
 cd testforge-ai
+export ANTHROPIC_API_KEY="sk-ant-..."
 mvn install -DskipTests
-mvn test -pl test-runner -Dtest=V1ExecutionPipelineTest
-cat test-runner/target/v1-execution-report.md
+mvn test -pl test-runner -Dtest=V3BaselinePipelineTest
+cat test-runner/target/v3-execution-report.md
 
 ## Tech Stack
 
@@ -53,26 +61,53 @@ cat test-runner/target/v1-execution-report.md
 
 ## Engineering Practices
 
-- TDD throughout — every feature has tests written before implementation (RED-GREEN-REFACTOR)
-- Spec-driven development — design spec, then implementation plan, then execute
-- Conventional commits — type(scope): subject format
-- Strategy Pattern for AI client — MockClaudeClient and RealClaudeClient are interchangeable
-- YAGNI on shared abstractions — domain models stay in their owning module until cross-module need is proven
+- TDD throughout: every feature has tests written before implementation (RED-GREEN-REFACTOR)
+- Spec-driven development: design spec, then implementation plan, then execute
+- One variable per iteration: each prompt/pipeline version changes exactly one thing for clean delta attribution
+- Real data over mock: all baselines run against real Claude API, all reports reproducible
+- Conventional commits: type(scope): subject format throughout
+- Strategy Pattern for AI client: MockClaudeClient and RealClaudeClient interchangeable
+- YAGNI on abstractions: domain models stay in their owning module until cross-module need is proven
+- Backward compatibility: each pipeline version adds method overloads rather than breaking existing signatures
+
+## Iteration Examples
+
+V1 to V2: Added state machine context to prompt
+- Problem: Claude assumed POST /payments returned status PENDING
+- Reality: API returns COMPLETED immediately
+- Fix: Embedded 5 state machine transitions in prompt
+- Result: createPayment 2/3 -> 3/3, getPayment 1/3 -> 2/3
+
+V2 to V3: Added fixture lifecycle
+- Problem: HAPPY PATH GET/refund hardcoded fake IDs that returned 404
+- Reality: Tests need a real existing payment to query/refund
+- Fix: SetupRunner creates seed payment, ExecutionPipeline substitutes {{paymentId}} with real ID
+- Result: getPayment 2/3 -> 3/3 (hardcoded ID failure resolved)
+
+V3 to V3.1: Per-test lazy fixtures
+- Problem: refund BOUNDARY failed because the seed payment was already refunded by an earlier test
+- Reality: Tests sharing fixtures pollute each other's state
+- Fix: Lazy fixture initialization - each test with placeholders gets a fresh seed
+- Result: refundPayment 2/3 -> 3/3, V3.1 hits 100%
 
 ## Roadmap
 
-- [ ] V2 prompt iteration (target 85%+ pass rate)
-- [ ] Real Claude API integration (currently MockClaudeClient backed)
+- [x] V1 baseline + integration test
+- [x] V2 prompt with state machine context
+- [x] V3 fixture lifecycle
+- [x] V3.1 per-test lazy fixtures (100% pass rate)
+- [ ] V4: Remove "exactly 3 cases" constraint, let Claude generate freely
+- [ ] V5: Multi-fixture types and teardown phase
 - [ ] api-gateway REST entry point
 - [ ] Migrate integration tests to Testcontainers
-- [ ] Quality metrics: schema validity, coverage, diversity
+- [ ] Quality metrics: schema validity, coverage diversity, bug-detection rate
 
 ## Design Documents
 
-- ai-engine V1 Spec: docs/superpowers/specs/2026-05-01-ai-engine-v1-design.md
-- test-runner V1 Spec: docs/superpowers/specs/2026-05-04-test-runner-v1-design.md
-- V1 Baseline Results: docs/baseline-results-v1.md
-- Architecture: docs/architecture.md
+- [ai-engine V1 Spec](docs/superpowers/specs/2026-05-01-ai-engine-v1-design.md)
+- [test-runner V1 Spec](docs/superpowers/specs/2026-05-04-test-runner-v1-design.md)
+- [V3 Fixture Lifecycle Spec](docs/superpowers/specs/2026-05-07-v3-fixture-lifecycle-design.md)
+- [V1 to V3.1 Iteration Comparison](docs/v1-to-v3.1-iteration-comparison.md)
 
 ## License
 
