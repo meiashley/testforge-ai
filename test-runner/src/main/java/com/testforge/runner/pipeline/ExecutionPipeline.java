@@ -10,7 +10,9 @@ import com.testforge.runner.report.ReportWriter;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ExecutionPipeline {
 
@@ -28,10 +30,15 @@ public class ExecutionPipeline {
     }
 
     public ExecutionReport run(List<GenerationResult> generationResults, String baseUrl) {
+        return run(generationResults, baseUrl, Map.of());
+    }
+
+    public ExecutionReport run(List<GenerationResult> generationResults, String baseUrl, Map<String, String> fixtures) {
         List<TestCaseResult> results = new ArrayList<>();
 
         for (GenerationResult generation : generationResults) {
             for (TestCase testCase : generation.getTestCases()) {
+                applyFixtures(testCase, fixtures);
                 results.add(execute(testCase, baseUrl));
             }
         }
@@ -40,6 +47,42 @@ public class ExecutionPipeline {
         Path outputDir = Path.of(System.getProperty("project.basedir", "."), "target");
         reportWriter.write(report, outputDir);
         return report;
+    }
+
+    private void applyFixtures(TestCase testCase, Map<String, String> fixtures) {
+        if (fixtures.isEmpty()) return;
+
+        if (testCase.getRequest().getPath() != null) {
+            testCase.getRequest().setPath(substitute(testCase.getRequest().getPath(), fixtures));
+        }
+
+        if (testCase.getRequest().getBody() != null) {
+            testCase.getRequest().setBody(substituteMap(testCase.getRequest().getBody(), fixtures));
+        }
+
+        if (testCase.getExpected().getBodyAssertions() != null) {
+            testCase.getExpected().setBodyAssertions(substituteMap(testCase.getExpected().getBodyAssertions(), fixtures));
+        }
+    }
+
+    private String substitute(String value, Map<String, String> fixtures) {
+        for (Map.Entry<String, String> entry : fixtures.entrySet()) {
+            value = value.replace("{{" + entry.getKey() + "}}", entry.getValue());
+        }
+        return value;
+    }
+
+    private Map<String, Object> substituteMap(Map<String, Object> map, Map<String, String> fixtures) {
+        Map<String, Object> result = new HashMap<>();
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            Object val = entry.getValue();
+            if (val instanceof String s) {
+                result.put(entry.getKey(), substitute(s, fixtures));
+            } else {
+                result.put(entry.getKey(), val);
+            }
+        }
+        return result;
     }
 
     private TestCaseResult execute(TestCase testCase, String baseUrl) {
