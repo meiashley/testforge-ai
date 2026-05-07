@@ -7,6 +7,7 @@ import com.testforge.runner.http.HttpExecutor;
 import com.testforge.runner.model.*;
 import com.testforge.runner.report.ReportBuilder;
 import com.testforge.runner.report.ReportWriter;
+import com.testforge.runner.setup.SetupRunner;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -47,6 +48,40 @@ public class ExecutionPipeline {
         Path outputDir = Path.of(System.getProperty("project.basedir", "."), "target");
         reportWriter.write(report, outputDir);
         return report;
+    }
+
+    public ExecutionReport run(List<GenerationResult> generationResults, String baseUrl, SetupRunner setupRunner) {
+        List<TestCaseResult> results = new ArrayList<>();
+
+        for (GenerationResult generation : generationResults) {
+            for (TestCase testCase : generation.getTestCases()) {
+                Map<String, String> fixtures = hasPlaceholders(testCase)
+                        ? setupRunner.run(baseUrl)
+                        : Map.of();
+                applyFixtures(testCase, fixtures);
+                results.add(execute(testCase, baseUrl));
+            }
+        }
+
+        ExecutionReport report = reportBuilder.build(results);
+        Path outputDir = Path.of(System.getProperty("project.basedir", "."), "target");
+        reportWriter.write(report, outputDir);
+        return report;
+    }
+
+    private boolean hasPlaceholders(TestCase testCase) {
+        if (testCase.getRequest().getPath() != null && testCase.getRequest().getPath().contains("{{")) return true;
+        if (testCase.getRequest().getBody() != null) {
+            for (Object val : testCase.getRequest().getBody().values()) {
+                if (val instanceof String s && s.contains("{{")) return true;
+            }
+        }
+        if (testCase.getExpected().getBodyAssertions() != null) {
+            for (Object val : testCase.getExpected().getBodyAssertions().values()) {
+                if (val instanceof String s && s.contains("{{")) return true;
+            }
+        }
+        return false;
     }
 
     private void applyFixtures(TestCase testCase, Map<String, String> fixtures) {

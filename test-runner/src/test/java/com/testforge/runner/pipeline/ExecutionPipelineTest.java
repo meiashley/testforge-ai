@@ -6,6 +6,7 @@ import com.testforge.runner.http.HttpExecutor;
 import com.testforge.runner.model.HttpResponse;
 import com.testforge.runner.report.ReportBuilder;
 import com.testforge.runner.report.ReportWriter;
+import com.testforge.runner.setup.SetupRunner;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -67,6 +68,33 @@ class ExecutionPipelineTest {
         assertEquals("/api/payments/pay_real123/refund", captured.getPath());
         assertEquals("refund for pay_real123", captured.getBody().get("reason"));
         assertEquals("pay_real123", testCase.getExpected().getBodyAssertions().get("paymentId"));
+    }
+
+    @Test
+    void perTestSetupRunnerCalledOnlyForTestCasesWithPlaceholders() {
+        SetupRunner setupRunner = mock(SetupRunner.class);
+        when(setupRunner.run(any())).thenReturn(Map.of("paymentId", "pay_per_test_456"));
+
+        TestCase withPlaceholder = buildTestCase("tc-with", "/api/payments/{{paymentId}}/refund", null, null);
+        TestCase withoutPlaceholder = buildTestCase("tc-without", "/api/payments/list", null, null);
+        GenerationResult generation = new GenerationResult(null, List.of(withPlaceholder, withoutPlaceholder));
+
+        HttpExecutor httpExecutor = mock(HttpExecutor.class);
+        HttpResponse stubResponse = new HttpResponse(200, Map.of(), "", Map.of(), 5L);
+        ArgumentCaptor<TestCaseRequest> requestCaptor = ArgumentCaptor.forClass(TestCaseRequest.class);
+        when(httpExecutor.execute(requestCaptor.capture(), any())).thenReturn(stubResponse);
+
+        ExecutionPipeline pipeline = new ExecutionPipeline(
+                httpExecutor, new AssertionEvaluator(),
+                new ReportBuilder(), new ReportWriter("test-per-test-setup"));
+
+        pipeline.run(List.of(generation), "http://localhost:8080", setupRunner);
+
+        verify(setupRunner, times(1)).run(any());
+
+        List<TestCaseRequest> captured = requestCaptor.getAllValues();
+        assertEquals("/api/payments/pay_per_test_456/refund", captured.get(0).getPath());
+        assertEquals("/api/payments/list", captured.get(1).getPath());
     }
 
     @Test
