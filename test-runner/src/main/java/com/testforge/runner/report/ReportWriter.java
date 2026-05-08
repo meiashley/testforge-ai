@@ -35,6 +35,7 @@ public class ReportWriter {
         writeConsole(report, outputDir);
         writeJson(report, outputDir);
         writeMarkdown(report, outputDir);
+        writeHtml(report, outputDir);
     }
 
     // ── Console ──────────────────────────────────────────────────────────────
@@ -63,6 +64,7 @@ public class ReportWriter {
         System.out.println("Reports written to:");
         System.out.println("  " + outputDir.resolve(prefix + "-execution-report.json"));
         System.out.println("  " + outputDir.resolve(prefix + "-execution-report.md"));
+        System.out.println("  " + outputDir.resolve(prefix + "-execution-report.html"));
         System.out.println("================================");
     }
 
@@ -97,6 +99,20 @@ public class ReportWriter {
             Files.writeString(file, buildMarkdown(report));
         } catch (IOException e) {
             throw new RuntimeException("Failed to write Markdown report to " + file, e);
+        }
+    }
+
+
+    // ── HTML ──────────────────────────────────────────────────────────────────
+
+    private void writeHtml(ExecutionReport report, Path outputDir) {
+        Path file = outputDir.resolve(prefix + "-execution-report.html");
+        try {
+            Files.createDirectories(outputDir);
+            String html = new HtmlReportGenerator().generate(report);
+            Files.writeString(file, html);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to write HTML report to " + file, e);
         }
     }
 
