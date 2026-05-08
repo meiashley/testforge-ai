@@ -1,5 +1,7 @@
 # TestForge AI
 
+[![Tests](https://github.com/meiashley/testforge-ai/actions/workflows/test.yml/badge.svg)](https://github.com/meiashley/testforge-ai/actions/workflows/test.yml)
+
 AI-powered API test generation platform. Java 21 + Spring Boot + Anthropic Claude.
 
 ## What It Does
