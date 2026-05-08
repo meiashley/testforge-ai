@@ -90,6 +90,74 @@ V3 to V3.1: Per-test lazy fixtures
 - Fix: Lazy fixture initialization - each test with placeholders gets a fresh seed
 - Result: refundPayment 2/3 -> 3/3, V3.1 hits 100%
 
+
+## REST API (api-gateway)
+
+The platform exposes a REST API for asynchronous test generation. Single JVM hosts both the gateway (port 8080) and mock-banking-api endpoints.
+
+### Quick Start
+
+Start the gateway:
+
+    mvn install -DskipTests
+    mvn spring-boot:run -pl api-gateway
+
+Submit a test generation job (returns immediately with jobId):
+
+    curl -X POST http://localhost:8080/api/v1/generate-tests \
+      -H "Content-Type: application/json" \
+      -d '{
+        "openApiUrl": "http://localhost:8080/openapi.yaml",
+        "promptVersion": "V3.1"
+      }'
+
+Response (HTTP 202):
+
+    {
+      "jobId": "524d605a-202e-448d-adb8-122679966711",
+      "status": "PENDING",
+      "statusUrl": "/api/v1/jobs/524d605a-202e-448d-adb8-122679966711"
+    }
+
+Poll for results:
+
+    curl http://localhost:8080/api/v1/jobs/{jobId} | python3 -m json.tool
+
+When complete (~30 seconds):
+
+    {
+      "jobId": "...",
+      "status": "COMPLETED",
+      "promptVersion": "V3.1",
+      "report": {
+        "summary": {
+          "total": 9,
+          "passed": 7,
+          "passRate": 0.7778
+        },
+        "results": [...]
+      }
+    }
+
+### Supported Prompt Versions
+
+Pass any of these in the promptVersion field:
+
+- V1 - Naive baseline prompt
+- V2 - State machine context (+22pp over V1)
+- V3 - Fixture lifecycle (+11pp over V2)
+- V3.1 - Per-test lazy fixtures (default, recommended)
+
+### Architecture
+
+Async execution via Spring @Async (extracted into GenerationExecutor to activate AOP proxy).
+
+Pipeline: REST -> Job (in-memory store) -> ai-engine (Claude API) -> test-runner (HTTP execution + assertions) -> stored ExecutionReport.
+
+### Swagger UI
+
+Built-in via springdoc-openapi: http://localhost:8080/swagger-ui.html
+
 ## Roadmap
 
 - [x] V1 baseline + integration test
@@ -98,7 +166,7 @@ V3 to V3.1: Per-test lazy fixtures
 - [x] V3.1 per-test lazy fixtures (100% pass rate)
 - [ ] V4: Remove "exactly 3 cases" constraint, let Claude generate freely
 - [ ] V5: Multi-fixture types and teardown phase
-- [ ] api-gateway REST entry point
+- [x] api-gateway REST entry point (V3.1: 7/9 = 77.8% via real Claude API end-to-end)
 - [ ] Migrate integration tests to Testcontainers
 - [ ] Quality metrics: schema validity, coverage diversity, bug-detection rate
 
