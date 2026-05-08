@@ -157,7 +157,7 @@ Pass any of these in the promptVersion field:
 
 ### Architecture
 
-Async execution via Spring @Async (extracted into GenerationExecutor to activate AOP proxy).
+Async execution via Spring `@Async` (extracted into `GenerationExecutor` to activate AOP proxy).
 
 Pipeline: REST -> Job (in-memory store) -> ai-engine (Claude API) -> test-runner (HTTP execution + assertions) -> stored ExecutionReport.
 
