@@ -39,4 +39,13 @@ jobs:
         if: always()
         run: |
           echo "### Test Results" >> $GITHUB_STEP_SUMMARY
-          find . -name "TEST-*.xml" -path "*/surefire-reports/*" | wc -l | xargs -I{} echo "Test files: {}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          TOTAL_FILES=$(find . -name "TEST-*.xml" 2>/dev/null | wc -l | tr -d ' ')
+          echo "Test report files: $TOTAL_FILES" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Module | Tests Run |" >> $GITHUB_STEP_SUMMARY
+          echo "|--------|-----------|" >> $GITHUB_STEP_SUMMARY
+          for module in mock-banking-api ai-engine test-runner api-gateway; do
+            COUNT=$(find $module -name "TEST-*.xml" 2>/dev/null | wc -l | tr -d ' ')
+            echo "| $module | $COUNT test files |" >> $GITHUB_STEP_SUMMARY
+          done
