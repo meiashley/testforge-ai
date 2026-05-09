@@ -6,29 +6,43 @@
 <title>TestForge AI - Execution Report</title>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f1f5f9; color: #1e293b; padding: 24px; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #f1f5f9; color: #1e293b; padding: 24px; max-width: 1100px; margin: 0 auto; }
 h1 { font-size: 1.75rem; color: #1e40af; margin-bottom: 4px; }
 h2 { font-size: 1.1rem; color: #1e40af; margin: 24px 0 12px; }
+h3 { font-size: 0.95rem; color: #1e40af; margin: 12px 0 6px; }
 .meta { color: #6b7280; font-size: 0.875rem; margin-bottom: 24px; }
 .cards { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
 .card { background: #fff; border-radius: 8px; padding: 20px 24px; box-shadow: 0 1px 3px rgba(0,0,0,.1); min-width: 130px; flex: 1; }
 .card .label { font-size: 0.75rem; color: #6b7280; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
 .card .value { font-size: 2rem; font-weight: 700; }
 .card.rate .value { color: #16a34a; }
-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
-th { background: #1e40af; color: #fff; text-align: left; padding: 10px 14px; font-size: 0.8rem; text-transform: uppercase; }
-td { padding: 10px 14px; font-size: 0.875rem; border-bottom: 1px solid #f1f5f9; }
-tr.failed { background: #fee2e2; }
-.PASSED { color: #16a34a; font-weight: 600; }
-.FAILED { color: #dc2626; font-weight: 600; }
-.ERROR  { color: #f59e0b; font-weight: 600; }
+details { background: #fff; border-radius: 8px; margin-bottom: 8px; box-shadow: 0 1px 3px rgba(0,0,0,.1); overflow: hidden; }
+details[open] { padding-bottom: 16px; }
+summary { padding: 12px 16px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; gap: 12px; user-select: none; }
+summary:hover { background: #f8fafc; }
+summary.failed { background: #fee2e2; }
+summary.failed:hover { background: #fecaca; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; }
+.badge-HAPPY_PATH { background: #dbeafe; color: #1e40af; }
+.badge-BOUNDARY { background: #ede9fe; color: #6d28d9; }
+.badge-NEGATIVE { background: #fed7aa; color: #c2410c; }
+.badge-SECURITY { background: #fecaca; color: #991b1b; }
+.details-body { padding: 0 16px; }
+pre { background: #f8fafc; padding: 12px; border-radius: 6px; overflow-x: auto; font-size: 0.8rem; line-height: 1.4; border: 1px solid #e2e8f0; }
+table.assertions { width: 100%; border-collapse: collapse; margin-top: 4px; }
+table.assertions th { background: #1e40af; color: #fff; text-align: left; padding: 6px 10px; font-size: 0.75rem; text-transform: uppercase; }
+table.assertions td { padding: 6px 10px; font-size: 0.825rem; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
+table.assertions tr.assert-failed { background: #fef2f2; }
+code { font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 0.85em; }
+.name { flex: 1; }
+.meta-info { color: #6b7280; font-size: 0.75rem; }
 footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem; }
-@media (max-width: 640px) { .cards { flex-direction: column; } }
+@media (max-width: 640px) { .cards { flex-direction: column; } summary { flex-wrap: wrap; } body { padding: 12px; } }
 </style>
 </head>
 <body>
 <h1>TestForge AI Execution Report</h1>
-<p class="meta">Generated 2026-05-08T07:12:48.617674Z &nbsp;|&nbsp; Duration 26ms</p>
+<p class="meta">Generated 2026-05-09T02:20:07.372216Z &nbsp;|&nbsp; Duration 288ms</p >
 <div class="cards">
 <div class="card"><div class="label">Total</div><div class="value">9</div></div>
 <div class="card"><div class="label">Passed</div><div class="value">9</div></div>
@@ -36,19 +50,284 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <div class="card rate"><div class="label">Pass Rate</div><div class="value">100.0%</div></div>
 </div>
 <h2>Test Cases</h2>
-<table>
-<thead><tr><th>Name</th><th>Type</th><th>Status</th><th>Duration</th><th>Assertions</th></tr></thead>
+<details>
+<summary><span>&#x2705;</span><span class="name">Create payment with all required fields</span><span class="badge badge-HAPPY_PATH">HAPPY_PATH</span><span class="meta-info">233ms</span><span class="meta-info">9/9</span></summary>
+<div class="details-body">
+<h3>Request</h3>
+<pre><code>POST /api/payments
+
+{
+  &quot;merchantId&quot; : &quot;merchant-001&quot;,
+  &quot;customerId&quot; : &quot;customer-abc&quot;,
+  &quot;amount&quot; : 128.5,
+  &quot;currency&quot; : &quot;USD&quot;,
+  &quot;description&quot; : &quot;Order #ORD-20260430-001&quot;
+}</code></pre>
+<h3>Response (HTTP 201, 228ms)</h3>
+<pre><code>{
+  &quot;id&quot; : &quot;pay_c98bef45881a&quot;,
+  &quot;merchantId&quot; : &quot;merchant-001&quot;,
+  &quot;customerId&quot; : &quot;customer-abc&quot;,
+  &quot;amount&quot; : 128.5,
+  &quot;currency&quot; : &quot;USD&quot;,
+  &quot;status&quot; : &quot;COMPLETED&quot;,
+  &quot;description&quot; : &quot;Order #ORD-20260430-001&quot;,
+  &quot;createdAt&quot; : &quot;2026-05-09T02:20:07.274143Z&quot;,
+  &quot;updatedAt&quot; : &quot;2026-05-09T02:20:07.274143Z&quot;
+}</code></pre>
+<h3>Assertions (9/9 passed)</h3>
+<table class="assertions">
+<thead><tr><th>Field</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead>
 <tbody>
-<tr><td>&#x2705; Create payment with all required fields</td><td>HAPPY_PATH</td><td class="PASSED">PASSED</td><td>5ms</td><td>9/9</td></tr>
-<tr><td>&#x2705; Create payment with minimum allowed amount boundary value</td><td>BOUNDARY</td><td class="PASSED">PASSED</td><td>2ms</td><td>8/8</td></tr>
-<tr><td>&#x2705; Create payment with missing required field amount</td><td>NEGATIVE</td><td class="PASSED">PASSED</td><td>3ms</td><td>2/2</td></tr>
-<tr><td>&#x2705; Get existing payment by ID</td><td>HAPPY_PATH</td><td class="PASSED">PASSED</td><td>3ms</td><td>8/8</td></tr>
-<tr><td>&#x2705; Get payment with non-existent ID returns 404</td><td>NEGATIVE</td><td class="PASSED">PASSED</td><td>2ms</td><td>1/1</td></tr>
-<tr><td>&#x2705; Get payment with SQL injection ID returns 404</td><td>SECURITY</td><td class="PASSED">PASSED</td><td>2ms</td><td>1/1</td></tr>
-<tr><td>&#x2705; Partial refund on existing payment</td><td>HAPPY_PATH</td><td class="PASSED">PASSED</td><td>3ms</td><td>5/5</td></tr>
-<tr><td>&#x2705; Refund with minimum allowed amount boundary value</td><td>BOUNDARY</td><td class="PASSED">PASSED</td><td>3ms</td><td>5/5</td></tr>
-<tr><td>&#x2705; Refund request missing required reason field</td><td>NEGATIVE</td><td class="PASSED">PASSED</td><td>3ms</td><td>2/2</td></tr>
+<tr><td><code>id</code></td><td><code>non-null</code></td><td><code>pay_c98bef45881a</code></td><td>&#x2705;</td></tr>
+<tr><td><code>merchantId</code></td><td><code>merchant-001</code></td><td><code>merchant-001</code></td><td>&#x2705;</td></tr>
+<tr><td><code>customerId</code></td><td><code>customer-abc</code></td><td><code>customer-abc</code></td><td>&#x2705;</td></tr>
+<tr><td><code>amount</code></td><td><code>128.5</code></td><td><code>128.5</code></td><td>&#x2705;</td></tr>
+<tr><td><code>currency</code></td><td><code>USD</code></td><td><code>USD</code></td><td>&#x2705;</td></tr>
+<tr><td><code>status</code></td><td><code>COMPLETED</code></td><td><code>COMPLETED</code></td><td>&#x2705;</td></tr>
+<tr><td><code>description</code></td><td><code>Order #ORD-20260430-001</code></td><td><code>Order #ORD-20260430-001</code></td><td>&#x2705;</td></tr>
+<tr><td><code>createdAt</code></td><td><code>non-null</code></td><td><code>2026-05-09T02:20:07.274143Z</code></td><td>&#x2705;</td></tr>
+<tr><td><code>updatedAt</code></td><td><code>non-null</code></td><td><code>2026-05-09T02:20:07.274143Z</code></td><td>&#x2705;</td></tr>
 </tbody></table>
+</div>
+</details>
+<details>
+<summary><span>&#x2705;</span><span class="name">Create payment with minimum allowed amount</span><span class="badge badge-BOUNDARY">BOUNDARY</span><span class="meta-info">3ms</span><span class="meta-info">8/8</span></summary>
+<div class="details-body">
+<h3>Request</h3>
+<pre><code>POST /api/payments
+
+{
+  &quot;merchantId&quot; : &quot;merchant-001&quot;,
+  &quot;customerId&quot; : &quot;customer-abc&quot;,
+  &quot;amount&quot; : 0.01,
+  &quot;currency&quot; : &quot;EUR&quot;
+}</code></pre>
+<h3>Response (HTTP 201, 3ms)</h3>
+<pre><code>{
+  &quot;id&quot; : &quot;pay_7a8aa7faf516&quot;,
+  &quot;merchantId&quot; : &quot;merchant-001&quot;,
+  &quot;customerId&quot; : &quot;customer-abc&quot;,
+  &quot;amount&quot; : 0.01,
+  &quot;currency&quot; : &quot;EUR&quot;,
+  &quot;status&quot; : &quot;COMPLETED&quot;,
+  &quot;createdAt&quot; : &quot;2026-05-09T02:20:07.300497Z&quot;,
+  &quot;updatedAt&quot; : &quot;2026-05-09T02:20:07.300497Z&quot;
+}</code></pre>
+<h3>Assertions (8/8 passed)</h3>
+<table class="assertions">
+<thead><tr><th>Field</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td><code>id</code></td><td><code>non-null</code></td><td><code>pay_7a8aa7faf516</code></td><td>&#x2705;</td></tr>
+<tr><td><code>merchantId</code></td><td><code>merchant-001</code></td><td><code>merchant-001</code></td><td>&#x2705;</td></tr>
+<tr><td><code>customerId</code></td><td><code>customer-abc</code></td><td><code>customer-abc</code></td><td>&#x2705;</td></tr>
+<tr><td><code>amount</code></td><td><code>0.01</code></td><td><code>0.01</code></td><td>&#x2705;</td></tr>
+<tr><td><code>currency</code></td><td><code>EUR</code></td><td><code>EUR</code></td><td>&#x2705;</td></tr>
+<tr><td><code>status</code></td><td><code>COMPLETED</code></td><td><code>COMPLETED</code></td><td>&#x2705;</td></tr>
+<tr><td><code>createdAt</code></td><td><code>non-null</code></td><td><code>2026-05-09T02:20:07.300497Z</code></td><td>&#x2705;</td></tr>
+<tr><td><code>updatedAt</code></td><td><code>non-null</code></td><td><code>2026-05-09T02:20:07.300497Z</code></td><td>&#x2705;</td></tr>
+</tbody></table>
+</div>
+</details>
+<details>
+<summary><span>&#x2705;</span><span class="name">Create payment with missing required field</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">30ms</span><span class="meta-info">2/2</span></summary>
+<div class="details-body">
+<h3>Request</h3>
+<pre><code>POST /api/payments
+
+{
+  &quot;merchantId&quot; : &quot;merchant-001&quot;,
+  &quot;customerId&quot; : &quot;customer-abc&quot;,
+  &quot;amount&quot; : 50.0
+}</code></pre>
+<h3>Response (HTTP 400, 29ms)</h3>
+<pre><code>{
+  &quot;status&quot; : 400,
+  &quot;code&quot; : &quot;VALIDATION_ERROR&quot;,
+  &quot;message&quot; : &quot;Request validation failed&quot;,
+  &quot;errors&quot; : [ {
+    &quot;field&quot; : &quot;currency&quot;,
+    &quot;message&quot; : &quot;不能为空&quot;
+  } ],
+  &quot;timestamp&quot; : &quot;2026-05-09T02:20:07.326876Z&quot;
+}</code></pre>
+<h3>Assertions (2/2 passed)</h3>
+<table class="assertions">
+<thead><tr><th>Field</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td><code>status</code></td><td><code>400</code></td><td><code>400</code></td><td>&#x2705;</td></tr>
+<tr><td><code>code</code></td><td><code>VALIDATION_ERROR</code></td><td><code>VALIDATION_ERROR</code></td><td>&#x2705;</td></tr>
+</tbody></table>
+</div>
+</details>
+<details>
+<summary><span>&#x2705;</span><span class="name">Get existing payment by ID</span><span class="badge badge-HAPPY_PATH">HAPPY_PATH</span><span class="meta-info">4ms</span><span class="meta-info">8/8</span></summary>
+<div class="details-body">
+<h3>Request</h3>
+<pre><code>GET /api/payments/pay_e5e5cc1e930e</code></pre>
+<h3>Response (HTTP 200, 4ms)</h3>
+<pre><code>{
+  &quot;id&quot; : &quot;pay_e5e5cc1e930e&quot;,
+  &quot;merchantId&quot; : &quot;setup-merchant&quot;,
+  &quot;customerId&quot; : &quot;setup-customer&quot;,
+  &quot;amount&quot; : 100.0,
+  &quot;currency&quot; : &quot;USD&quot;,
+  &quot;status&quot; : &quot;COMPLETED&quot;,
+  &quot;createdAt&quot; : &quot;2026-05-09T02:20:07.336010Z&quot;,
+  &quot;updatedAt&quot; : &quot;2026-05-09T02:20:07.336010Z&quot;
+}</code></pre>
+<h3>Assertions (8/8 passed)</h3>
+<table class="assertions">
+<thead><tr><th>Field</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td><code>createdAt</code></td><td><code>non-null</code></td><td><code>2026-05-09T02:20:07.336010Z</code></td><td>&#x2705;</td></tr>
+<tr><td><code>amount</code></td><td><code>non-null</code></td><td><code>100.0</code></td><td>&#x2705;</td></tr>
+<tr><td><code>merchantId</code></td><td><code>non-null</code></td><td><code>setup-merchant</code></td><td>&#x2705;</td></tr>
+<tr><td><code>customerId</code></td><td><code>non-null</code></td><td><code>setup-customer</code></td><td>&#x2705;</td></tr>
+<tr><td><code>currency</code></td><td><code>non-null</code></td><td><code>USD</code></td><td>&#x2705;</td></tr>
+<tr><td><code>id</code></td><td><code>non-null</code></td><td><code>pay_e5e5cc1e930e</code></td><td>&#x2705;</td></tr>
+<tr><td><code>status</code></td><td><code>COMPLETED</code></td><td><code>COMPLETED</code></td><td>&#x2705;</td></tr>
+<tr><td><code>updatedAt</code></td><td><code>non-null</code></td><td><code>2026-05-09T02:20:07.336010Z</code></td><td>&#x2705;</td></tr>
+</tbody></table>
+</div>
+</details>
+<details>
+<summary><span>&#x2705;</span><span class="name">Get payment with non-existent ID returns 404</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">3ms</span><span class="meta-info">1/1</span></summary>
+<div class="details-body">
+<h3>Request</h3>
+<pre><code>GET /api/payments/non-existent-id</code></pre>
+<h3>Response (HTTP 404, 3ms)</h3>
+<pre><code>{
+  &quot;status&quot; : 404,
+  &quot;code&quot; : &quot;PAYMENT_NOT_FOUND&quot;,
+  &quot;message&quot; : &quot;Payment not found: non-existent-id&quot;,
+  &quot;timestamp&quot; : &quot;2026-05-09T02:20:07.343190Z&quot;
+}</code></pre>
+<h3>Assertions (1/1 passed)</h3>
+<table class="assertions">
+<thead><tr><th>Field</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td><code>timestamp</code></td><td><code>non-null</code></td><td><code>2026-05-09T02:20:07.343190Z</code></td><td>&#x2705;</td></tr>
+</tbody></table>
+</div>
+</details>
+<details>
+<summary><span>&#x2705;</span><span class="name">Get payment with SQL injection in ID returns 4xx</span><span class="badge badge-SECURITY">SECURITY</span><span class="meta-info">2ms</span><span class="meta-info">1/1</span></summary>
+<div class="details-body">
+<h3>Request</h3>
+<pre><code>GET /api/payments/' OR '1'='1</code></pre>
+<h3>Response (HTTP 404, 2ms)</h3>
+<pre><code>{
+  &quot;status&quot; : 404,
+  &quot;code&quot; : &quot;PAYMENT_NOT_FOUND&quot;,
+  &quot;message&quot; : &quot;Payment not found: ' OR '1'='1&quot;,
+  &quot;timestamp&quot; : &quot;2026-05-09T02:20:07.345665Z&quot;
+}</code></pre>
+<h3>Assertions (1/1 passed)</h3>
+<table class="assertions">
+<thead><tr><th>Field</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td><code>timestamp</code></td><td><code>non-null</code></td><td><code>2026-05-09T02:20:07.345665Z</code></td><td>&#x2705;</td></tr>
+</tbody></table>
+</div>
+</details>
+<details>
+<summary><span>&#x2705;</span><span class="name">Partial refund of an existing payment</span><span class="badge badge-HAPPY_PATH">HAPPY_PATH</span><span class="meta-info">7ms</span><span class="meta-info">5/5</span></summary>
+<div class="details-body">
+<h3>Request</h3>
+<pre><code>POST /api/payments/pay_1387ba7cfea4/refund
+
+{
+  &quot;reason&quot; : &quot;Customer requested partial cancellation&quot;,
+  &quot;amount&quot; : 10.0
+}</code></pre>
+<h3>Response (HTTP 200, 7ms)</h3>
+<pre><code>{
+  &quot;id&quot; : &quot;pay_1387ba7cfea4&quot;,
+  &quot;merchantId&quot; : &quot;setup-merchant&quot;,
+  &quot;customerId&quot; : &quot;setup-customer&quot;,
+  &quot;amount&quot; : 100.0,
+  &quot;currency&quot; : &quot;USD&quot;,
+  &quot;status&quot; : &quot;PARTIALLY_REFUNDED&quot;,
+  &quot;refundReason&quot; : &quot;Customer requested partial cancellation&quot;,
+  &quot;createdAt&quot; : &quot;2026-05-09T02:20:07.348071Z&quot;,
+  &quot;updatedAt&quot; : &quot;2026-05-09T02:20:07.355221Z&quot;
+}</code></pre>
+<h3>Assertions (5/5 passed)</h3>
+<table class="assertions">
+<thead><tr><th>Field</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td><code>createdAt</code></td><td><code>non-null</code></td><td><code>2026-05-09T02:20:07.348071Z</code></td><td>&#x2705;</td></tr>
+<tr><td><code>refundReason</code></td><td><code>Customer requested partial cancellation</code></td><td><code>Customer requested partial cancellation</code></td><td>&#x2705;</td></tr>
+<tr><td><code>id</code></td><td><code>non-null</code></td><td><code>pay_1387ba7cfea4</code></td><td>&#x2705;</td></tr>
+<tr><td><code>status</code></td><td><code>PARTIALLY_REFUNDED</code></td><td><code>PARTIALLY_REFUNDED</code></td><td>&#x2705;</td></tr>
+<tr><td><code>updatedAt</code></td><td><code>non-null</code></td><td><code>2026-05-09T02:20:07.355221Z</code></td><td>&#x2705;</td></tr>
+</tbody></table>
+</div>
+</details>
+<details>
+<summary><span>&#x2705;</span><span class="name">Refund with minimum allowed amount boundary value</span><span class="badge badge-BOUNDARY">BOUNDARY</span><span class="meta-info">3ms</span><span class="meta-info">5/5</span></summary>
+<div class="details-body">
+<h3>Request</h3>
+<pre><code>POST /api/payments/pay_0b8615561fc1/refund
+
+{
+  &quot;reason&quot; : &quot;Minimum boundary refund test&quot;,
+  &quot;amount&quot; : 0.01
+}</code></pre>
+<h3>Response (HTTP 200, 3ms)</h3>
+<pre><code>{
+  &quot;id&quot; : &quot;pay_0b8615561fc1&quot;,
+  &quot;merchantId&quot; : &quot;setup-merchant&quot;,
+  &quot;customerId&quot; : &quot;setup-customer&quot;,
+  &quot;amount&quot; : 100.0,
+  &quot;currency&quot; : &quot;USD&quot;,
+  &quot;status&quot; : &quot;PARTIALLY_REFUNDED&quot;,
+  &quot;refundReason&quot; : &quot;Minimum boundary refund test&quot;,
+  &quot;createdAt&quot; : &quot;2026-05-09T02:20:07.358351Z&quot;,
+  &quot;updatedAt&quot; : &quot;2026-05-09T02:20:07.361337Z&quot;
+}</code></pre>
+<h3>Assertions (5/5 passed)</h3>
+<table class="assertions">
+<thead><tr><th>Field</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td><code>createdAt</code></td><td><code>non-null</code></td><td><code>2026-05-09T02:20:07.358351Z</code></td><td>&#x2705;</td></tr>
+<tr><td><code>refundReason</code></td><td><code>Minimum boundary refund test</code></td><td><code>Minimum boundary refund test</code></td><td>&#x2705;</td></tr>
+<tr><td><code>id</code></td><td><code>non-null</code></td><td><code>pay_0b8615561fc1</code></td><td>&#x2705;</td></tr>
+<tr><td><code>status</code></td><td><code>PARTIALLY_REFUNDED</code></td><td><code>PARTIALLY_REFUNDED</code></td><td>&#x2705;</td></tr>
+<tr><td><code>updatedAt</code></td><td><code>non-null</code></td><td><code>2026-05-09T02:20:07.361337Z</code></td><td>&#x2705;</td></tr>
+</tbody></table>
+</div>
+</details>
+<details>
+<summary><span>&#x2705;</span><span class="name">Refund with missing required reason field</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">3ms</span><span class="meta-info">2/2</span></summary>
+<div class="details-body">
+<h3>Request</h3>
+<pre><code>POST /api/payments/pay_394ad81f4c8f/refund
+
+{
+  &quot;amount&quot; : 10.0
+}</code></pre>
+<h3>Response (HTTP 400, 3ms)</h3>
+<pre><code>{
+  &quot;status&quot; : 400,
+  &quot;code&quot; : &quot;VALIDATION_ERROR&quot;,
+  &quot;message&quot; : &quot;Request validation failed&quot;,
+  &quot;errors&quot; : [ {
+    &quot;field&quot; : &quot;reason&quot;,
+    &quot;message&quot; : &quot;不能为空&quot;
+  } ],
+  &quot;timestamp&quot; : &quot;2026-05-09T02:20:07.366733Z&quot;
+}</code></pre>
+<h3>Assertions (2/2 passed)</h3>
+<table class="assertions">
+<thead><tr><th>Field</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td><code>code</code></td><td><code>VALIDATION_ERROR</code></td><td><code>VALIDATION_ERROR</code></td><td>&#x2705;</td></tr>
+<tr><td><code>status</code></td><td><code>400</code></td><td><code>400</code></td><td>&#x2705;</td></tr>
+</tbody></table>
+</div>
+</details>
 <footer>Generated by TestForge AI &middot; github.com/meiashley/testforge-ai</footer>
 </body>
 </html>

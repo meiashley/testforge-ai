@@ -33,11 +33,11 @@ class HtmlReportGeneratorTest {
 
         TestCaseResult tc1 = new TestCaseResult(
                 "tc-1", "createPayment_happy", TestCaseType.HAPPY_PATH, null,
-                TestResultStatus.PASSED, response, List.of(passed), null, 60);
+                TestResultStatus.PASSED, null, response, List.of(passed), null, 60);
 
         TestCaseResult tc2 = new TestCaseResult(
                 "tc-2", "createPayment_negative", TestCaseType.NEGATIVE, null,
-                TestResultStatus.FAILED, response, List.of(passed, failed), "ASSERTION_FAILURE", 60);
+                TestResultStatus.FAILED, null, response, List.of(passed, failed), "ASSERTION_FAILURE", 60);
 
         report = new ExecutionReport(summary, List.of(tc1, tc2));
     }

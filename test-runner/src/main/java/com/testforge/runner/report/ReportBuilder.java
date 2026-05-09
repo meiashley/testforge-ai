@@ -33,7 +33,7 @@ public class ReportBuilder {
         String category = categorize(result);
         return new TestCaseResult(
                 result.getTestCaseId(), result.getName(), result.getType(), result.getPriority(),
-                result.getStatus(), result.getHttpResponse(), result.getAssertionResults(),
+                result.getStatus(), result.getRequest(), result.getHttpResponse(), result.getAssertionResults(),
                 category, result.getDurationMs());
     }
 

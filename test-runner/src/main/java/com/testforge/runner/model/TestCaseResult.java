@@ -1,6 +1,7 @@
 package com.testforge.runner.model;
 
 import com.testforge.ai.model.Priority;
+import com.testforge.ai.model.TestCaseRequest;
 import com.testforge.ai.model.TestCaseType;
 import lombok.Value;
 
@@ -13,6 +14,7 @@ public class TestCaseResult {
     TestCaseType type;
     Priority priority;
     TestResultStatus status;
+    TestCaseRequest request;
     HttpResponse httpResponse;
     List<AssertionResult> assertionResults;
     String failureCategory;

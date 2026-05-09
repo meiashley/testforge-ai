@@ -141,13 +141,13 @@ public class ExecutionPipeline {
 
             return new TestCaseResult(
                     testCase.getId(), testCase.getName(), testCase.getType(), testCase.getPriority(),
-                    status, httpResponse, assertionResults, null, durationMs);
+                    status, testCase.getRequest(), httpResponse, assertionResults, null, durationMs);
 
         } catch (Exception e) {
             long durationMs = System.currentTimeMillis() - start;
             return new TestCaseResult(
                     testCase.getId(), testCase.getName(), testCase.getType(), testCase.getPriority(),
-                    TestResultStatus.ERROR, null, List.of(), null, durationMs);
+                    TestResultStatus.ERROR, testCase.getRequest(), null, List.of(), null, durationMs);
         }
     }
 }

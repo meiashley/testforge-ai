@@ -65,6 +65,6 @@ class ReportBuilderTest {
 
     private TestCaseResult failedResult(String id, HttpResponse httpResponse, List<AssertionResult> assertions) {
         return new TestCaseResult(id, "test-" + id, TestCaseType.HAPPY_PATH, Priority.P0,
-                TestResultStatus.FAILED, httpResponse, assertions, null, httpResponse.getDurationMs());
+                TestResultStatus.FAILED, null, httpResponse, assertions, null, httpResponse.getDurationMs());
     }
 }
