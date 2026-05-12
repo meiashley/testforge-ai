@@ -98,6 +98,36 @@ V3 to V3.1: Per-test lazy fixtures
 - Fix: Lazy fixture initialization - each test with placeholders gets a fresh seed
 - Result: refundPayment 2/3 -> 3/3, V3.1 hits 100%
 
+## 🎯 Quality Validation
+
+V3.1 AI-generated test suite quality measured on three independent axes:
+
+| Metric                    | Value         | Source                                    |
+|---------------------------|---------------|-------------------------------------------|
+| Pass rate                 | **100%** (9/9)  | Real Claude Sonnet 4.5 against live API   |
+| Line coverage             | **82.6%**     | JaCoCo on `mock-banking-api`              |
+| Branch coverage           | **60.0%**     | JaCoCo (Lombok-generated code excluded)   |
+| Method coverage           | **80.0%**     | JaCoCo                                    |
+| Class coverage            | **87.5%**     | JaCoCo                                    |
+| Contract violations       | **0**         | TestCaseContractValidator vs OpenAPI spec |
+
+**[View full JaCoCo coverage report](https://meiashley.github.io/testforge-ai/coverage/index.html)**
+
+### Multi-Layer Validation Strategy
+
+Quality is not measured by pass rate alone. TestForge AI validates AI-generated tests on three layers:
+
+1. **Pre-execution: Contract conformance** — `TestCaseContractValidator` checks every generated test case against the OpenAPI spec (path, method, expected status code, request body fields). Structurally invalid tests are filtered out before execution, with `[contract violation]` log lines for visibility.
+
+2. **Runtime: Pass rate + assertion strictness** — Tests execute against the live API; each assertion (status code, body field, type, structure) must hold for the test to pass.
+
+3. **Post-execution: Code coverage** — JaCoCo measures how thoroughly the passing tests actually exercise the underlying business code. 82.6% line coverage means the tests aren't just structurally passing — they reach into the real logic.
+
+This combination catches three different failure modes:
+- ❌ A test that passes by checking nothing meaningful → caught by coverage
+- ❌ A test with a wrong path Claude invented → caught by contract validator  
+- ❌ A test whose expected status doesn't match reality → caught by execution
+
 ## REST API (api-gateway)
 
 The platform exposes a REST API for asynchronous test generation. Single JVM hosts both the gateway (port 8080) and mock-banking-api endpoints.
