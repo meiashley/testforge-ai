@@ -9,10 +9,13 @@ import com.testforge.ai.model.GenerationResult;
 import com.testforge.ai.model.TestCase;
 import com.testforge.ai.parser.ResponseParser;
 import com.testforge.ai.prompt.EndpointPromptBuilder;
+import com.testforge.ai.validation.ContractViolation;
+import com.testforge.ai.validation.TestCaseContractValidator;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public class TestGenerationPipeline {
 
@@ -21,6 +24,7 @@ public class TestGenerationPipeline {
     private final ClaudeClient claudeClient;
     private final ResponseParser responseParser;
     private final EndpointCache cache;
+    private final TestCaseContractValidator contractValidator;
 
     public TestGenerationPipeline(OpenApiLoader loader,
                                    EndpointPromptBuilder promptBuilder,
@@ -34,11 +38,21 @@ public class TestGenerationPipeline {
                                    ClaudeClient claudeClient,
                                    ResponseParser responseParser,
                                    EndpointCache cache) {
+        this(loader, promptBuilder, claudeClient, responseParser, cache, new TestCaseContractValidator());
+    }
+
+    public TestGenerationPipeline(OpenApiLoader loader,
+                                   EndpointPromptBuilder promptBuilder,
+                                   ClaudeClient claudeClient,
+                                   ResponseParser responseParser,
+                                   EndpointCache cache,
+                                   TestCaseContractValidator contractValidator) {
         this.loader = loader;
         this.promptBuilder = promptBuilder;
         this.claudeClient = claudeClient;
         this.responseParser = responseParser;
         this.cache = cache;
+        this.contractValidator = contractValidator;
     }
 
     public List<GenerationResult> run(String yamlContent) {
@@ -61,6 +75,18 @@ public class TestGenerationPipeline {
                 String rawJson = claudeClient.generate(prompt);
                 testCases = responseParser.parse(rawJson);
                 cache.save(fingerprint, testCases);
+            }
+
+            List<ContractViolation> violations = contractValidator.validate(testCases, endpoint);
+            if (!violations.isEmpty()) {
+                Set<String> violatingIds = new java.util.HashSet<>();
+                for (ContractViolation v : violations) {
+                    System.out.println("[contract violation] " + v.getTestCaseName() + ": " + v.getDetails());
+                    violatingIds.add(v.getTestCaseId());
+                }
+                testCases = testCases.stream()
+                        .filter(tc -> !violatingIds.contains(tc.getId()))
+                        .toList();
             }
 
             results.add(new GenerationResult(endpoint, testCases));
