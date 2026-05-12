@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PaymentService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TestForge AI - Mock Banking API</a> &gt; <a href="index.source.html" class="el_package">com.testforge.mockbank.service</a> &gt; <span class="el_source">PaymentService.java</span></div><h1>PaymentService.java</h1><pre class="source lang-java linenums">package com.testforge.mockbank.service;
+
+import com.testforge.mockbank.dto.CreatePaymentRequest;
+import com.testforge.mockbank.dto.RefundRequest;
+import com.testforge.mockbank.exception.PaymentNotFoundException;
+import com.testforge.mockbank.exception.PaymentNotRefundableException;
+import com.testforge.mockbank.model.Payment;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
+@Service
+<span class="fc" id="L17">public class PaymentService {</span>
+
+<span class="fc" id="L19">    private final Map&lt;String, Payment&gt; store = new ConcurrentHashMap&lt;&gt;();</span>
+
+    public Payment createPayment(CreatePaymentRequest req) {
+<span class="fc" id="L22">        String id = &quot;pay_&quot; + UUID.randomUUID().toString().replace(&quot;-&quot;, &quot;&quot;).substring(0, 12);</span>
+<span class="fc" id="L23">        Instant now = Instant.now();</span>
+<span class="fc" id="L24">        Payment payment = Payment.builder()</span>
+<span class="fc" id="L25">                .id(id)</span>
+<span class="fc" id="L26">                .merchantId(req.getMerchantId())</span>
+<span class="fc" id="L27">                .customerId(req.getCustomerId())</span>
+<span class="fc" id="L28">                .amount(req.getAmount())</span>
+<span class="fc" id="L29">                .currency(req.getCurrency())</span>
+<span class="fc" id="L30">                .description(req.getDescription())</span>
+<span class="fc" id="L31">                .status(Payment.PaymentStatus.COMPLETED)</span>
+<span class="fc" id="L32">                .createdAt(now)</span>
+<span class="fc" id="L33">                .updatedAt(now)</span>
+<span class="fc" id="L34">                .build();</span>
+<span class="fc" id="L35">        store.put(id, payment);</span>
+<span class="fc" id="L36">        return payment;</span>
+    }
+
+    public Payment getPayment(String id) {
+<span class="fc" id="L40">        Payment payment = store.get(id);</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        if (payment == null) {</span>
+<span class="fc" id="L42">            throw new PaymentNotFoundException(id);</span>
+        }
+<span class="fc" id="L44">        return payment;</span>
+    }
+
+    public Payment refundPayment(String id, RefundRequest req) {
+<span class="fc" id="L48">        Payment payment = getPayment(id);</span>
+
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">        if (payment.getStatus() != Payment.PaymentStatus.COMPLETED) {</span>
+<span class="nc" id="L51">            throw new PaymentNotRefundableException(id, payment.getStatus());</span>
+        }
+
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">        BigDecimal refundAmount = req.getAmount() != null ? req.getAmount() : payment.getAmount();</span>
+
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">        if (refundAmount.compareTo(payment.getAmount()) &gt; 0) {</span>
+<span class="nc" id="L57">            throw new IllegalArgumentException(</span>
+<span class="nc" id="L58">                    &quot;Refund amount &quot; + refundAmount + &quot; exceeds original payment amount &quot; + payment.getAmount());</span>
+        }
+
+<span class="pc bpc" id="L61" title="1 of 2 branches missed.">        Payment.PaymentStatus newStatus = refundAmount.compareTo(payment.getAmount()) == 0</span>
+<span class="nc" id="L62">                ? Payment.PaymentStatus.REFUNDED</span>
+<span class="fc" id="L63">                : Payment.PaymentStatus.PARTIALLY_REFUNDED;</span>
+
+<span class="fc" id="L65">        Payment updated = Payment.builder()</span>
+<span class="fc" id="L66">                .id(payment.getId())</span>
+<span class="fc" id="L67">                .merchantId(payment.getMerchantId())</span>
+<span class="fc" id="L68">                .customerId(payment.getCustomerId())</span>
+<span class="fc" id="L69">                .amount(payment.getAmount())</span>
+<span class="fc" id="L70">                .currency(payment.getCurrency())</span>
+<span class="fc" id="L71">                .description(payment.getDescription())</span>
+<span class="fc" id="L72">                .status(newStatus)</span>
+<span class="fc" id="L73">                .refundReason(req.getReason())</span>
+<span class="fc" id="L74">                .createdAt(payment.getCreatedAt())</span>
+<span class="fc" id="L75">                .updatedAt(Instant.now())</span>
+<span class="fc" id="L76">                .build();</span>
+
+<span class="fc" id="L78">        store.put(id, updated);</span>
+<span class="fc" id="L79">        return updated;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

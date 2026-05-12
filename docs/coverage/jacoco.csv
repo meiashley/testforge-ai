@@ -1,0 +1,9 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+TestForge AI - Mock Banking API,com.testforge.mockbank.exception,GlobalExceptionHandler,24,47,0,0,12,21,2,4,2,4
+TestForge AI - Mock Banking API,com.testforge.mockbank.exception,PaymentNotFoundException,0,5,0,0,0,2,0,1,0,1
+TestForge AI - Mock Banking API,com.testforge.mockbank.exception,PaymentNotRefundableException,7,0,0,0,2,0,1,0,1,0
+TestForge AI - Mock Banking API,com.testforge.mockbank.controller,PaymentController,0,21,0,0,0,4,0,3,0,3
+TestForge AI - Mock Banking API,com.testforge.mockbank.dto,PaymentResponse,0,33,0,0,0,12,0,1,0,1
+TestForge AI - Mock Banking API,com.testforge.mockbank,MockBankingApiApplication,5,3,0,0,2,1,1,1,1,1
+TestForge AI - Mock Banking API,com.testforge.mockbank.config,OpenApiConfig,0,42,0,0,0,14,0,2,0,2
+TestForge AI - Mock Banking API,com.testforge.mockbank.service,PaymentService,21,135,4,6,4,41,4,5,0,4

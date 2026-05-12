@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PaymentController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">TestForge AI - Mock Banking API</a> &gt; <a href="index.source.html" class="el_package">com.testforge.mockbank.controller</a> &gt; <span class="el_source">PaymentController.java</span></div><h1>PaymentController.java</h1><pre class="source lang-java linenums">package com.testforge.mockbank.controller;
+
+import com.testforge.mockbank.dto.*;
+import com.testforge.mockbank.model.Payment;
+import com.testforge.mockbank.service.PaymentService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping(&quot;/api/payments&quot;)
+@RequiredArgsConstructor
+@Tag(name = &quot;Payments&quot;, description = &quot;Payment lifecycle operations&quot;)
+public class PaymentController {
+
+    private final PaymentService paymentService;
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(
+        summary = &quot;Create a payment&quot;,
+        description = &quot;Initiates a new payment. Returns COMPLETED immediately (mock behaviour).&quot;
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = &quot;201&quot;, description = &quot;Payment created&quot;,
+            content = @Content(schema = @Schema(implementation = PaymentResponse.class))),
+        @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Validation error&quot;,
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public PaymentResponse createPayment(@Valid @RequestBody CreatePaymentRequest request) {
+<span class="fc" id="L39">        Payment payment = paymentService.createPayment(request);</span>
+<span class="fc" id="L40">        return PaymentResponse.from(payment);</span>
+    }
+
+    @GetMapping(&quot;/{id}&quot;)
+    @Operation(
+        summary = &quot;Get a payment&quot;,
+        description = &quot;Retrieves a payment by its unique identifier.&quot;
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Payment found&quot;,
+            content = @Content(schema = @Schema(implementation = PaymentResponse.class))),
+        @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Payment not found&quot;,
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public PaymentResponse getPayment(
+            @Parameter(description = &quot;Payment ID&quot;, example = &quot;pay_a1b2c3d4e5f6&quot;)
+            @PathVariable String id) {
+<span class="fc" id="L57">        return PaymentResponse.from(paymentService.getPayment(id));</span>
+    }
+
+    @PostMapping(&quot;/{id}/refund&quot;)
+    @Operation(
+        summary = &quot;Refund a payment&quot;,
+        description = &quot;Issues a full or partial refund for a COMPLETED payment.&quot;
+    )
+    @ApiResponses({
+        @ApiResponse(responseCode = &quot;200&quot;, description = &quot;Refund processed&quot;,
+            content = @Content(schema = @Schema(implementation = PaymentResponse.class))),
+        @ApiResponse(responseCode = &quot;400&quot;, description = &quot;Invalid refund amount&quot;,
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = &quot;404&quot;, description = &quot;Payment not found&quot;,
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+        @ApiResponse(responseCode = &quot;422&quot;, description = &quot;Payment is not refundable&quot;,
+            content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    public PaymentResponse refundPayment(
+            @Parameter(description = &quot;Payment ID&quot;, example = &quot;pay_a1b2c3d4e5f6&quot;)
+            @PathVariable String id,
+            @Valid @RequestBody RefundRequest request) {
+<span class="fc" id="L79">        return PaymentResponse.from(paymentService.refundPayment(id, request));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
