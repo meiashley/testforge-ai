@@ -204,7 +204,10 @@ Built-in via springdoc-openapi: http://localhost:8080/swagger-ui.html
 - [ ] V4: Remove "exactly 3 cases" constraint, let Claude generate freely
 - [ ] V5: Multi-fixture types and teardown phase
 - [x] api-gateway REST entry point (V3.1: 7/9 = 77.8% via real Claude API end-to-end)
+- [x] Code coverage validation via JaCoCo (V3.1: 82.6% line, 60% branch on mock-banking-api)
+- [x] Contract conformance validator: pre-execution check that AI-generated tests match OpenAPI spec
 - [ ] Migrate integration tests to Testcontainers
+- [ ] Mutation testing: inject synthetic API defects to validate test detection power
 - [ ] Quality metrics: schema validity, coverage diversity, bug-detection rate
 
 ## Design Documents
