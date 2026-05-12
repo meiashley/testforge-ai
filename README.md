@@ -98,6 +98,27 @@ V3 to V3.1: Per-test lazy fixtures
 - Fix: Lazy fixture initialization - each test with placeholders gets a fresh seed
 - Result: refundPayment 2/3 -> 3/3, V3.1 hits 100%
 
+## 🏗️ Architecture
+
+```mermaid
+graph LR
+    A([OpenAPI Spec]):::input --> B[ai-engine]:::module
+    B -->|prompts| C([Claude API\nSonnet 4.5]):::external
+    C -->|JSON response| B
+    B -->|validated test cases| D[test-runner]:::module
+    D -->|HTTP| E[mock-banking-api\n+ JaCoCo agent]:::module
+    D --> F([Execution Report\nHTML / JSON / MD]):::output
+    E -.->|coverage data| G([JaCoCo Coverage Report]):::output
+    H[api-gateway\nREST entry point]:::module -.->|invokes| B
+
+    classDef module fill:#dbeafe,stroke:#93c5fd,color:#1e3a5f
+    classDef input fill:#f0fdf4,stroke:#86efac,color:#14532d
+    classDef output fill:#fefce8,stroke:#fde047,color:#713f12
+    classDef external fill:#faf5ff,stroke:#d8b4fe,color:#4a044e
+```
+
+End-to-end flow: OpenAPI spec → ai-engine (with spec caching + contract validation) → Claude → validated test cases → test-runner → HTTP execution against mock-banking-api → Execution Report + JaCoCo Coverage. `api-gateway` exposes the full workflow as a REST entry point.
+
 ## 🎯 Quality Validation
 
 V3.1 AI-generated test suite quality measured on three independent axes:
