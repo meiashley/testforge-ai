@@ -1,5 +1,9 @@
 package com.testforge.runner.pipeline;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.testforge.ai.analysis.FailureAnalysisInput;
+import com.testforge.ai.analysis.FailureAnalysisResult;
+import com.testforge.ai.analysis.FailureAnalyzer;
 import com.testforge.ai.model.GenerationResult;
 import com.testforge.ai.model.TestCase;
 import com.testforge.runner.assertion.AssertionEvaluator;
@@ -14,13 +18,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ExecutionPipeline {
+
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private final HttpExecutor httpExecutor;
     private final AssertionEvaluator assertionEvaluator;
     private final ReportBuilder reportBuilder;
     private final ReportWriter reportWriter;
+    private FailureAnalyzer failureAnalyzer;
 
     public ExecutionPipeline(HttpExecutor httpExecutor, AssertionEvaluator assertionEvaluator,
                              ReportBuilder reportBuilder, ReportWriter reportWriter) {
@@ -28,6 +36,11 @@ public class ExecutionPipeline {
         this.assertionEvaluator = assertionEvaluator;
         this.reportBuilder = reportBuilder;
         this.reportWriter = reportWriter;
+    }
+
+    public ExecutionPipeline withFailureAnalyzer(FailureAnalyzer analyzer) {
+        this.failureAnalyzer = analyzer;
+        return this;
     }
 
     public ExecutionReport run(List<GenerationResult> generationResults, String baseUrl) {
@@ -45,6 +58,7 @@ public class ExecutionPipeline {
         }
 
         ExecutionReport report = reportBuilder.build(results);
+        analyzeFailures(report);
         Path outputDir = Path.of(System.getProperty("project.basedir", "."), "target");
         reportWriter.write(report, outputDir);
         return report;
@@ -64,9 +78,65 @@ public class ExecutionPipeline {
         }
 
         ExecutionReport report = reportBuilder.build(results);
+        analyzeFailures(report);
         Path outputDir = Path.of(System.getProperty("project.basedir", "."), "target");
         reportWriter.write(report, outputDir);
         return report;
+    }
+
+    private void analyzeFailures(ExecutionReport report) {
+        if (failureAnalyzer == null) return;
+
+        List<TestCaseResult> failedResults = report.getResults().stream()
+                .filter(r -> r.getStatus() == TestResultStatus.FAILED)
+                .toList();
+
+        if (failedResults.isEmpty()) return;
+
+        List<FailureAnalysisInput> inputs = failedResults.stream()
+                .map(this::toFailureAnalysisInput)
+                .toList();
+
+        try {
+            List<FailureAnalysisResult> analyses = failureAnalyzer.analyze(inputs);
+            report.setFailureAnalysis(analyses);
+            System.out.printf("[failure analysis] analyzed %d failures, returned %d diagnoses%n",
+                    inputs.size(), analyses.size());
+        } catch (Exception e) {
+            System.err.printf("[failure analysis] failed to analyze failures: %s%n", e.getMessage());
+        }
+    }
+
+    private FailureAnalysisInput toFailureAnalysisInput(TestCaseResult r) {
+        String requestBody = "";
+        try {
+            requestBody = MAPPER.writeValueAsString(r.getRequest().getBody());
+        } catch (Exception ignored) {}
+
+        String actualResponseBody = "";
+        try {
+            actualResponseBody = r.getHttpResponse() != null
+                    ? MAPPER.writeValueAsString(r.getHttpResponse().getBody())
+                    : "";
+        } catch (Exception ignored) {}
+
+        String assertionFailures = r.getAssertionResults().stream()
+                .filter(ar -> !ar.isPassed())
+                .map(ar -> "field '" + ar.getField() + "': " + ar.getFailureReason())
+                .collect(Collectors.joining("; "));
+
+        return FailureAnalysisInput.builder()
+                .testCaseId(r.getTestCaseId())
+                .testCaseName(r.getName())
+                .testCaseType(r.getType() != null ? r.getType().name() : "UNKNOWN")
+                .endpointMethod(r.getRequest().getMethod())
+                .endpointPath(r.getRequest().getPath())
+                .requestBody(requestBody)
+                .actualStatusCode(r.getHttpResponse() != null ? r.getHttpResponse().getStatusCode() : 0)
+                .actualResponseBody(actualResponseBody)
+                .expectedStatusCode(0)
+                .assertionFailures(assertionFailures)
+                .build();
     }
 
     private boolean hasPlaceholders(TestCase testCase) {

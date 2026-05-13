@@ -1,11 +1,20 @@
 package com.testforge.runner.model;
 
-import lombok.Value;
+import com.testforge.ai.analysis.FailureAnalysisResult;
+import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@Value
+@Data
 public class ExecutionReport {
-    ExecutionSummary summary;
-    List<TestCaseResult> results;
+    private final ExecutionSummary summary;
+    private final List<TestCaseResult> results;
+    private List<FailureAnalysisResult> failureAnalysis;
+
+    public ExecutionReport(ExecutionSummary summary, List<TestCaseResult> results) {
+        this.summary = summary;
+        this.results = results;
+        this.failureAnalysis = new ArrayList<>();
+    }
 }

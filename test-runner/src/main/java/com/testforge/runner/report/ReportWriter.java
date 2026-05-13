@@ -2,6 +2,7 @@ package com.testforge.runner.report;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.testforge.ai.analysis.FailureAnalysisResult;
 import com.testforge.runner.model.AssertionResult;
 import com.testforge.runner.model.ExecutionReport;
 import com.testforge.runner.model.ExecutionSummary;
@@ -198,6 +199,31 @@ public class ReportWriter {
         out.println("## V2 Prompt Improvement Targets");
         out.println();
         out.println(buildImprovementTargets(report, categoryCounts));
+        out.println();
+
+        // Section 5: AI Failure Analysis
+        List<FailureAnalysisResult> analyses = report.getFailureAnalysis();
+        if (analyses != null && !analyses.isEmpty()) {
+            out.println("## AI Failure Analysis");
+            out.println();
+            out.println("| ID | Category | Confidence | Summary |");
+            out.println("|----|----------|------------|---------|");
+            for (FailureAnalysisResult a : analyses) {
+                out.printf("| %s | %s | %s | %s |%n",
+                        a.getTestCaseId(), a.getRootCauseCategory(),
+                        a.getConfidence(), a.getRootCauseSummary());
+            }
+            out.println();
+            for (FailureAnalysisResult a : analyses) {
+                out.printf("### [%s] %s%n", a.getTestCaseId(), a.getTestCaseName());
+                out.printf("- **Category**: %s%n", a.getRootCauseCategory());
+                out.printf("- **Confidence**: %s%n", a.getConfidence());
+                out.printf("- **Summary**: %s%n", a.getRootCauseSummary());
+                out.printf("- **Evidence**: %s%n", a.getEvidence());
+                out.printf("- **Suggested Fix**: %s%n", a.getSuggestedFix());
+                out.println();
+            }
+        }
 
         return sw.toString();
     }

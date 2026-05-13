@@ -2,6 +2,7 @@ package com.testforge.runner;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.testforge.ai.analysis.FailureAnalyzer;
 import com.testforge.ai.client.RealClaudeClient;
 import com.testforge.ai.model.GenerationResult;
 import com.testforge.ai.parser.ResponseParser;
@@ -39,23 +40,28 @@ class V4BaselinePipelineTest {
     @Test
     void runsFullPipelineWithFixturesAndProducesReport() throws IOException {
         String baseUrl = "http://localhost:" + port;
+        RealClaudeClient claudeClient = new RealClaudeClient(System.getenv("ANTHROPIC_API_KEY"));
 
         // 1. Build ai-engine pipeline with V4 dimension-driven prompt
         TestGenerationPipeline aiPipeline = new TestGenerationPipeline(
                 new SwaggerOpenApiLoader(), new PromptBuilderV4(),
-                new RealClaudeClient(System.getenv("ANTHROPIC_API_KEY")), new ResponseParser());
+                claudeClient, new ResponseParser());
 
         // 2. Load openapi.yaml and generate test cases
         String yaml = TestFixtures.loadMockBankingApiSpec();
         List<GenerationResult> generationResults = aiPipeline.run(yaml);
 
-        // 3. Execute against live server with per-test fixture initialization
+        // 3. Build failure analyzer backed by same Claude client
+        FailureAnalyzer analyzer = new FailureAnalyzer(claudeClient);
+
+        // 4. Execute against live server with per-test fixture initialization
         ExecutionReport report = new ExecutionPipeline(
                 new HttpExecutor(), new AssertionEvaluator(),
                 new ReportBuilder(), new ReportWriter("v4")
-        ).run(generationResults, baseUrl, new SetupRunner());
+        ).withFailureAnalyzer(analyzer)
+         .run(generationResults, baseUrl, new SetupRunner());
 
-        // 4. Assertions
+        // 5. Execution assertions
         int total = report.getSummary().getTotal();
         int passed = report.getSummary().getPassed();
         int failed = report.getSummary().getFailed();
@@ -63,7 +69,19 @@ class V4BaselinePipelineTest {
         assertTrue(total >= 6, "V4 dimension-driven: expected at least 6 test cases, got: " + total);
         assertTrue(passed >= total * 0.6, "V4 target: at least 60% pass, got: " + passed + "/" + total);
 
-        // 5. File artifacts
+        // 6. Failure analysis assertions
+        if (failed > 0) {
+            assertNotNull(report.getFailureAnalysis(), "failureAnalysis must not be null when there are failures");
+            assertEquals(failed, report.getFailureAnalysis().size(),
+                    "failureAnalysis size must equal number of failed test cases");
+            assertTrue(
+                    report.getFailureAnalysis().stream()
+                            .anyMatch(a -> a.getRootCauseCategory() != null && !a.getRootCauseCategory().isBlank()),
+                    "At least one FailureAnalysisResult must have a non-blank rootCauseCategory"
+            );
+        }
+
+        // 7. File artifacts
         Path outputDir = Path.of(System.getProperty("project.basedir", "."), "target");
         assertTrue(Files.exists(outputDir.resolve("v4-execution-report.json")),
                 "v4-execution-report.json must exist");
@@ -76,6 +94,7 @@ class V4BaselinePipelineTest {
                     outputDir.resolve("v4-execution-report.json").toFile());
             assertNotNull(node.get("summary"), "JSON must contain 'summary'");
             assertNotNull(node.get("results"), "JSON must contain 'results'");
+            assertNotNull(node.get("failureAnalysis"), "JSON must contain 'failureAnalysis'");
         });
     }
 }
