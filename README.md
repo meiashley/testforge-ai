@@ -119,6 +119,29 @@ graph LR
 
 End-to-end flow: OpenAPI spec → ai-engine (with spec caching + contract validation) → Claude → validated test cases → test-runner → HTTP execution against mock-banking-api → Execution Report + JaCoCo Coverage. `api-gateway` exposes the full workflow as a REST entry point.
 
+
+## 🤖 AI Failure Analyzer
+
+When test cases fail, the system batch-analyses them via Claude to diagnose root causes. Each diagnosis includes a category, evidence-based summary, suggested fix, and confidence label.
+
+**Categories**
+- `TEST_LOGIC_ERROR` — Test expectations don't match the spec
+- `API_BUG` — API behaves incorrectly per the spec
+- `DATA_DEPENDENCY` — Required prerequisite data missing or in wrong state
+- `ASSERTION_TOO_STRICT` — Assertions check fields not actually required
+- `ENVIRONMENT` — Network/timeout/infrastructure issue
+- `UNCERTAIN` — Multiple plausible causes; needs human review
+
+**V4 Baseline Diagnosis Results (6 failures, all HIGH confidence)**
+
+| Category               | Count | Example                                                                 |
+|------------------------|-------|-------------------------------------------------------------------------|
+| `TEST_LOGIC_ERROR`     | 3     | Test expects 201 for over-maxLength input; API correctly returns 400    |
+| `ASSERTION_TOO_STRICT` | 2     | Test asserts `code` field on Spring default error response              |
+| `API_BUG`              | 1     | **Real bug found**: Refund on already-REFUNDED payment returns 200 instead of 422 |
+
+The analyzer is batch-mode (one Claude call diagnoses all failures), result-cached on input hash (re-runs on the same failures cost $0), and renders as expandable HTML blocks in the execution report alongside each failed case.
+
 ## 🎯 Quality Validation
 
 V3.1 AI-generated test suite quality measured on three independent axes:
@@ -148,6 +171,19 @@ This combination catches three different failure modes:
 - ❌ A test that passes by checking nothing meaningful → caught by coverage
 - ❌ A test with a wrong path Claude invented → caught by contract validator  
 - ❌ A test whose expected status doesn't match reality → caught by execution
+
+
+### V4 Baseline — Dimension-Driven Generation
+
+V4 removes the V3 "EXACTLY 3 cases" constraint and uses dimension-driven prompts (status codes, happy path, boundary, negative, authorization edge cases) to let Claude generate as many test cases as needed.
+
+| Metric                    | V3.1                | V4                  |
+|---------------------------|---------------------|---------------------|
+| Test cases generated      | 9 (3 per endpoint)  | **34** (3.8x growth) |
+| Pass rate                 | 100%                | **82.4%** (28/34)   |
+| Coverage strategy         | Narrow & reliable   | Broad & exploratory |
+
+**[View V4 execution report](https://meiashley.github.io/testforge-ai/sample-v4-execution-report.html)** — failed cases include embedded AI Failure Analyzer diagnoses.
 
 ## REST API (api-gateway)
 
@@ -222,12 +258,13 @@ Built-in via springdoc-openapi: http://localhost:8080/swagger-ui.html
 - [x] V2 prompt with state machine context
 - [x] V3 fixture lifecycle
 - [x] V3.1 per-test lazy fixtures (100% pass rate)
-- [ ] V4: Remove "exactly 3 cases" constraint, let Claude generate freely
+- [x] V4: Dimension-driven generation (34 cases, 82.4% pass rate)
 - [ ] V5: Multi-fixture types and teardown phase
 - [x] api-gateway REST entry point (V3.1: 7/9 = 77.8% via real Claude API end-to-end)
 - [x] Code coverage validation via JaCoCo (V3.1: 82.6% line, 60% branch on mock-banking-api)
 - [x] Contract conformance validator: pre-execution check that AI-generated tests match OpenAPI spec
 - [ ] Migrate integration tests to Testcontainers
+- [x] AI Failure Analyzer: batch root-cause diagnosis of failed test cases (6 categories, confidence labels, embedded in HTML reports)
 - [ ] Mutation testing: inject synthetic API defects to validate test detection power
 - [ ] Quality metrics: schema validity, coverage diversity, bug-detection rate
 
