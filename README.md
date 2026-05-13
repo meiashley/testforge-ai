@@ -8,7 +8,7 @@ AI-powered API test generation platform. Java 21 + Spring Boot + Anthropic Claud
 
 Reads an OpenAPI 3.0 specification, generates structured test cases using Anthropic Claude, then executes them against the live API and produces structured execution reports.
 
-Pipeline: OpenAPI YAML -> AI Engine (Claude) -> List<TestCase> -> Test Runner -> ExecutionReport (JSON + Markdown)
+Pipeline: OpenAPI YAML -> AI Engine (Claude) -> List<TestCase> -> Test Runner -> AI Engine(Claude) -> ExecutionReport (JSON + Markdown)
 
 ## 📊 Live Demo Reports
 
