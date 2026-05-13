@@ -31,9 +31,7 @@ jobs:
         run: mvn install -DskipTests --batch-mode
 
       - name: Run unit tests
-        run: |
-          mvn test --batch-mode -Dsurefire.failIfNoSpecifiedTests=false \
-            -Dtest='!V1ExecutionPipelineTest,!V2BaselinePipelineTest,!V3BaselinePipelineTest,!SetupRunnerTest'
+        run: mvn test --batch-mode
 
       - name: Test summary
         if: always()

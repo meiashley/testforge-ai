@@ -18,6 +18,7 @@ import com.testforge.runner.report.ReportBuilder;
 import com.testforge.runner.report.ReportWriter;
 import com.testforge.runner.setup.SetupRunner;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 
@@ -28,6 +29,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@EnabledIfEnvironmentVariable(named = "ANTHROPIC_API_KEY", matches = ".+")
 @SpringBootTest(
         classes = MockBankingApiApplication.class,
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
