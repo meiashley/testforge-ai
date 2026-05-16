@@ -16,6 +16,7 @@ public class AlignmentResult {
     private List<ConsistencyMismatch> mismatches;
     private int totalConstraints;
     private int alignedCount;
+    private int constraintsWithMismatchCount;
     private int mismatchCount;
     private Map<String, Integer> severityBreakdown;
     private Map<String, Integer> categoryBreakdown;

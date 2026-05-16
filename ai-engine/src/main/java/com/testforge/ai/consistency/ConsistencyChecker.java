@@ -28,6 +28,7 @@ public class ConsistencyChecker {
                     .mismatches(List.of())
                     .totalConstraints(0)
                     .alignedCount(0)
+                    .constraintsWithMismatchCount(0)
                     .mismatchCount(0)
                     .severityBreakdown(Map.of())
                     .categoryBreakdown(Map.of())
@@ -115,11 +116,11 @@ public class ConsistencyChecker {
                 .map(ConsistencyMismatch::getRequirementReference)
                 .collect(Collectors.toSet());
 
-        long constraintsWithMismatch = analysis.getConstraints().stream()
+        int constraintsWithMismatch = (int) analysis.getConstraints().stream()
                 .filter(c -> referencedSections.contains(c.getRequirementSection()))
                 .count();
 
-        int aligned = (int) (total - constraintsWithMismatch);
+        int aligned = total - constraintsWithMismatch;
 
         Map<String, Integer> severityBreakdown = new HashMap<>();
         Map<String, Integer> categoryBreakdown = new HashMap<>();
@@ -132,6 +133,7 @@ public class ConsistencyChecker {
                 .mismatches(mismatches)
                 .totalConstraints(total)
                 .alignedCount(aligned)
+                .constraintsWithMismatchCount(constraintsWithMismatch)
                 .mismatchCount(mismatches.size())
                 .severityBreakdown(severityBreakdown)
                 .categoryBreakdown(categoryBreakdown)

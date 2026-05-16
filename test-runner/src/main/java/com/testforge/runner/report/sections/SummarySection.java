@@ -49,9 +49,9 @@ public class SummarySection implements ReportSection {
         sb.append("<p class=\"meta\">Generated ").append(HtmlUtil.esc(s.getExecutedAt()))
           .append(" &nbsp;|&nbsp; Duration ").append(s.getTotalDurationMs()).append("ms</p>\n");
         sb.append("<div class=\"cards\">\n");
-        sb.append(HtmlUtil.card("API Total",  String.valueOf(s.getTotal()),  ""));
-        sb.append(HtmlUtil.card("API Passed", String.valueOf(s.getPassed()), ""));
-        sb.append(HtmlUtil.card("API Failed", String.valueOf(s.getFailed()), ""));
+        sb.append(HtmlUtil.card("API Tests Total",  String.valueOf(s.getTotal()),  ""));
+        sb.append(HtmlUtil.card("API Tests Passed", String.valueOf(s.getPassed()), ""));
+        sb.append(HtmlUtil.card("API Tests Failed", String.valueOf(s.getFailed()), ""));
         sb.append("<div class=\"card rate\"><div class=\"label\">Pass Rate</div>"
                 + "<div class=\"value\" style=\"color:" + passRateColor + "\">"
                 + String.format("%.1f%%", rate * 100) + "</div></div>\n");

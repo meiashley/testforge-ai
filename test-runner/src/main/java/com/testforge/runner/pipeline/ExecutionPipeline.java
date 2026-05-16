@@ -6,6 +6,7 @@ import com.testforge.ai.analysis.FailureAnalysisResult;
 import com.testforge.ai.analysis.FailureAnalyzer;
 import com.testforge.ai.model.GenerationResult;
 import com.testforge.ai.model.TestCase;
+import com.testforge.ai.scenario.Assertion;
 import com.testforge.ai.scenario.ExecutionPlan;
 import com.testforge.ai.scenario.ScenarioStep;
 import com.testforge.ai.scenario.StepDataContext;
@@ -144,12 +145,13 @@ public class ExecutionPipeline {
         String body = step.getRequestBody() != null
                 ? bindingResolver.resolve(step.getRequestBody(), context)
                 : null;
+        List<Assertion> resolvedAssertions = resolveAssertions(step.getAssertions(), context);
 
         HttpResponse response = httpExecutor.execute(step.getMethod(), baseUrl + resolvedPath, headers, body);
 
         boolean statusOk = response.getStatusCode() == step.getExpectedStatusCode();
         List<com.testforge.runner.execution.AssertionResult> assertionResults =
-                assertionEvaluator.evaluateV5(step.getAssertions(), response);
+                assertionEvaluator.evaluateV5(resolvedAssertions, response);
         boolean allAssertionsPass = assertionResults.stream()
                 .allMatch(com.testforge.runner.execution.AssertionResult::isPassed);
 
@@ -160,6 +162,25 @@ public class ExecutionPipeline {
                 .assertionResults(assertionResults)
                 .passed(statusOk && allAssertionsPass)
                 .build();
+    }
+
+    private List<Assertion> resolveAssertions(List<Assertion> assertions, StepDataContext context) {
+        if (assertions == null || assertions.isEmpty()) return List.of();
+
+        List<Assertion> resolved = new ArrayList<>(assertions.size());
+        for (Assertion assertion : assertions) {
+            Object expected = assertion.getExpected();
+            if (expected instanceof String expectedString) {
+                expected = bindingResolver.resolve(expectedString, context);
+            }
+
+            resolved.add(Assertion.builder()
+                    .path(bindingResolver.resolve(assertion.getPath(), context))
+                    .type(assertion.getType())
+                    .expected(expected)
+                    .build());
+        }
+        return resolved;
     }
 
     private void captureOutputs(ScenarioStep step, HttpResponse response, StepDataContext context) {

@@ -4,13 +4,19 @@ import com.testforge.ai.analysis.FailureAnalysisInput;
 import com.testforge.ai.analysis.FailureAnalyzer;
 import com.testforge.ai.client.RealClaudeClient;
 import com.testforge.ai.consistency.ConsistencyChecker;
+import com.testforge.ai.model.GenerationResult;
 import com.testforge.ai.mapping.RequirementApiMapper;
 import com.testforge.ai.orchestrator.QualityContext;
 import com.testforge.ai.orchestrator.QualityPipelineOrchestrator;
+import com.testforge.ai.parser.ResponseParser;
+import com.testforge.ai.pipeline.SwaggerOpenApiLoader;
+import com.testforge.ai.pipeline.TestGenerationPipeline;
+import com.testforge.ai.prompt.PromptBuilderV4;
 import com.testforge.ai.requirement.RequirementAnalyzer;
 import com.testforge.ai.scenario.ApiFlowResolver;
 import com.testforge.ai.scenario.ExecutionPlan;
 import com.testforge.ai.scenario.ScenarioPlanner;
+import com.testforge.ai.validation.TestCaseContractValidator;
 import com.testforge.mockbank.MockBankingApiApplication;
 import com.testforge.runner.assertion.AssertionEvaluator;
 import com.testforge.runner.execution.PlanExecutionResult;
@@ -18,9 +24,12 @@ import com.testforge.runner.execution.StepResult;
 import com.testforge.runner.http.HttpExecutor;
 import com.testforge.runner.model.ExecutionReport;
 import com.testforge.runner.model.ExecutionSummary;
+import com.testforge.runner.model.TestCaseResult;
+import com.testforge.runner.model.TestResultStatus;
 import com.testforge.runner.pipeline.ExecutionPipeline;
 import com.testforge.runner.report.ReportBuilder;
 import com.testforge.runner.report.ReportWriter;
+import com.testforge.runner.setup.SetupRunner;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -97,7 +106,33 @@ class V5BaselinePipelineTest {
         System.out.println("[V5] resolved flows        : " + context.getResolvedFlows().size());
         System.out.println("[V5] execution plans       : " + context.getPlans().size());
 
-        // 5. Execute each plan against the live API
+        // 5. Reuse V4 API-layer generation + execution against the same live server
+        TestGenerationPipeline aiPipeline = new TestGenerationPipeline(
+                new SwaggerOpenApiLoader(),
+                new PromptBuilderV4(),
+                claude,
+                new ResponseParser(),
+                new com.testforge.ai.cache.FileBasedEndpointCache(),
+                new TestCaseContractValidator()
+        );
+        List<GenerationResult> apiGenResults = aiPipeline.run(specContent);
+
+        ExecutionPipeline apiExecutionPipeline = new ExecutionPipeline(
+                new HttpExecutor(),
+                new AssertionEvaluator(),
+                new ReportBuilder(),
+                new ReportWriter("v5-api")
+        );
+        ExecutionReport apiReport = apiExecutionPipeline.run(apiGenResults, baseUrl, new SetupRunner());
+        List<TestCaseResult> apiResults = apiReport.getResults();
+
+        int apiPassed = (int) apiResults.stream().filter(r -> r.getStatus() == TestResultStatus.PASSED).count();
+        int apiFailed = (int) apiResults.stream().filter(r -> r.getStatus() == TestResultStatus.FAILED).count();
+        System.out.println("[V5] api tests executed    : " + apiResults.size());
+        System.out.println("[V5] api tests passed      : " + apiPassed);
+        System.out.println("[V5] api tests failed      : " + apiFailed);
+
+        // 6. Execute each scenario plan against the live API
         ExecutionPipeline pipeline = new ExecutionPipeline(
                 new HttpExecutor(),
                 new AssertionEvaluator(),
@@ -117,30 +152,31 @@ class V5BaselinePipelineTest {
         System.out.println("[V5] scenarios passed      : " + scenariosPassed);
         System.out.println("[V5] scenarios failed      : " + scenariosFailed);
 
-        // 6. Collect failed steps → diagnose with AI
-        List<FailureAnalysisInput> failures = collectFailedSteps(planResults);
+        // 7. Collect API + scenario failures → diagnose with AI
+        List<FailureAnalysisInput> failures = collectFailures(apiResults, planResults);
         if (!failures.isEmpty()) {
             orchestrator.diagnoseFailures(context, failures);
             System.out.println("[V5] failures diagnosed    : " + context.getFailureAnalysis().size());
         }
 
-        // 7. Build unified ExecutionReport
-        long totalMs = planResults.stream()
+        // 8. Build unified ExecutionReport
+        long totalMs = apiResults.stream().mapToLong(TestCaseResult::getDurationMs).sum()
+                + planResults.stream()
                 .flatMap(r -> r.getSteps().stream())
                 .mapToLong(sr -> sr.getResponse() != null ? sr.getResponse().getDurationMs() : 0L)
                 .sum();
 
         ExecutionSummary summary = new ExecutionSummary(
-                planResults.size(),
-                (int) scenariosPassed,
-                (int) scenariosFailed,
-                0,
-                planResults.isEmpty() ? 0.0 : (double) scenariosPassed / planResults.size(),
+                apiResults.size(),
+                apiPassed,
+                apiFailed,
+                apiReport.getSummary().getErrored(),
+                apiResults.isEmpty() ? 0.0 : (double) apiPassed / apiResults.size(),
                 Instant.now().toString(),
                 totalMs
         );
 
-        ExecutionReport report = new ExecutionReport(summary, List.of());
+        ExecutionReport report = new ExecutionReport(summary, apiResults);
         report.setScenarioResults(planResults);
         report.setConsistencyResult(context.getConsistencyResult());
         report.setRequirementAnalysis(context.getRequirementAnalysis());
@@ -148,15 +184,16 @@ class V5BaselinePipelineTest {
             report.setFailureAnalysis(context.getFailureAnalysis());
         }
 
-        // 8. Write reports (JSON + MD + HTML via ReportWriter)
+        // 9. Write reports (JSON + MD + HTML via ReportWriter)
         Path outputDir = Path.of(basedir, "target");
         new ReportWriter("v5").write(report, outputDir);
 
         System.out.println("[V5] report written to     : " + outputDir.resolve("v5-execution-report.html"));
 
-        // 9. Assertions
+        // 10. Assertions
         assertTrue(context.getConsistencyResult().getMismatchCount() > 0,
                 "payment-system-requirements.md is intentionally richer than the mock API spec — expect mismatches");
+        assertFalse(apiResults.isEmpty(), "at least one API test must have been executed");
         assertFalse(planResults.isEmpty(), "at least one scenario plan must have been executed");
 
         Path htmlReport = outputDir.resolve("v5-execution-report.html");
@@ -169,6 +206,18 @@ class V5BaselinePipelineTest {
         assertTrue(html.contains("Scenarios") || html.contains("scenario"), "HTML must contain scenario section");
     }
 
+    private List<FailureAnalysisInput> collectFailures(List<TestCaseResult> apiResults,
+                                                       List<PlanExecutionResult> planResults) {
+        List<FailureAnalysisInput> inputs = new ArrayList<>();
+        for (TestCaseResult apiResult : apiResults) {
+            if (apiResult.getStatus() != TestResultStatus.PASSED) {
+                inputs.add(buildFailureInputFromTestResult(apiResult));
+            }
+        }
+        inputs.addAll(collectFailedSteps(planResults));
+        return inputs;
+    }
+
     private List<FailureAnalysisInput> collectFailedSteps(List<PlanExecutionResult> planResults) {
         List<FailureAnalysisInput> inputs = new ArrayList<>();
         for (PlanExecutionResult plan : planResults) {
@@ -176,35 +225,62 @@ class V5BaselinePipelineTest {
             for (StepResult sr : plan.getSteps()) {
                 // Skip: passed, or skipped (no response to analyze)
                 if (sr.isPassed() || sr.getSkipReason() != null || sr.getResponse() == null) continue;
-
-                String assertionFailures = "";
-                if (sr.getAssertionResults() != null) {
-                    assertionFailures = sr.getAssertionResults().stream()
-                            .filter(ar -> !ar.isPassed())
-                            .map(ar -> {
-                                String path = ar.getAssertion() != null ? ar.getAssertion().getPath() : "?";
-                                String expected = ar.getAssertion() != null
-                                        ? String.valueOf(ar.getAssertion().getExpected()) : "?";
-                                return path + ": expected " + expected + " but was " + ar.getActualValue();
-                            })
-                            .collect(Collectors.joining("; "));
-                }
-
-                String rawBody = sr.getResponse().getRawBody();
-                inputs.add(FailureAnalysisInput.builder()
-                        .testCaseId(plan.getPlanId() + "-" + sr.getStep().getStepId())
-                        .testCaseName(plan.getScenarioName() + " | " + sr.getStep().getRole())
-                        .testCaseType("SCENARIO")
-                        .endpointMethod(sr.getStep().getMethod())
-                        .endpointPath(sr.getStep().getPathTemplate())
-                        .requestBody(sr.getStep().getRequestBody() != null ? sr.getStep().getRequestBody() : "")
-                        .expectedStatusCode(sr.getStep().getExpectedStatusCode())
-                        .actualStatusCode(sr.getResponse().getStatusCode())
-                        .actualResponseBody(rawBody != null ? rawBody : "")
-                        .assertionFailures(assertionFailures)
-                        .build());
+                inputs.add(buildFailureInputFromStepResult(plan, sr));
             }
         }
         return inputs;
+    }
+
+    private FailureAnalysisInput buildFailureInputFromTestResult(TestCaseResult r) {
+        String requestBody = r.getRequest().getBody() != null ? String.valueOf(r.getRequest().getBody()) : "";
+        String actualResponseBody = r.getHttpResponse() != null && r.getHttpResponse().getRawBody() != null
+                ? r.getHttpResponse().getRawBody()
+                : "";
+        String assertionFailures = r.getAssertionResults() == null ? "" : r.getAssertionResults().stream()
+                .filter(ar -> !ar.isPassed())
+                .map(ar -> "field '" + ar.getField() + "': " + ar.getFailureReason())
+                .collect(Collectors.joining("; "));
+
+        return FailureAnalysisInput.builder()
+                .testCaseId(r.getTestCaseId())
+                .testCaseName(r.getName())
+                .testCaseType(r.getType() != null ? r.getType().name() : "UNKNOWN")
+                .endpointMethod(r.getRequest().getMethod())
+                .endpointPath(r.getRequest().getPath())
+                .requestBody(requestBody)
+                .expectedStatusCode(0)
+                .actualStatusCode(r.getHttpResponse() != null ? r.getHttpResponse().getStatusCode() : 0)
+                .actualResponseBody(actualResponseBody)
+                .assertionFailures(assertionFailures)
+                .build();
+    }
+
+    private FailureAnalysisInput buildFailureInputFromStepResult(PlanExecutionResult plan, StepResult sr) {
+        String assertionFailures = "";
+        if (sr.getAssertionResults() != null) {
+            assertionFailures = sr.getAssertionResults().stream()
+                    .filter(ar -> !ar.isPassed())
+                    .map(ar -> {
+                        String path = ar.getAssertion() != null ? ar.getAssertion().getPath() : "?";
+                        String expected = ar.getAssertion() != null
+                                ? String.valueOf(ar.getAssertion().getExpected()) : "?";
+                        return path + ": expected " + expected + " but was " + ar.getActualValue();
+                    })
+                    .collect(Collectors.joining("; "));
+        }
+
+        String rawBody = sr.getResponse().getRawBody();
+        return FailureAnalysisInput.builder()
+                .testCaseId(plan.getPlanId() + "-" + sr.getStep().getStepId())
+                .testCaseName(plan.getScenarioName() + " | " + sr.getStep().getRole())
+                .testCaseType("SCENARIO")
+                .endpointMethod(sr.getStep().getMethod())
+                .endpointPath(sr.getStep().getPathTemplate())
+                .requestBody(sr.getStep().getRequestBody() != null ? sr.getStep().getRequestBody() : "")
+                .expectedStatusCode(sr.getStep().getExpectedStatusCode())
+                .actualStatusCode(sr.getResponse().getStatusCode())
+                .actualResponseBody(rawBody != null ? rawBody : "")
+                .assertionFailures(assertionFailures)
+                .build();
     }
 }

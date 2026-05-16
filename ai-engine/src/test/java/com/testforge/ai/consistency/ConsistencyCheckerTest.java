@@ -94,6 +94,7 @@ class ConsistencyCheckerTest {
         assertNotNull(result);
         assertEquals(0, result.getTotalConstraints());
         assertEquals(0, result.getAlignedCount());
+        assertEquals(0, result.getConstraintsWithMismatchCount());
         assertEquals(0, result.getMismatchCount());
         assertTrue(result.getMismatches().isEmpty());
         assertTrue(result.getSeverityBreakdown().isEmpty());
@@ -115,6 +116,7 @@ class ConsistencyCheckerTest {
         AlignmentResult result = checker.check(analysis, "openapi: 3.0.0");
 
         assertEquals(3, result.getTotalConstraints());
+        assertEquals(1, result.getConstraintsWithMismatchCount());
         assertEquals(1, result.getMismatchCount());
         assertEquals(2, result.getAlignedCount());
 
@@ -144,7 +146,9 @@ class ConsistencyCheckerTest {
         AlignmentResult result = checker.check(analysis, "openapi: 3.0.0");
 
         assertEquals(4, result.getTotalConstraints());
+        assertEquals(2, result.getConstraintsWithMismatchCount());
         assertEquals(3, result.getMismatchCount());
+        assertEquals(2, result.getAlignedCount());
 
         Map<String, Integer> severity = result.getSeverityBreakdown();
         assertEquals(1, severity.get("HIGH"));

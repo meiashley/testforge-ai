@@ -49,6 +49,8 @@ public class ScenarioPlanner {
         return """
                 You are an expert test scenario designer. Given resolved API flows and requirement constraints, produce executable test plans with concrete business assertions and test data.
 
+                Prompt Version: scenario-planner-v2-assertion-rules-2026-05-16
+
                 Your responsibilities:
                 - Add testData (concrete values for ${variables}) within metadata
                 - Specify requestBody content for each step (with ${var} placeholders where data flows from previous steps)
@@ -67,6 +69,31 @@ public class ScenarioPlanner {
                 For "SUCCESS" scenarios:
                 - All steps return 2xx
                 - Final assertions verify successful state transition
+
+                Assertion Rules (CRITICAL — violating these makes tests fail incorrectly):
+
+                1. HTTP status code is ALREADY validated via the "expectedStatusCode" field on each step.
+                   NEVER add an assertion with path "$.status" or "$.statusCode" — those paths do not exist in the response body.
+
+                2. Assertion paths MUST reference body or headers only:
+                   - $.body.fieldName  (e.g. $.body.status, $.body.id, $.body.amount)
+                   - $.headers.headerName  (e.g. $.headers.location)
+
+                3. Assertion type whitelist — use ONLY these types:
+                   - EQUALS / NOT_EQUALS: expected is a single value (string, number, boolean)
+                   - EXISTS / NOT_EXISTS: expected is null
+                   - MATCHES_REGEX: expected is a regex pattern string
+                   - CONTAINS: expected is a single substring/element
+
+                   DO NOT use ONE_OF, IN, MEMBER_OF or any other type. They are not supported.
+
+                4. When response state has multiple valid values, pick the MOST LIKELY for the scenario:
+                   - Successful payment creation → use EQUALS with "COMPLETED"
+                   - Pending payment scenario → use EQUALS with "PENDING"
+                   - DO NOT pass arrays to expected; if you cannot pick one, use EXISTS to assert the field is present
+
+                5. For SUCCESS scenarios, assertions validate the final expected state.
+                   For REJECTED scenarios (4xx response), assertions validate the error structure ($.body.code, $.body.message).
 
                 Output structure (JSON array, no surrounding text):
                 [

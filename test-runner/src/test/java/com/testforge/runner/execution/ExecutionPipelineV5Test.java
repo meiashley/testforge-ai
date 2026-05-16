@@ -124,6 +124,34 @@ class ExecutionPipelineV5Test {
     }
 
     @Test
+    void executePlan_multiStepWithBinding_assertionExpectedResolvedFromPriorStep() {
+        ScenarioStep step1 = step(0, "step-1", "POST", "/api/payments",
+                null,
+                Map.of("payment.id", "$.body.id"),
+                201, List.of());
+
+        ScenarioStep step2 = step(1, "step-2", "GET", "/api/payments/{id}",
+                Map.of("id", "${payment.id}"),
+                Map.of(),
+                200, List.of(new Assertion("$.body.id", "EQUALS", "${payment.id}")));
+
+        when(httpExecutor.execute(eq("POST"), contains("/api/payments"), any(), any()))
+                .thenReturn(httpResponse(201, Map.of("id", "pay-abc", "status", "COMPLETED")));
+        when(httpExecutor.execute(eq("GET"), contains("/api/payments/pay-abc"), any(), any()))
+                .thenReturn(httpResponse(200, Map.of("id", "pay-abc", "status", "COMPLETED")));
+
+        PlanExecutionResult result = pipeline.executePlan(
+                plan("plan-assertion-binding", List.of(step1, step2)), "http://localhost:8080");
+
+        assertTrue(result.isPassed());
+        StepResult verifier = result.getSteps().get(1);
+        assertTrue(verifier.isPassed());
+        assertEquals(1, verifier.getAssertionResults().size());
+        assertTrue(verifier.getAssertionResults().get(0).isPassed());
+        assertEquals("pay-abc", verifier.getAssertionResults().get(0).getActualValue());
+    }
+
+    @Test
     void executePlan_earlyTermination_step2Skipped() {
         ScenarioStep step1 = step(0, "step-1", "POST", "/api/payments",
                 null, null, 201, List.of());

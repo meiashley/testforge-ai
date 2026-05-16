@@ -36,6 +36,7 @@ class ConsistencySectionTest {
                 .mismatches(List.of(m))
                 .totalConstraints(5)
                 .alignedCount(4)
+                .constraintsWithMismatchCount(1)
                 .mismatchCount(1)
                 .severityBreakdown(Map.of("HIGH", 1))
                 .categoryBreakdown(Map.of("MISSING_IN_API", 1))
@@ -59,6 +60,9 @@ class ConsistencySectionTest {
     @Test
     void render_containsMismatchSummaryAndEvidence() {
         String html = section.render(reportWithMismatch());
+        assertTrue(html.contains("Aligned Constraints"));
+        assertTrue(html.contains("Constraints With Mismatch"));
+        assertTrue(html.contains("Mismatch Records"));
         assertTrue(html.contains("Cross-user refund check missing"));
         assertTrue(html.contains("Section 4.3 not in spec"));
         assertTrue(html.contains("MISSING_IN_API"));

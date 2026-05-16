@@ -33,8 +33,11 @@ public class ConsistencySection implements ReportSection {
         // Breakdown table
         sb.append("<div class=\"cards\">\n");
         sb.append(HtmlUtil.card("Total Constraints", String.valueOf(result.getTotalConstraints()), ""));
-        sb.append(HtmlUtil.card("Aligned", String.valueOf(result.getAlignedCount()), ""));
-        sb.append("<div class=\"card\"><div class=\"label\">Mismatches</div>"
+        sb.append(HtmlUtil.card("Aligned Constraints", String.valueOf(result.getAlignedCount()), ""));
+        sb.append("<div class=\"card\"><div class=\"label\">Constraints With Mismatch</div>"
+                + "<div class=\"value\" style=\"color:" + (result.getConstraintsWithMismatchCount() > 0 ? "#dc2626" : "#16a34a") + "\">"
+                + result.getConstraintsWithMismatchCount() + "</div></div>\n");
+        sb.append("<div class=\"card\"><div class=\"label\">Mismatch Records</div>"
                 + "<div class=\"value\" style=\"color:" + (result.getMismatchCount() > 0 ? "#dc2626" : "#16a34a") + "\">"
                 + result.getMismatchCount() + "</div></div>\n");
         sb.append("</div>\n");
