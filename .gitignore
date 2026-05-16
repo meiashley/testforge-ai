@@ -48,3 +48,4 @@ test-runner/target/v2-execution-report.json
 test-runner/target/v2-execution-report.md
 test-runner/target/v3-execution-report.json
 test-runner/target/v3-execution-report.md
+.testforge-cache/
