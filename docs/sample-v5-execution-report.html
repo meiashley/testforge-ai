@@ -110,12 +110,12 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <div class="card"><div class="label">LOW</div><div class="value" style="color:#6b7280">4</div></div>
 </div>
 <details>
-<summary><span class="severity-badge severity-HIGH">HIGH</span><span class="category-mm-badge category-mm-CONSTRAINT_CONFLICT">CONSTRAINT_CONFLICT</span><span class="name">Amount minimum value differs: requirement mandates 1.00, API allows 0.01</span></summary>
+<summary><span class="severity-badge severity-HIGH">HIGH</span><span class="category-mm-badge category-mm-CONSTRAINT_CONFLICT">CONSTRAINT_CONFLICT</span><span class="name">API supports partial refunds; requirement explicitly forbids them in v1.0</span></summary>
 <div class="details-body">
-<div class="ai-field"><strong>Evidence:</strong> Requirement Section 2.1 (req-amount-range) states minimum amount is AUD 1.00 (inclusive). OpenAPI CreatePaymentRequest.amount has minimum: 0.01, allowing values between 0.01 and 0.99 that should be rejected.</div>
-<div class="ai-field"><strong>Location:</strong> POST /api/payments - CreatePaymentRequest.amount</div>
-<div class="ai-field"><strong>Requirement:</strong> Section 2.1 (req-amount-range)</div>
-<div class="ai-field"><strong>Spec:</strong> components/schemas/CreatePaymentRequest/properties/amount/minimum</div>
+<div class="ai-field"><strong>Evidence:</strong> Requirement Section 4.4 (req-refund-amount-full) states partial refunds are not supported in v1.0 and any refund not matching the original amount must be rejected. API spec RefundRequest has an optional amount field for partial refunds and includes a 'partial_refund' example, and PaymentStatus includes PARTIALLY_REFUNDED.</div>
+<div class="ai-field"><strong>Location:</strong> POST /api/payments/{id}/refund - RefundRequest</div>
+<div class="ai-field"><strong>Requirement:</strong> Section 4.4 (req-refund-amount-full)</div>
+<div class="ai-field"><strong>Spec:</strong> components/schemas/RefundRequest/properties/amount, components/schemas/PaymentStatus</div>
 <div class="ai-field"><strong>Confidence:</strong> HIGH</div>
 </div>
 </details>
@@ -130,52 +130,12 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 </div>
 </details>
 <details>
-<summary><span class="severity-badge severity-MEDIUM">MEDIUM</span><span class="category-mm-badge category-mm-CONSTRAINT_CONFLICT">CONSTRAINT_CONFLICT</span><span class="name">Supported currencies conflict: requirement allows AUD/USD/EUR only; API example uses CNY with no enum restriction</span></summary>
+<summary><span class="severity-badge severity-HIGH">HIGH</span><span class="category-mm-badge category-mm-CONSTRAINT_CONFLICT">CONSTRAINT_CONFLICT</span><span class="name">Amount minimum value differs: requirement mandates 1.00, API allows 0.01</span></summary>
 <div class="details-body">
-<div class="ai-field"><strong>Evidence:</strong> Requirement Section 2.2 (req-currency-enum) restricts currency to AUD, USD, EUR. OpenAPI currency field uses pattern '^[A-Z]{3}$' with no enum constraint, and examples use CNY, which is not in the allowed list.</div>
-<div class="ai-field"><strong>Location:</strong> POST /api/payments - CreatePaymentRequest.currency</div>
-<div class="ai-field"><strong>Requirement:</strong> Section 2.2 (req-currency-enum)</div>
-<div class="ai-field"><strong>Spec:</strong> components/schemas/CreatePaymentRequest/properties/currency</div>
-<div class="ai-field"><strong>Confidence:</strong> HIGH</div>
-</div>
-</details>
-<details>
-<summary><span class="severity-badge severity-MEDIUM">MEDIUM</span><span class="category-mm-badge category-mm-MISSING_IN_API">MISSING_IN_API</span><span class="name">Error code UNSUPPORTED_CURRENCY not defined in API spec</span></summary>
-<div class="details-body">
-<div class="ai-field"><strong>Evidence:</strong> Requirement Section 2.2 (req-currency-enum) mandates HTTP 400 with error code UNSUPPORTED_CURRENCY for unsupported currencies. API spec defines a generic 400 ErrorResponse with no enumeration of specific error codes for currency validation.</div>
-<div class="ai-field"><strong>Location:</strong> POST /api/payments</div>
-<div class="ai-field"><strong>Requirement:</strong> Section 2.2 (req-currency-enum)</div>
-<div class="ai-field"><strong>Spec:</strong> paths//api/payments/post/responses/400</div>
-<div class="ai-field"><strong>Confidence:</strong> HIGH</div>
-</div>
-</details>
-<details>
-<summary><span class="severity-badge severity-MEDIUM">MEDIUM</span><span class="category-mm-badge category-mm-MISSING_IN_API">MISSING_IN_API</span><span class="name">Error code INVALID_AMOUNT not defined in API spec</span></summary>
-<div class="details-body">
-<div class="ai-field"><strong>Evidence:</strong> Requirement Section 2.1 (req-amount-range) mandates HTTP 400 with error code INVALID_AMOUNT for out-of-range amounts. API spec 400 response uses generic ErrorResponse with no enumeration of INVALID_AMOUNT as a possible code value.</div>
-<div class="ai-field"><strong>Location:</strong> POST /api/payments</div>
-<div class="ai-field"><strong>Requirement:</strong> Section 2.1 (req-amount-range)</div>
-<div class="ai-field"><strong>Spec:</strong> paths//api/payments/post/responses/400</div>
-<div class="ai-field"><strong>Confidence:</strong> HIGH</div>
-</div>
-</details>
-<details>
-<summary><span class="severity-badge severity-MEDIUM">MEDIUM</span><span class="category-mm-badge category-mm-MISSING_IN_API">MISSING_IN_API</span><span class="name">Amount truncation behavior not specified in API spec</span></summary>
-<div class="details-body">
-<div class="ai-field"><strong>Evidence:</strong> Requirement Section 2.1 (req-amount-precision) mandates that amounts with more than 2 decimal places are truncated. The API spec has no mention of truncation behavior for the amount field; it is silent on how extra precision is handled.</div>
+<div class="ai-field"><strong>Evidence:</strong> Requirement Section 2.1 (req-amount-range) states minimum amount is AUD 1.00 (inclusive). OpenAPI CreatePaymentRequest.amount has minimum: 0.01, allowing values between 0.01 and 0.99 that should be rejected.</div>
 <div class="ai-field"><strong>Location:</strong> POST /api/payments - CreatePaymentRequest.amount</div>
-<div class="ai-field"><strong>Requirement:</strong> Section 2.1 (req-amount-precision)</div>
-<div class="ai-field"><strong>Spec:</strong> components/schemas/CreatePaymentRequest/properties/amount</div>
-<div class="ai-field"><strong>Confidence:</strong> HIGH</div>
-</div>
-</details>
-<details>
-<summary><span class="severity-badge severity-HIGH">HIGH</span><span class="category-mm-badge category-mm-MISSING_IN_API">MISSING_IN_API</span><span class="name">payerId field absent from API spec; API uses merchantId/customerId instead</span></summary>
-<div class="details-body">
-<div class="ai-field"><strong>Evidence:</strong> Requirement Sections 2.3, 2.4, 4.3, 5.2 (req-required-field-payerId, req-payment-creation-response, req-refund-ownership) require a payerId field representing the authenticated user. OpenAPI CreatePaymentRequest uses merchantId and customerId; PaymentResponse has no payerId field.</div>
-<div class="ai-field"><strong>Location:</strong> POST /api/payments - CreatePaymentRequest and PaymentResponse</div>
-<div class="ai-field"><strong>Requirement:</strong> Section 2.3 (req-required-field-payerId), Section 2.4 (req-payment-creation-response), Section 4.3 (req-refund-ownership)</div>
-<div class="ai-field"><strong>Spec:</strong> components/schemas/CreatePaymentRequest, components/schemas/PaymentResponse</div>
+<div class="ai-field"><strong>Requirement:</strong> Section 2.1 (req-amount-range)</div>
+<div class="ai-field"><strong>Spec:</strong> components/schemas/CreatePaymentRequest/properties/amount/minimum</div>
 <div class="ai-field"><strong>Confidence:</strong> HIGH</div>
 </div>
 </details>
@@ -190,42 +150,22 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 </div>
 </details>
 <details>
-<summary><span class="severity-badge severity-MEDIUM">MEDIUM</span><span class="category-mm-badge category-mm-UNDOCUMENTED_API">UNDOCUMENTED_API</span><span class="name">API defines PARTIALLY_REFUNDED and FAILED states not mentioned in requirements</span></summary>
-<div class="details-body">
-<div class="ai-field"><strong>Evidence:</strong> PaymentStatus enum in API spec includes FAILED and PARTIALLY_REFUNDED. Requirements state machine (Sections 3.1, 3.2) only mentions PENDING, COMPLETED, and REFUNDED states with no reference to FAILED or PARTIALLY_REFUNDED.</div>
-<div class="ai-field"><strong>Location:</strong> components/schemas/PaymentStatus</div>
-<div class="ai-field"><strong>Requirement:</strong> Section 3.1, Section 3.2</div>
-<div class="ai-field"><strong>Spec:</strong> components/schemas/PaymentStatus</div>
-<div class="ai-field"><strong>Confidence:</strong> HIGH</div>
-</div>
-</details>
-<details>
-<summary><span class="severity-badge severity-HIGH">HIGH</span><span class="category-mm-badge category-mm-CONSTRAINT_CONFLICT">CONSTRAINT_CONFLICT</span><span class="name">API supports partial refunds; requirement explicitly forbids them in v1.0</span></summary>
-<div class="details-body">
-<div class="ai-field"><strong>Evidence:</strong> Requirement Section 4.4 (req-refund-amount-full) states partial refunds are not supported in v1.0 and any refund not matching the original amount must be rejected. API spec RefundRequest has an optional amount field for partial refunds and includes a 'partial_refund' example, and PaymentStatus includes PARTIALLY_REFUNDED.</div>
-<div class="ai-field"><strong>Location:</strong> POST /api/payments/{id}/refund - RefundRequest</div>
-<div class="ai-field"><strong>Requirement:</strong> Section 4.4 (req-refund-amount-full)</div>
-<div class="ai-field"><strong>Spec:</strong> components/schemas/RefundRequest/properties/amount, components/schemas/PaymentStatus</div>
-<div class="ai-field"><strong>Confidence:</strong> HIGH</div>
-</div>
-</details>
-<details>
-<summary><span class="severity-badge severity-HIGH">HIGH</span><span class="category-mm-badge category-mm-MISSING_IN_API">MISSING_IN_API</span><span class="name">No authorization/authentication scheme defined in API spec</span></summary>
-<div class="details-body">
-<div class="ai-field"><strong>Evidence:</strong> Requirement Section 5.1 (req-auth-bearer-token) mandates Bearer token authentication on all endpoints with HTTP 401 and error code UNAUTHORIZED for missing/invalid tokens. The OpenAPI spec defines no securitySchemes, no security requirements, and no 401 responses on any endpoint.</div>
-<div class="ai-field"><strong>Location:</strong> All endpoints</div>
-<div class="ai-field"><strong>Requirement:</strong> Section 5.1 (req-auth-bearer-token)</div>
-<div class="ai-field"><strong>Spec:</strong> components/securitySchemes (absent), paths (no 401 responses)</div>
-<div class="ai-field"><strong>Confidence:</strong> HIGH</div>
-</div>
-</details>
-<details>
 <summary><span class="severity-badge severity-HIGH">HIGH</span><span class="category-mm-badge category-mm-MISSING_IN_API">MISSING_IN_API</span><span class="name">Cross-user refund ownership check absent in API spec</span></summary>
 <div class="details-body">
 <div class="ai-field"><strong>Evidence:</strong> Requirement Section 4.3 (req-refund-ownership) and Section 5.2 (req-authz-refund-payment) mandate that only the original payerId can initiate a refund, returning HTTP 403 with error code FORBIDDEN_OWNERSHIP for other users. API spec POST /api/payments/{id}/refund has no 403 response and no authorization rule.</div>
 <div class="ai-field"><strong>Location:</strong> POST /api/payments/{id}/refund</div>
 <div class="ai-field"><strong>Requirement:</strong> Section 4.3 (req-refund-ownership), Section 5.2 (req-authz-refund-payment)</div>
 <div class="ai-field"><strong>Spec:</strong> paths//api/payments/{id}/refund/post/responses</div>
+<div class="ai-field"><strong>Confidence:</strong> HIGH</div>
+</div>
+</details>
+<details>
+<summary><span class="severity-badge severity-HIGH">HIGH</span><span class="category-mm-badge category-mm-MISSING_IN_API">MISSING_IN_API</span><span class="name">Double-refund rejection (ALREADY_REFUNDED error code) not documented in API spec</span></summary>
+<div class="details-body">
+<div class="ai-field"><strong>Evidence:</strong> Requirement Section 4.2 (req-refund-idempotency) mandates HTTP 422 with error code ALREADY_REFUNDED when refunding an already-refunded payment. API spec 422 response has a generic ErrorResponse with no specific error codes enumerated; ALREADY_REFUNDED is not mentioned.</div>
+<div class="ai-field"><strong>Location:</strong> POST /api/payments/{id}/refund</div>
+<div class="ai-field"><strong>Requirement:</strong> Section 4.2 (req-refund-idempotency)</div>
+<div class="ai-field"><strong>Spec:</strong> paths//api/payments/{id}/refund/post/responses/422</div>
 <div class="ai-field"><strong>Confidence:</strong> HIGH</div>
 </div>
 </details>
@@ -240,12 +180,82 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 </div>
 </details>
 <details>
-<summary><span class="severity-badge severity-HIGH">HIGH</span><span class="category-mm-badge category-mm-MISSING_IN_API">MISSING_IN_API</span><span class="name">Double-refund rejection (ALREADY_REFUNDED error code) not documented in API spec</span></summary>
+<summary><span class="severity-badge severity-HIGH">HIGH</span><span class="category-mm-badge category-mm-MISSING_IN_API">MISSING_IN_API</span><span class="name">No authorization/authentication scheme defined in API spec</span></summary>
 <div class="details-body">
-<div class="ai-field"><strong>Evidence:</strong> Requirement Section 4.2 (req-refund-idempotency) mandates HTTP 422 with error code ALREADY_REFUNDED when refunding an already-refunded payment. API spec 422 response has a generic ErrorResponse with no specific error codes enumerated; ALREADY_REFUNDED is not mentioned.</div>
+<div class="ai-field"><strong>Evidence:</strong> Requirement Section 5.1 (req-auth-bearer-token) mandates Bearer token authentication on all endpoints with HTTP 401 and error code UNAUTHORIZED for missing/invalid tokens. The OpenAPI spec defines no securitySchemes, no security requirements, and no 401 responses on any endpoint.</div>
+<div class="ai-field"><strong>Location:</strong> All endpoints</div>
+<div class="ai-field"><strong>Requirement:</strong> Section 5.1 (req-auth-bearer-token)</div>
+<div class="ai-field"><strong>Spec:</strong> components/securitySchemes (absent), paths (no 401 responses)</div>
+<div class="ai-field"><strong>Confidence:</strong> HIGH</div>
+</div>
+</details>
+<details>
+<summary><span class="severity-badge severity-HIGH">HIGH</span><span class="category-mm-badge category-mm-MISSING_IN_API">MISSING_IN_API</span><span class="name">payerId field absent from API spec; API uses merchantId/customerId instead</span></summary>
+<div class="details-body">
+<div class="ai-field"><strong>Evidence:</strong> Requirement Sections 2.3, 2.4, 4.3, 5.2 (req-required-field-payerId, req-payment-creation-response, req-refund-ownership) require a payerId field representing the authenticated user. OpenAPI CreatePaymentRequest uses merchantId and customerId; PaymentResponse has no payerId field.</div>
+<div class="ai-field"><strong>Location:</strong> POST /api/payments - CreatePaymentRequest and PaymentResponse</div>
+<div class="ai-field"><strong>Requirement:</strong> Section 2.3 (req-required-field-payerId), Section 2.4 (req-payment-creation-response), Section 4.3 (req-refund-ownership)</div>
+<div class="ai-field"><strong>Spec:</strong> components/schemas/CreatePaymentRequest, components/schemas/PaymentResponse</div>
+<div class="ai-field"><strong>Confidence:</strong> HIGH</div>
+</div>
+</details>
+<details>
+<summary><span class="severity-badge severity-HIGH">HIGH</span><span class="category-mm-badge category-mm-WORKFLOW_MISMATCH">WORKFLOW_MISMATCH</span><span class="name">API description says payment returns COMPLETED immediately (always); requirement allows PENDING or COMPLETED as initial state</span></summary>
+<div class="details-body">
+<div class="ai-field"><strong>Evidence:</strong> Requirement Section 2.4 (req-initial-status) states initial status can be PENDING or COMPLETED depending on payment method. API spec POST /api/payments description states 'Returns COMPLETED immediately (mock behaviour)', implying only COMPLETED as initial state.</div>
+<div class="ai-field"><strong>Location:</strong> POST /api/payments</div>
+<div class="ai-field"><strong>Requirement:</strong> Section 2.4 (req-initial-status)</div>
+<div class="ai-field"><strong>Spec:</strong> paths//api/payments/post/description</div>
+<div class="ai-field"><strong>Confidence:</strong> HIGH</div>
+</div>
+</details>
+<details>
+<summary><span class="severity-badge severity-MEDIUM">MEDIUM</span><span class="category-mm-badge category-mm-CONSTRAINT_CONFLICT">CONSTRAINT_CONFLICT</span><span class="name">Supported currencies conflict: requirement allows AUD/USD/EUR only; API example uses CNY with no enum restriction</span></summary>
+<div class="details-body">
+<div class="ai-field"><strong>Evidence:</strong> Requirement Section 2.2 (req-currency-enum) restricts currency to AUD, USD, EUR. OpenAPI currency field uses pattern '^[A-Z]{3}$' with no enum constraint, and examples use CNY, which is not in the allowed list.</div>
+<div class="ai-field"><strong>Location:</strong> POST /api/payments - CreatePaymentRequest.currency</div>
+<div class="ai-field"><strong>Requirement:</strong> Section 2.2 (req-currency-enum)</div>
+<div class="ai-field"><strong>Spec:</strong> components/schemas/CreatePaymentRequest/properties/currency</div>
+<div class="ai-field"><strong>Confidence:</strong> HIGH</div>
+</div>
+</details>
+<details>
+<summary><span class="severity-badge severity-MEDIUM">MEDIUM</span><span class="category-mm-badge category-mm-MISSING_IN_API">MISSING_IN_API</span><span class="name">Amount truncation behavior not specified in API spec</span></summary>
+<div class="details-body">
+<div class="ai-field"><strong>Evidence:</strong> Requirement Section 2.1 (req-amount-precision) mandates that amounts with more than 2 decimal places are truncated. The API spec has no mention of truncation behavior for the amount field; it is silent on how extra precision is handled.</div>
+<div class="ai-field"><strong>Location:</strong> POST /api/payments - CreatePaymentRequest.amount</div>
+<div class="ai-field"><strong>Requirement:</strong> Section 2.1 (req-amount-precision)</div>
+<div class="ai-field"><strong>Spec:</strong> components/schemas/CreatePaymentRequest/properties/amount</div>
+<div class="ai-field"><strong>Confidence:</strong> HIGH</div>
+</div>
+</details>
+<details>
+<summary><span class="severity-badge severity-MEDIUM">MEDIUM</span><span class="category-mm-badge category-mm-MISSING_IN_API">MISSING_IN_API</span><span class="name">Error code INVALID_AMOUNT not defined in API spec</span></summary>
+<div class="details-body">
+<div class="ai-field"><strong>Evidence:</strong> Requirement Section 2.1 (req-amount-range) mandates HTTP 400 with error code INVALID_AMOUNT for out-of-range amounts. API spec 400 response uses generic ErrorResponse with no enumeration of INVALID_AMOUNT as a possible code value.</div>
+<div class="ai-field"><strong>Location:</strong> POST /api/payments</div>
+<div class="ai-field"><strong>Requirement:</strong> Section 2.1 (req-amount-range)</div>
+<div class="ai-field"><strong>Spec:</strong> paths//api/payments/post/responses/400</div>
+<div class="ai-field"><strong>Confidence:</strong> HIGH</div>
+</div>
+</details>
+<details>
+<summary><span class="severity-badge severity-MEDIUM">MEDIUM</span><span class="category-mm-badge category-mm-MISSING_IN_API">MISSING_IN_API</span><span class="name">Error code UNSUPPORTED_CURRENCY not defined in API spec</span></summary>
+<div class="details-body">
+<div class="ai-field"><strong>Evidence:</strong> Requirement Section 2.2 (req-currency-enum) mandates HTTP 400 with error code UNSUPPORTED_CURRENCY for unsupported currencies. API spec defines a generic 400 ErrorResponse with no enumeration of specific error codes for currency validation.</div>
+<div class="ai-field"><strong>Location:</strong> POST /api/payments</div>
+<div class="ai-field"><strong>Requirement:</strong> Section 2.2 (req-currency-enum)</div>
+<div class="ai-field"><strong>Spec:</strong> paths//api/payments/post/responses/400</div>
+<div class="ai-field"><strong>Confidence:</strong> HIGH</div>
+</div>
+</details>
+<details>
+<summary><span class="severity-badge severity-MEDIUM">MEDIUM</span><span class="category-mm-badge category-mm-MISSING_IN_API">MISSING_IN_API</span><span class="name">Forbidden state transitions (rollback to PENDING, transitions from REFUNDED) not documented in API spec</span></summary>
+<div class="details-body">
+<div class="ai-field"><strong>Evidence:</strong> Requirements Section 3.2 (req-state-transition-no-rollback-to-pending, req-state-refunded-terminal) forbid transitions to PENDING and any transition from REFUNDED. API spec does not document these forbidden transitions or the corresponding error responses.</div>
 <div class="ai-field"><strong>Location:</strong> POST /api/payments/{id}/refund</div>
-<div class="ai-field"><strong>Requirement:</strong> Section 4.2 (req-refund-idempotency)</div>
-<div class="ai-field"><strong>Spec:</strong> paths//api/payments/{id}/refund/post/responses/422</div>
+<div class="ai-field"><strong>Requirement:</strong> Section 3.2 (req-state-transition-no-rollback-to-pending, req-state-refunded-terminal)</div>
+<div class="ai-field"><strong>Spec:</strong> paths//api/payments/{id}/refund/post</div>
 <div class="ai-field"><strong>Confidence:</strong> HIGH</div>
 </div>
 </details>
@@ -270,22 +280,12 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 </div>
 </details>
 <details>
-<summary><span class="severity-badge severity-HIGH">HIGH</span><span class="category-mm-badge category-mm-WORKFLOW_MISMATCH">WORKFLOW_MISMATCH</span><span class="name">API description says payment returns COMPLETED immediately (always); requirement allows PENDING or COMPLETED as initial state</span></summary>
+<summary><span class="severity-badge severity-MEDIUM">MEDIUM</span><span class="category-mm-badge category-mm-UNDOCUMENTED_API">UNDOCUMENTED_API</span><span class="name">API defines PARTIALLY_REFUNDED and FAILED states not mentioned in requirements</span></summary>
 <div class="details-body">
-<div class="ai-field"><strong>Evidence:</strong> Requirement Section 2.4 (req-initial-status) states initial status can be PENDING or COMPLETED depending on payment method. API spec POST /api/payments description states 'Returns COMPLETED immediately (mock behaviour)', implying only COMPLETED as initial state.</div>
-<div class="ai-field"><strong>Location:</strong> POST /api/payments</div>
-<div class="ai-field"><strong>Requirement:</strong> Section 2.4 (req-initial-status)</div>
-<div class="ai-field"><strong>Spec:</strong> paths//api/payments/post/description</div>
-<div class="ai-field"><strong>Confidence:</strong> HIGH</div>
-</div>
-</details>
-<details>
-<summary><span class="severity-badge severity-LOW">LOW</span><span class="category-mm-badge category-mm-MISSING_IN_API">MISSING_IN_API</span><span class="name">Performance/latency SLA requirements have no representation in API spec</span></summary>
-<div class="details-body">
-<div class="ai-field"><strong>Evidence:</strong> Requirements Section 8 (req-perf-payment-creation, req-perf-status-query, req-perf-refund) define p95 latency SLAs of 200ms, 50ms, and 300ms respectively. OpenAPI spec has no SLA, latency, or performance-related annotations.</div>
-<div class="ai-field"><strong>Location:</strong> All endpoints</div>
-<div class="ai-field"><strong>Requirement:</strong> Section 8 (req-perf-payment-creation, req-perf-status-query, req-perf-refund)</div>
-<div class="ai-field"><strong>Spec:</strong> N/A</div>
+<div class="ai-field"><strong>Evidence:</strong> PaymentStatus enum in API spec includes FAILED and PARTIALLY_REFUNDED. Requirements state machine (Sections 3.1, 3.2) only mentions PENDING, COMPLETED, and REFUNDED states with no reference to FAILED or PARTIALLY_REFUNDED.</div>
+<div class="ai-field"><strong>Location:</strong> components/schemas/PaymentStatus</div>
+<div class="ai-field"><strong>Requirement:</strong> Section 3.1, Section 3.2</div>
+<div class="ai-field"><strong>Spec:</strong> components/schemas/PaymentStatus</div>
 <div class="ai-field"><strong>Confidence:</strong> HIGH</div>
 </div>
 </details>
@@ -296,6 +296,26 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <div class="ai-field"><strong>Location:</strong> POST /api/payments - CreatePaymentRequest</div>
 <div class="ai-field"><strong>Requirement:</strong> Section 2.3</div>
 <div class="ai-field"><strong>Spec:</strong> components/schemas/CreatePaymentRequest/required</div>
+<div class="ai-field"><strong>Confidence:</strong> HIGH</div>
+</div>
+</details>
+<details>
+<summary><span class="severity-badge severity-LOW">LOW</span><span class="category-mm-badge category-mm-MISSING_IN_API">MISSING_IN_API</span><span class="name">Admin role for GET /api/payments/{id} not reflected in API spec</span></summary>
+<div class="details-body">
+<div class="ai-field"><strong>Evidence:</strong> Requirement Section 5.2 (req-authz-query-payment) allows both the original payer and admins to query a payment. API spec GET /api/payments/{id} has no role-based access control, admin role definition, or security scheme to enforce this.</div>
+<div class="ai-field"><strong>Location:</strong> GET /api/payments/{id}</div>
+<div class="ai-field"><strong>Requirement:</strong> Section 5.2 (req-authz-query-payment)</div>
+<div class="ai-field"><strong>Spec:</strong> paths//api/payments/{id}/get</div>
+<div class="ai-field"><strong>Confidence:</strong> MEDIUM</div>
+</div>
+</details>
+<details>
+<summary><span class="severity-badge severity-LOW">LOW</span><span class="category-mm-badge category-mm-MISSING_IN_API">MISSING_IN_API</span><span class="name">Performance/latency SLA requirements have no representation in API spec</span></summary>
+<div class="details-body">
+<div class="ai-field"><strong>Evidence:</strong> Requirements Section 8 (req-perf-payment-creation, req-perf-status-query, req-perf-refund) define p95 latency SLAs of 200ms, 50ms, and 300ms respectively. OpenAPI spec has no SLA, latency, or performance-related annotations.</div>
+<div class="ai-field"><strong>Location:</strong> All endpoints</div>
+<div class="ai-field"><strong>Requirement:</strong> Section 8 (req-perf-payment-creation, req-perf-status-query, req-perf-refund)</div>
+<div class="ai-field"><strong>Spec:</strong> N/A</div>
 <div class="ai-field"><strong>Confidence:</strong> HIGH</div>
 </div>
 </details>
@@ -317,26 +337,6 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <div class="ai-field"><strong>Requirement:</strong> Section 2.4 (req-payment-creation-response)</div>
 <div class="ai-field"><strong>Spec:</strong> components/schemas/PaymentResponse/properties/updatedAt</div>
 <div class="ai-field"><strong>Confidence:</strong> HIGH</div>
-</div>
-</details>
-<details>
-<summary><span class="severity-badge severity-MEDIUM">MEDIUM</span><span class="category-mm-badge category-mm-MISSING_IN_API">MISSING_IN_API</span><span class="name">Forbidden state transitions (rollback to PENDING, transitions from REFUNDED) not documented in API spec</span></summary>
-<div class="details-body">
-<div class="ai-field"><strong>Evidence:</strong> Requirements Section 3.2 (req-state-transition-no-rollback-to-pending, req-state-refunded-terminal) forbid transitions to PENDING and any transition from REFUNDED. API spec does not document these forbidden transitions or the corresponding error responses.</div>
-<div class="ai-field"><strong>Location:</strong> POST /api/payments/{id}/refund</div>
-<div class="ai-field"><strong>Requirement:</strong> Section 3.2 (req-state-transition-no-rollback-to-pending, req-state-refunded-terminal)</div>
-<div class="ai-field"><strong>Spec:</strong> paths//api/payments/{id}/refund/post</div>
-<div class="ai-field"><strong>Confidence:</strong> HIGH</div>
-</div>
-</details>
-<details>
-<summary><span class="severity-badge severity-LOW">LOW</span><span class="category-mm-badge category-mm-MISSING_IN_API">MISSING_IN_API</span><span class="name">Admin role for GET /api/payments/{id} not reflected in API spec</span></summary>
-<div class="details-body">
-<div class="ai-field"><strong>Evidence:</strong> Requirement Section 5.2 (req-authz-query-payment) allows both the original payer and admins to query a payment. API spec GET /api/payments/{id} has no role-based access control, admin role definition, or security scheme to enforce this.</div>
-<div class="ai-field"><strong>Location:</strong> GET /api/payments/{id}</div>
-<div class="ai-field"><strong>Requirement:</strong> Section 5.2 (req-authz-query-payment)</div>
-<div class="ai-field"><strong>Spec:</strong> paths//api/payments/{id}/get</div>
-<div class="ai-field"><strong>Confidence:</strong> MEDIUM</div>
 </div>
 </details>
 </section>
@@ -1829,6 +1829,32 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <div class="card"><div class="label">TEST LOGIC ERROR</div><div class="value" style="font-size:1.5rem;">5</div></div>
 <div class="card"><div class="label">ASSERTION TOO STRICT</div><div class="value" style="font-size:1.5rem;">1</div></div>
 </div>
+<h3>API BUG</h3>
+<details>
+<summary><span class="name">Cross-User Refund Attempt (REJECTED) | refunder</span><span class="category-badge category-API_BUG">API BUG</span>&nbsp;<span class="confidence-badge confidence-HIGH">HIGH</span></summary>
+<div class="details-body">
+<div class="ai-field"><strong>Root Cause:</strong> The API does not enforce ownership authorization on the refund endpoint, allowing User B to successfully refund a payment belonging to User A instead of returning 403 FORBIDDEN_OWNERSHIP.</div>
+<div class="ai-field"><strong>Evidence:</strong> The request is made by 'refunder' (User B) on payment 'pay_960153861d4f' owned by 'customer-userA-001', yet the API returns 200 with status REFUNDED, proving no ownership check is performed.</div>
+<div class="ai-field"><strong>Suggested Fix:</strong> Implement an ownership/authorization check in the refund handler that compares the authenticated user's identity against the payment's merchantId or customerId and returns 403 with code FORBIDDEN_OWNERSHIP when they do not match.</div>
+</div>
+</details>
+<details>
+<summary><span class="name">Refund Pending Payment (REJECTED) | creator</span><span class="category-badge category-API_BUG">API BUG</span>&nbsp;<span class="confidence-badge confidence-HIGH">HIGH</span></summary>
+<div class="details-body">
+<div class="ai-field"><strong>Root Cause:</strong> The API immediately transitions newly created payments to COMPLETED status instead of the expected PENDING status, violating the intended payment lifecycle.</div>
+<div class="ai-field"><strong>Evidence:</strong> The POST /api/payments response for the newly created payment returns status 'COMPLETED' rather than 'PENDING', even though the test (and presumably the spec) expects new payments to start in a PENDING state.</div>
+<div class="ai-field"><strong>Suggested Fix:</strong> Fix the payment creation logic to set the initial status to PENDING; status transitions to COMPLETED should occur only after explicit confirmation or processing steps defined in the payment workflow.</div>
+</div>
+</details>
+<details>
+<summary><span class="name">Response body contains all defined fields for existing payment</span><span class="category-badge category-API_BUG">API BUG</span>&nbsp;<span class="confidence-badge confidence-HIGH">HIGH</span></summary>
+<div class="details-body">
+<div class="ai-field"><strong>Root Cause:</strong> The API allows a refund to be applied to an already-REFUNDED payment instead of rejecting it with 422, indicating missing idempotency/state-guard logic in the refund endpoint.</div>
+<div class="ai-field"><strong>Evidence:</strong> The payment 'pay_041437b689e7' already has status REFUNDED, yet POST /refund returns 200 with an updated refundReason and a new updatedAt timestamp, meaning the refund was processed again rather than rejected.</div>
+<div class="ai-field"><strong>Suggested Fix:</strong> Add a pre-condition check in the refund handler that returns 422 (e.g., PAYMENT_NOT_REFUNDABLE or ALREADY_REFUNDED) when the payment status is already REFUNDED; also set expected_status to 422 in the test and assert the error code/message fields.</div>
+</div>
+</details>
+<h3>TEST LOGIC ERROR</h3>
 <details>
 <summary><span class="name">Create payment with amount as string instead of number</span><span class="category-badge category-TEST_LOGIC_ERROR">TEST LOGIC ERROR</span>&nbsp;<span class="confidence-badge confidence-HIGH">HIGH</span></summary>
 <div class="details-body">
@@ -1846,19 +1872,11 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 </div>
 </details>
 <details>
-<summary><span class="name">Response body contains all defined fields for existing payment</span><span class="category-badge category-ASSERTION_TOO_STRICT">ASSERTION TOO STRICT</span>&nbsp;<span class="confidence-badge confidence-HIGH">HIGH</span></summary>
+<summary><span class="name">Double Refund Attempt (REJECTED) | refunder</span><span class="category-badge category-TEST_LOGIC_ERROR">TEST LOGIC ERROR</span>&nbsp;<span class="confidence-badge confidence-HIGH">HIGH</span></summary>
 <div class="details-body">
-<div class="ai-field"><strong>Root Cause:</strong> The test asserts that 'description' must be present in the response, but the stored payment was created without a description field and the API correctly omits absent optional fields.</div>
-<div class="ai-field"><strong>Evidence:</strong> The actual response contains all other expected fields correctly (id, merchantId, customerId, amount, currency, status, createdAt, updatedAt) and returns 200, but 'description' is absent because the seed payment has no description value.</div>
-<div class="ai-field"><strong>Suggested Fix:</strong> Either make the 'description' assertion conditional/optional in the test, or update the test setup data to include a description value when seeding 'pay_4f5ee92bf505'.</div>
-</div>
-</details>
-<details>
-<summary><span class="name">Response body contains all defined fields for existing payment</span><span class="category-badge category-API_BUG">API BUG</span>&nbsp;<span class="confidence-badge confidence-HIGH">HIGH</span></summary>
-<div class="details-body">
-<div class="ai-field"><strong>Root Cause:</strong> The API allows a refund to be applied to an already-REFUNDED payment instead of rejecting it with 422, indicating missing idempotency/state-guard logic in the refund endpoint.</div>
-<div class="ai-field"><strong>Evidence:</strong> The payment 'pay_041437b689e7' already has status REFUNDED, yet POST /refund returns 200 with an updated refundReason and a new updatedAt timestamp, meaning the refund was processed again rather than rejected.</div>
-<div class="ai-field"><strong>Suggested Fix:</strong> Add a pre-condition check in the refund handler that returns 422 (e.g., PAYMENT_NOT_REFUNDABLE or ALREADY_REFUNDED) when the payment status is already REFUNDED; also set expected_status to 422 in the test and assert the error code/message fields.</div>
+<div class="ai-field"><strong>Root Cause:</strong> The test expects the error code 'ALREADY_REFUNDED' but the API returns the functionally equivalent code 'PAYMENT_NOT_REFUNDABLE', indicating a mismatch between the expected error code and the API's actual contract.</div>
+<div class="ai-field"><strong>Evidence:</strong> actual_status is correctly 422 and the response body contains a valid error message ('Payment pay_bfd6e342ae9a cannot be refunded in status: REFUNDED'), but the asserted code 'ALREADY_REFUNDED' differs from the actual code 'PAYMENT_NOT_REFUNDABLE'.</div>
+<div class="ai-field"><strong>Suggested Fix:</strong> Update the test's expected error code from 'ALREADY_REFUNDED' to 'PAYMENT_NOT_REFUNDABLE' to match the API's documented or actual error codes; alternatively, if the spec mandates 'ALREADY_REFUNDED', update the API to return that specific code for the already-refunded state.</div>
 </div>
 </details>
 <details>
@@ -1877,28 +1895,13 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <div class="ai-field"><strong>Suggested Fix:</strong> Either update the global exception handler to wrap HttpMessageNotReadableException with a structured error body including 'code' and 'message', or update the test assertions to match the actual Spring error response format and set expected_status to 400.</div>
 </div>
 </details>
+<h3>ASSERTION TOO STRICT</h3>
 <details>
-<summary><span class="name">Cross-User Refund Attempt (REJECTED) | refunder</span><span class="category-badge category-API_BUG">API BUG</span>&nbsp;<span class="confidence-badge confidence-HIGH">HIGH</span></summary>
+<summary><span class="name">Response body contains all defined fields for existing payment</span><span class="category-badge category-ASSERTION_TOO_STRICT">ASSERTION TOO STRICT</span>&nbsp;<span class="confidence-badge confidence-HIGH">HIGH</span></summary>
 <div class="details-body">
-<div class="ai-field"><strong>Root Cause:</strong> The API does not enforce ownership authorization on the refund endpoint, allowing User B to successfully refund a payment belonging to User A instead of returning 403 FORBIDDEN_OWNERSHIP.</div>
-<div class="ai-field"><strong>Evidence:</strong> The request is made by 'refunder' (User B) on payment 'pay_960153861d4f' owned by 'customer-userA-001', yet the API returns 200 with status REFUNDED, proving no ownership check is performed.</div>
-<div class="ai-field"><strong>Suggested Fix:</strong> Implement an ownership/authorization check in the refund handler that compares the authenticated user's identity against the payment's merchantId or customerId and returns 403 with code FORBIDDEN_OWNERSHIP when they do not match.</div>
-</div>
-</details>
-<details>
-<summary><span class="name">Double Refund Attempt (REJECTED) | refunder</span><span class="category-badge category-TEST_LOGIC_ERROR">TEST LOGIC ERROR</span>&nbsp;<span class="confidence-badge confidence-HIGH">HIGH</span></summary>
-<div class="details-body">
-<div class="ai-field"><strong>Root Cause:</strong> The test expects the error code 'ALREADY_REFUNDED' but the API returns the functionally equivalent code 'PAYMENT_NOT_REFUNDABLE', indicating a mismatch between the expected error code and the API's actual contract.</div>
-<div class="ai-field"><strong>Evidence:</strong> actual_status is correctly 422 and the response body contains a valid error message ('Payment pay_bfd6e342ae9a cannot be refunded in status: REFUNDED'), but the asserted code 'ALREADY_REFUNDED' differs from the actual code 'PAYMENT_NOT_REFUNDABLE'.</div>
-<div class="ai-field"><strong>Suggested Fix:</strong> Update the test's expected error code from 'ALREADY_REFUNDED' to 'PAYMENT_NOT_REFUNDABLE' to match the API's documented or actual error codes; alternatively, if the spec mandates 'ALREADY_REFUNDED', update the API to return that specific code for the already-refunded state.</div>
-</div>
-</details>
-<details>
-<summary><span class="name">Refund Pending Payment (REJECTED) | creator</span><span class="category-badge category-API_BUG">API BUG</span>&nbsp;<span class="confidence-badge confidence-HIGH">HIGH</span></summary>
-<div class="details-body">
-<div class="ai-field"><strong>Root Cause:</strong> The API immediately transitions newly created payments to COMPLETED status instead of the expected PENDING status, violating the intended payment lifecycle.</div>
-<div class="ai-field"><strong>Evidence:</strong> The POST /api/payments response for the newly created payment returns status 'COMPLETED' rather than 'PENDING', even though the test (and presumably the spec) expects new payments to start in a PENDING state.</div>
-<div class="ai-field"><strong>Suggested Fix:</strong> Fix the payment creation logic to set the initial status to PENDING; status transitions to COMPLETED should occur only after explicit confirmation or processing steps defined in the payment workflow.</div>
+<div class="ai-field"><strong>Root Cause:</strong> The test asserts that 'description' must be present in the response, but the stored payment was created without a description field and the API correctly omits absent optional fields.</div>
+<div class="ai-field"><strong>Evidence:</strong> The actual response contains all other expected fields correctly (id, merchantId, customerId, amount, currency, status, createdAt, updatedAt) and returns 200, but 'description' is absent because the seed payment has no description value.</div>
+<div class="ai-field"><strong>Suggested Fix:</strong> Either make the 'description' assertion conditional/optional in the test, or update the test setup data to include a description value when seeding 'pay_4f5ee92bf505'.</div>
 </div>
 </details>
 </section>
