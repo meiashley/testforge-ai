@@ -1,5 +1,7 @@
 package com.testforge.runner.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.testforge.ai.analysis.FailureAnalysisResult;
 import com.testforge.ai.consistency.AlignmentResult;
 import com.testforge.ai.requirement.RequirementAnalysis;
@@ -20,7 +22,9 @@ public class ExecutionReport {
     private List<PlanExecutionResult> scenarioResults;
     private RequirementAnalysis requirementAnalysis;
 
-    public ExecutionReport(ExecutionSummary summary, List<TestCaseResult> results) {
+    @JsonCreator
+    public ExecutionReport(@JsonProperty("summary") ExecutionSummary summary,
+                           @JsonProperty("results") List<TestCaseResult> results) {
         this.summary = summary;
         this.results = results;
         this.failureAnalysis = new ArrayList<>();

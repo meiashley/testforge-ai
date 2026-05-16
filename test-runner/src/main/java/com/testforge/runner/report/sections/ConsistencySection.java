@@ -4,9 +4,16 @@ import com.testforge.ai.consistency.AlignmentResult;
 import com.testforge.ai.consistency.ConsistencyMismatch;
 import com.testforge.runner.model.ExecutionReport;
 
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 
 public class ConsistencySection implements ReportSection {
+
+    private static final Comparator<ConsistencyMismatch> MISMATCH_PRIORITY_ORDER =
+            Comparator.comparingInt((ConsistencyMismatch m) -> severityRank(m.getSeverity()))
+                    .thenComparing(m -> safe(m.getCategory()))
+                    .thenComparing(m -> safe(m.getSummary()));
 
     @Override
     public String getSectionId() { return "consistency"; }
@@ -56,7 +63,10 @@ public class ConsistencySection implements ReportSection {
 
         // Each mismatch as collapsible details
         if (result.getMismatches() != null) {
-            for (ConsistencyMismatch m : result.getMismatches()) {
+            List<ConsistencyMismatch> sortedMismatches = result.getMismatches().stream()
+                    .sorted(MISMATCH_PRIORITY_ORDER)
+                    .toList();
+            for (ConsistencyMismatch m : sortedMismatches) {
                 sb.append("<details>\n<summary>")
                   .append("<span class=\"severity-badge severity-").append(HtmlUtil.esc(m.getSeverity())).append("\">")
                   .append(HtmlUtil.esc(m.getSeverity())).append("</span>")
@@ -89,5 +99,18 @@ public class ConsistencySection implements ReportSection {
             case "MEDIUM" -> "#f59e0b";
             default -> "#6b7280";
         };
+    }
+
+    private static int severityRank(String severity) {
+        return switch (safe(severity)) {
+            case "HIGH" -> 0;
+            case "MEDIUM" -> 1;
+            case "LOW" -> 2;
+            default -> 3;
+        };
+    }
+
+    private static String safe(String value) {
+        return value != null ? value : "";
     }
 }
