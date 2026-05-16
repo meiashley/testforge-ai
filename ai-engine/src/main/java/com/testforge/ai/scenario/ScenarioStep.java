@@ -21,7 +21,7 @@ public class ScenarioStep {
     private String pathTemplate;
     private Map<String, String> pathBindings;
     private Map<String, String> headerBindings;
-    private String bodyBinding;
+    private Object bodyBinding;
     private String requestBody;
     private Map<String, String> outputCapture;
     private int expectedStatusCode;
