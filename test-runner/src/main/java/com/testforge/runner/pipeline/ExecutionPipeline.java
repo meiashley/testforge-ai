@@ -6,7 +6,14 @@ import com.testforge.ai.analysis.FailureAnalysisResult;
 import com.testforge.ai.analysis.FailureAnalyzer;
 import com.testforge.ai.model.GenerationResult;
 import com.testforge.ai.model.TestCase;
+import com.testforge.ai.scenario.ExecutionPlan;
+import com.testforge.ai.scenario.ScenarioStep;
+import com.testforge.ai.scenario.StepDataContext;
 import com.testforge.runner.assertion.AssertionEvaluator;
+import com.testforge.runner.execution.BindingResolver;
+import com.testforge.runner.execution.JsonPathExtractor;
+import com.testforge.runner.execution.PlanExecutionResult;
+import com.testforge.runner.execution.StepResult;
 import com.testforge.runner.http.HttpExecutor;
 import com.testforge.runner.model.*;
 import com.testforge.runner.report.ReportBuilder;
@@ -28,6 +35,7 @@ public class ExecutionPipeline {
     private final AssertionEvaluator assertionEvaluator;
     private final ReportBuilder reportBuilder;
     private final ReportWriter reportWriter;
+    private final BindingResolver bindingResolver;
     private FailureAnalyzer failureAnalyzer;
 
     public ExecutionPipeline(HttpExecutor httpExecutor, AssertionEvaluator assertionEvaluator,
@@ -36,6 +44,7 @@ public class ExecutionPipeline {
         this.assertionEvaluator = assertionEvaluator;
         this.reportBuilder = reportBuilder;
         this.reportWriter = reportWriter;
+        this.bindingResolver = new BindingResolver();
     }
 
     public ExecutionPipeline withFailureAnalyzer(FailureAnalyzer analyzer) {
@@ -82,6 +91,83 @@ public class ExecutionPipeline {
         Path outputDir = Path.of(System.getProperty("project.basedir", "."), "target");
         reportWriter.write(report, outputDir);
         return report;
+    }
+
+    // === V5: multi-step ExecutionPlan support ===
+
+    public PlanExecutionResult executePlan(ExecutionPlan plan, String baseUrl) {
+        StepDataContext context = new StepDataContext();
+
+        if (plan.getMetadata() != null && plan.getMetadata().get("testData") instanceof Map<?, ?> testData) {
+            testData.forEach((k, v) -> context.put(String.valueOf(k), v));
+        }
+
+        List<StepResult> stepResults = new ArrayList<>();
+        boolean previousFailed = false;
+
+        for (ScenarioStep step : plan.getSteps()) {
+            if (previousFailed) {
+                stepResults.add(StepResult.skipped(step));
+                continue;
+            }
+
+            StepResult result = executeStep(step, context, baseUrl);
+            stepResults.add(result);
+
+            if (!result.isPassed()) {
+                previousFailed = true;
+            } else {
+                captureOutputs(step, result.getResponse(), context);
+            }
+        }
+
+        return PlanExecutionResult.builder()
+                .planId(plan.getPlanId())
+                .scenarioId(plan.getScenarioId())
+                .scenarioName(plan.getScenarioName())
+                .steps(stepResults)
+                .passed(stepResults.stream().allMatch(StepResult::isPassed))
+                .build();
+    }
+
+    private StepResult executeStep(ScenarioStep step, StepDataContext context, String baseUrl) {
+        String resolvedPath = step.getPathTemplate();
+        if (step.getPathBindings() != null) {
+            for (Map.Entry<String, String> binding : step.getPathBindings().entrySet()) {
+                String resolvedValue = bindingResolver.resolve(binding.getValue(), context);
+                resolvedPath = resolvedPath.replace("{" + binding.getKey() + "}", resolvedValue);
+            }
+        }
+
+        Map<String, String> headers = bindingResolver.resolveMap(step.getHeaderBindings(), context);
+
+        String body = step.getRequestBody() != null
+                ? bindingResolver.resolve(step.getRequestBody(), context)
+                : null;
+
+        HttpResponse response = httpExecutor.execute(step.getMethod(), baseUrl + resolvedPath, headers, body);
+
+        boolean statusOk = response.getStatusCode() == step.getExpectedStatusCode();
+        List<com.testforge.runner.execution.AssertionResult> assertionResults =
+                assertionEvaluator.evaluateV5(step.getAssertions(), response);
+        boolean allAssertionsPass = assertionResults.stream()
+                .allMatch(com.testforge.runner.execution.AssertionResult::isPassed);
+
+        return StepResult.builder()
+                .step(step)
+                .response(response)
+                .statusMatch(statusOk)
+                .assertionResults(assertionResults)
+                .passed(statusOk && allAssertionsPass)
+                .build();
+    }
+
+    private void captureOutputs(ScenarioStep step, HttpResponse response, StepDataContext context) {
+        if (step.getOutputCapture() == null) return;
+        for (Map.Entry<String, String> entry : step.getOutputCapture().entrySet()) {
+            Object captured = JsonPathExtractor.extract(response, entry.getValue());
+            context.put(entry.getKey(), captured);
+        }
     }
 
     private void analyzeFailures(ExecutionReport report) {

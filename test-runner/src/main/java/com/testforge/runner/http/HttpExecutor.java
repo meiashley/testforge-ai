@@ -46,6 +46,43 @@ public class HttpExecutor {
         }
     }
 
+    public HttpResponse execute(String method, String url, Map<String, String> headers, String body) {
+        Request.Builder builder = new Request.Builder().url(url);
+
+        if (headers != null) {
+            headers.forEach(builder::addHeader);
+        }
+
+        String upperMethod = method == null ? "GET" : method.toUpperCase();
+        RequestBody requestBody = buildStringRequestBody(upperMethod, body);
+        builder.method(upperMethod, requestBody);
+
+        long start = System.currentTimeMillis();
+        try (Response okResponse = client.newCall(builder.build()).execute()) {
+            long durationMs = System.currentTimeMillis() - start;
+
+            String rawBody = okResponse.body() != null ? okResponse.body().string() : "";
+            Map<String, Object> parsedBody = tryParseJson(rawBody);
+
+            Map<String, String> responseHeaders = new HashMap<>();
+            okResponse.headers().forEach(pair -> responseHeaders.put(pair.getFirst(), pair.getSecond()));
+
+            return new HttpResponse(okResponse.code(), parsedBody, rawBody, responseHeaders, durationMs);
+        } catch (IOException e) {
+            throw new RuntimeException("HTTP request failed: " + upperMethod + " " + url, e);
+        }
+    }
+
+    private RequestBody buildStringRequestBody(String method, String body) {
+        if ("GET".equals(method) || "HEAD".equals(method) || "DELETE".equals(method)) {
+            return null;
+        }
+        if (body == null) {
+            return RequestBody.create("", JSON);
+        }
+        return RequestBody.create(body, JSON);
+    }
+
     private RequestBody buildRequestBody(String method, Map<String, Object> body) {
         if ("GET".equals(method) || "HEAD".equals(method) || "DELETE".equals(method)) {
             return null;
