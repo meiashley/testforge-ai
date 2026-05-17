@@ -15,7 +15,7 @@
 [![V3.1 Baseline](https://img.shields.io/badge/V3.1_Baseline-Live-brightgreen?style=for-the-badge)](https://meiashley.github.io/testforge-ai/sample-execution-report.html)
 [![JaCoCo Coverage](https://img.shields.io/badge/JaCoCo_Coverage-Live-yellow?style=for-the-badge)](https://meiashley.github.io/testforge-ai/coverage/index.html)
 
-🆕 **V5** combines PRD-driven scenarios + AI-augmented API tests + automatic consistency check between requirements and OpenAPI spec.
+🆕 **V5** combines PRD-driven scenarios + AI-augmented API tests + automatic consistency check between requirements and OpenAPI spec + AI-driven failure diagnosis (categorizes failures into 6 root-cause types).
 
 ---
 
@@ -61,28 +61,42 @@ The result is a single unified report covering contract conformance, code covera
 ## 🏗️ Architecture
 
 ```mermaid
-graph LR
-    A([OpenAPI Spec]) --> B[ai-engine]
-    R([Requirement.md]) --> B
-    B <-->|prompts / JSON| C([Claude API<br/>Sonnet 4.5])
-    B -->|ExecutionPlans| D[test-runner]
-    D -->|HTTP| E[mock-banking-api<br/>+ JaCoCo agent]
-    D --> F([Unified Report<br/>HTML / JSON / MD])
-    E -.->|coverage data| G([JaCoCo Coverage Report])
-    H[api-gateway<br/>REST entry point] -.->|invokes| B
+graph TB
+    A([OpenAPI Spec]):::input --> O
+    R([Requirement.md]):::input --> O
+
+    subgraph AIENGINE[ai-engine]
+        O[Orchestrator]:::orch
+        O --> RA[RequirementAnalyzer]:::ai
+        O --> CC[ConsistencyChecker]:::ai
+        O --> MAP[RequirementApiMapper]:::ai
+        O --> AFR[ApiFlowResolver]:::ai
+        O --> SP[ScenarioPlanner]:::ai
+        O --> FA[FailureAnalyzer]:::ai
+    end
+
+    RA <-->|prompts / JSON| C([Claude API<br/>Sonnet 4.5]):::external
+    CC <-.->|prompts / JSON| C
+    MAP <-.->|prompts / JSON| C
+    AFR <-.->|prompts / JSON| C
+    SP <-.->|prompts / JSON| C
+    FA <-.->|prompts / JSON| C
+
+    O -->|ExecutionPlans| D[test-runner]:::module
+    D -->|HTTP| E[mock-banking-api<br/>+ JaCoCo agent]:::module
+    D --> F([Unified Report<br/>HTML / JSON / MD]):::output
+    E -.->|coverage data| G([JaCoCo Coverage Report]):::output
+    H[api-gateway<br/>REST entry point]:::module -.->|invokes| AIENGINE
 
     classDef module fill:#dbeafe,stroke:#93c5fd,color:#1e3a5f
+    classDef ai fill:#e0e7ff,stroke:#a5b4fc,color:#312e81
+    classDef orch fill:#fef3c7,stroke:#fcd34d,color:#78350f
     classDef input fill:#f0fdf4,stroke:#86efac,color:#14532d
     classDef output fill:#fefce8,stroke:#fde047,color:#713f12
     classDef external fill:#faf5ff,stroke:#d8b4fe,color:#4a044e
-
-    class B,D,E,H module
-    class A,R input
-    class F,G output
-    class C external
 ```
 
-End-to-end flow: OpenAPI spec + requirement document → ai-engine (with spec caching + contract validation + AI failure analysis) → Claude → ExecutionPlans → test-runner → HTTP execution against mock-banking-api → unified report + JaCoCo coverage. `api-gateway` exposes the full workflow as a REST entry point.
+End-to-end flow: OpenAPI spec + requirement document → Orchestrator coordinates 6 AI components (RequirementAnalyzer, ConsistencyChecker, RequirementApiMapper, ApiFlowResolver, ScenarioPlanner, FailureAnalyzer) — all pure orchestration, no business logic in the orchestrator. Each component is independently testable. The resulting ExecutionPlans run against mock-banking-api (instrumented with JaCoCo), producing a unified report. `api-gateway` exposes the V3.1/V4 generation flow as a REST entry point (V5 pipeline exposure pending).
 
 See [docs/architecture.md](docs/architecture.md) for module boundary details.
 
@@ -231,6 +245,8 @@ Prompt-level caching is automatic — re-runs with the same model + prompt are f
 - [x] TestCaseContractValidator (pre-execution structural check)
 - [x] Architecture diagram + plugin-pattern reporting
 - [x] V5: Requirement-driven pipeline + consistency check + scenario execution
+- [ ] JaCoCo coverage integration: embed coverage metrics directly into the unified execution report (currently rendered as a standalone JaCoCo HTML page)
+- [ ] api-gateway: expose V5 requirement-driven pipeline (currently only V3.1/V4 generation flows are wired)
 - [ ] V6: Requirement-aware API test generation (replace V4 fallback with native V5-style API planner)
 - [ ] Mutation testing: inject synthetic API defects to validate test detection power
 - [ ] Multi-spec batch processing in CI
