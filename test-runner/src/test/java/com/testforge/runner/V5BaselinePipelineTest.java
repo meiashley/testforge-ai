@@ -115,7 +115,7 @@ class V5BaselinePipelineTest {
                 new com.testforge.ai.cache.FileBasedEndpointCache(),
                 new TestCaseContractValidator()
         );
-        List<GenerationResult> apiGenResults = aiPipeline.run(specContent);
+        List<GenerationResult> apiGenResults = aiPipeline.generate(specContent).getGenerationResults();
 
         ExecutionPipeline apiExecutionPipeline = new ExecutionPipeline(
                 new HttpExecutor(),
@@ -141,8 +141,9 @@ class V5BaselinePipelineTest {
         );
 
         List<PlanExecutionResult> planResults = new ArrayList<>();
-        for (ExecutionPlan plan : context.getPlans()) {
-            PlanExecutionResult result = pipeline.executePlan(plan, baseUrl);
+        for (int i = 0; i < context.getPlans().size(); i++) {
+            ExecutionPlan plan = context.getPlans().get(i);
+            PlanExecutionResult result = pipeline.executePlan(context.getResolvedFlows().get(i), plan, baseUrl);
             planResults.add(result);
         }
 

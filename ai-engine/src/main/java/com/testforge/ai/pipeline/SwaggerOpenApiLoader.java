@@ -42,6 +42,7 @@ public class SwaggerOpenApiLoader implements OpenApiLoader {
             if (item.getPut() != null)    specs.add(build("PUT",    path, item.getPut()));
             if (item.getPatch() != null)  specs.add(build("PATCH",  path, item.getPatch()));
             if (item.getDelete() != null) specs.add(build("DELETE", path, item.getDelete()));
+            if (item.getHead() != null)   specs.add(build("HEAD",   path, item.getHead()));
         }
 
         return specs;

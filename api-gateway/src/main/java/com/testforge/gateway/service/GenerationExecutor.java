@@ -5,6 +5,7 @@ import com.testforge.ai.client.RealClaudeClient;
 import com.testforge.ai.model.GenerationResult;
 import com.testforge.ai.parser.ResponseParser;
 import com.testforge.ai.pipeline.SwaggerOpenApiLoader;
+import com.testforge.ai.pipeline.TestGenerationOutcome;
 import com.testforge.ai.pipeline.TestGenerationPipeline;
 import com.testforge.ai.prompt.EndpointPromptBuilder;
 import com.testforge.ai.prompt.PromptBuilder;
@@ -57,7 +58,9 @@ public class GenerationExecutor {
             TestGenerationPipeline pipeline = new TestGenerationPipeline(
                     new SwaggerOpenApiLoader(), promptBuilder, claudeClient, new ResponseParser());
 
-            List<GenerationResult> results = pipeline.run(yaml);
+            TestGenerationOutcome outcome = pipeline.generate(yaml);
+            applyGenerationOutcome(job, outcome);
+            List<GenerationResult> results = outcome.getGenerationResults();
 
             ExecutionReport report;
             if ("V3".equals(promptVersion) || "V3.1".equals(promptVersion)) {
@@ -92,6 +95,14 @@ public class GenerationExecutor {
             case "V3", "V3.1" -> new PromptBuilderV3();
             default -> throw new IllegalArgumentException("Unknown promptVersion: " + promptVersion);
         };
+    }
+
+    void applyGenerationOutcome(Job job, TestGenerationOutcome outcome) {
+        job.setGenerationResults(outcome.getGenerationResults());
+        job.setRejectedTestCases(outcome.getRejectedTestCases());
+        job.setValidationWarnings(outcome.getWarnings());
+        job.setPartialAcceptance(!outcome.getRejectedTestCases().isEmpty()
+                && !outcome.getAcceptedTestCases().isEmpty());
     }
 
     private String fetchYaml(String url) throws IOException {

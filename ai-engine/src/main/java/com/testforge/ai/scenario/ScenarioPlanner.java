@@ -60,7 +60,7 @@ public class ScenarioPlanner {
                 - Set scenarioId/scenarioName matching the flow
 
                 Your NON-responsibilities (do NOT change these from the input):
-                - order, pathTemplate, role, pathBindings, headerBindings, outputCapture (already resolved by ApiFlowResolver)
+                - order, method, pathTemplate, role, pathBindings, headerBindings, outputCapture (already resolved by ApiFlowResolver)
 
                 For "REJECTED" scenarios (like cross-user refund, double refund):
                 - The final step's expectedStatusCode should be 4xx (403, 422, etc.)

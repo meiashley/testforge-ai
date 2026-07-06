@@ -76,7 +76,8 @@ class ExecutionPipelineV5Test {
         when(httpExecutor.execute(eq("POST"), contains("/api/payments"), any(), any()))
                 .thenReturn(httpResponse(201, Map.of("id", "pay-001", "status", "COMPLETED")));
 
-        PlanExecutionResult result = pipeline.executePlan(plan("plan-1", List.of(step)), "http://localhost:8080");
+        List<ScenarioStep> steps = List.of(step);
+        PlanExecutionResult result = pipeline.executePlan(flow(steps), plan("plan-1", steps), "http://localhost:8080");
 
         assertTrue(result.isPassed());
         assertEquals(1, result.getSteps().size());
@@ -107,8 +108,9 @@ class ExecutionPipelineV5Test {
         when(httpExecutor.execute(eq("POST"), contains("/api/payments/pay-abc/refund"), any(), any()))
                 .thenReturn(httpResponse(200, Map.of("status", "REFUNDED")));
 
+        List<ScenarioStep> steps = List.of(step1, step2);
         PlanExecutionResult result = pipeline.executePlan(
-                plan("plan-2", List.of(step1, step2)), "http://localhost:8080");
+                flow(steps), plan("plan-2", steps), "http://localhost:8080");
 
         assertTrue(result.isPassed());
         assertEquals(2, result.getSteps().size());
@@ -140,8 +142,9 @@ class ExecutionPipelineV5Test {
         when(httpExecutor.execute(eq("GET"), contains("/api/payments/pay-abc"), any(), any()))
                 .thenReturn(httpResponse(200, Map.of("id", "pay-abc", "status", "COMPLETED")));
 
+        List<ScenarioStep> steps = List.of(step1, step2);
         PlanExecutionResult result = pipeline.executePlan(
-                plan("plan-assertion-binding", List.of(step1, step2)), "http://localhost:8080");
+                flow(steps), plan("plan-assertion-binding", steps), "http://localhost:8080");
 
         assertTrue(result.isPassed());
         StepResult verifier = result.getSteps().get(1);
@@ -162,8 +165,9 @@ class ExecutionPipelineV5Test {
         when(httpExecutor.execute(eq("POST"), any(), any(), any()))
                 .thenReturn(httpResponse(400, Map.of("error", "bad request")));
 
+        List<ScenarioStep> steps = List.of(step1, step2);
         PlanExecutionResult result = pipeline.executePlan(
-                plan("plan-3", List.of(step1, step2)), "http://localhost:8080");
+                flow(steps), plan("plan-3", steps), "http://localhost:8080");
 
         assertFalse(result.isPassed());
         assertEquals(2, result.getSteps().size());
@@ -186,8 +190,9 @@ class ExecutionPipelineV5Test {
         when(httpExecutor.execute(eq("POST"), any(), any(), any()))
                 .thenReturn(httpResponse(403, Map.of("code", "UNAUTHORIZED")));
 
+        List<ScenarioStep> steps = List.of(step);
         PlanExecutionResult result = pipeline.executePlan(
-                plan("plan-4", List.of(step)), "http://localhost:8080");
+                flow(steps), plan("plan-4", steps), "http://localhost:8080");
 
         assertFalse(result.isPassed());
         StepResult sr = result.getSteps().get(0);
@@ -196,5 +201,26 @@ class ExecutionPipelineV5Test {
         assertEquals(1, sr.getAssertionResults().size());
         assertFalse(sr.getAssertionResults().get(0).isPassed());
         assertEquals("UNAUTHORIZED", sr.getAssertionResults().get(0).getActualValue());
+    }
+
+    private ResolvedFlow flow(List<ScenarioStep> steps) {
+        return ResolvedFlow.builder()
+                .flowId("flow-test")
+                .featureId("feature-test")
+                .description("Test flow")
+                .steps(steps.stream()
+                        .map(step -> FlowStep.builder()
+                                .order(step.getOrder())
+                                .stepId(step.getStepId())
+                                .role(step.getRole())
+                                .method(step.getMethod())
+                                .pathTemplate(step.getPathTemplate())
+                                .pathBindings(step.getPathBindings())
+                                .headerBindings(step.getHeaderBindings())
+                                .bodyBinding(step.getBodyBinding())
+                                .outputCapture(step.getOutputCapture())
+                                .build())
+                        .toList())
+                .build();
     }
 }

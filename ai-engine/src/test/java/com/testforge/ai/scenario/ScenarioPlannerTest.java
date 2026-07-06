@@ -166,4 +166,24 @@ class ScenarioPlannerTest {
                 () -> planner.plan(List.of(sampleFlow()), sampleAnalysis(), "openapi: 3.0.0"));
         assertTrue(ex.getMessage().contains("Failed to parse ScenarioPlanner response"));
     }
+
+    @Test
+    void prompt_marksMethodAsNonResponsibility() {
+        CapturingClaudeClient claude = new CapturingClaudeClient();
+        ScenarioPlanner planner = new ScenarioPlanner(claude);
+
+        planner.plan(List.of(sampleFlow()), sampleAnalysis(), "openapi: 3.0.0");
+
+        assertTrue(claude.prompt.contains("order, method, pathTemplate, role, pathBindings, headerBindings, outputCapture"));
+    }
+
+    private static class CapturingClaudeClient implements ClaudeClient {
+        private String prompt;
+
+        @Override
+        public String generate(String prompt) {
+            this.prompt = prompt;
+            return ONE_PLAN_JSON;
+        }
+    }
 }
