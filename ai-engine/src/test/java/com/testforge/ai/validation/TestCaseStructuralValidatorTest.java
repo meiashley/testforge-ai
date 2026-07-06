@@ -51,6 +51,23 @@ class TestCaseStructuralValidatorTest {
     }
 
     @Test
+    void missingScenario_isAcceptedWithWarning() {
+        TestCase testCase = valid("tc-1");
+        testCase.setScenario(null);
+
+        TestCaseStructuralValidationResult result = validator.validate(List.of(testCase));
+
+        assertFalse(result.isBatchRejected());
+        assertEquals(1, result.getAcceptedTestCases().size());
+        assertSame(testCase, result.getAcceptedTestCases().get(0));
+        assertTrue(result.getRejectedTestCases().isEmpty());
+        assertTrue(result.errors().isEmpty());
+        assertEquals(1, result.warnings().size());
+        assertEquals("TEST_CASE_SCENARIO_MISSING", result.warnings().get(0).getCode());
+        assertEquals("testCases[0].scenario", result.warnings().get(0).getFieldPath());
+    }
+
+    @Test
     void blankId_isItemError() {
         TestCase testCase = valid(" ");
 

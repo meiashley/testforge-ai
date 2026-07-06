@@ -65,6 +65,29 @@ class TestGenerationPipelineStructuralValidationTest {
     }
 
     @Test
+    void scenarioWarningOnlyItemRemainsAcceptedAndReachesContractValidation() {
+        TrackingContractValidator contractValidator = new TrackingContractValidator();
+        TrackingCache cache = new TrackingCache(Optional.empty());
+        TestGenerationPipeline pipeline = pipeline("""
+                [
+                  {"id":"tc-1","name":"Create payment","type":"HAPPY_PATH","priority":"P0","scenario":null,
+                   "request":{"method":"POST","path":"/api/payments","headers":{"Content-Type":"application/json"},"body":{"amount":100}},
+                   "expected":{"status":201,"bodyAssertions":{"id":"non-null"}}}
+                ]
+                """, cache, contractValidator);
+
+        TestGenerationOutcome outcome = pipeline.generate("openapi: 3.0.0");
+
+        assertEquals(1, outcome.getGenerationResults().size());
+        assertEquals(1, outcome.getAcceptedTestCases().size());
+        assertEquals(0, outcome.getRejectedTestCases().size());
+        assertEquals(1, outcome.getWarnings().size());
+        assertEquals("TEST_CASE_SCENARIO_MISSING", outcome.getWarnings().get(0).getCode());
+        assertEquals(1, contractValidator.calls);
+        assertEquals(1, contractValidator.lastValidated.size());
+    }
+
+    @Test
     void cacheHitStillRunsStructuralValidationBeforeContract() {
         List<TestCase> cached = new ResponseParser().parse("""
                 [

@@ -95,7 +95,6 @@ public class TestCaseStructuralValidator {
     private void validateOne(TestCase testCase, int index, List<ValidationIssue> issues,
                              Map<Integer, List<ValidationIssue>> issuesByIndex,
                              Set<Integer> invalidIndexes) {
-        int issueCount = issues.size();
         String base = "testCases[" + index + "]";
 
         if (testCase == null) {
@@ -128,7 +127,7 @@ public class TestCaseStructuralValidator {
         validateRequest(testCase.getRequest(), index, issues, issuesByIndex);
         validateExpected(testCase.getExpected(), index, issues, issuesByIndex);
 
-        if (issues.size() > issueCount) {
+        if (hasErrorsForIndex(issuesByIndex, index)) {
             invalidIndexes.add(index);
         }
     }
@@ -220,6 +219,14 @@ public class TestCaseStructuralValidator {
                           int index, ValidationIssue issue) {
         issues.add(issue);
         issuesByIndex.computeIfAbsent(index, ignored -> new ArrayList<>()).add(issue);
+    }
+
+    private boolean hasErrorsForIndex(Map<Integer, List<ValidationIssue>> issuesByIndex, int index) {
+        List<ValidationIssue> itemIssues = issuesByIndex.get(index);
+        if (itemIssues == null) {
+            return false;
+        }
+        return itemIssues.stream().anyMatch(issue -> issue.getSeverity() == ValidationSeverity.ERROR);
     }
 
     private List<RejectedTestCase> rejected(List<TestCase> testCases,
