@@ -82,7 +82,6 @@ public class ScenarioPlanner {
                 3. Assertion type whitelist — use ONLY these types:
                    - EQUALS / NOT_EQUALS: expected is a single value (string, number, boolean)
                    - EXISTS / NOT_EXISTS: expected is null
-                   - MATCHES_REGEX: expected is a regex pattern string
                    - CONTAINS: expected is a single substring/element
 
                    DO NOT use ONE_OF, IN, MEMBER_OF or any other type. They are not supported.

@@ -177,6 +177,19 @@ class ScenarioPlannerTest {
         assertTrue(claude.prompt.contains("order, method, pathTemplate, role, pathBindings, headerBindings, outputCapture"));
     }
 
+    @Test
+    void scenarioPlannerPrompt_containsOnlyExecutableAssertionTypes() {
+        CapturingClaudeClient claude = new CapturingClaudeClient();
+        ScenarioPlanner planner = new ScenarioPlanner(claude);
+
+        planner.plan(List.of(sampleFlow()), sampleAnalysis(), "openapi: 3.0.0");
+
+        assertTrue(claude.prompt.contains("EQUALS / NOT_EQUALS"));
+        assertTrue(claude.prompt.contains("EXISTS / NOT_EXISTS"));
+        assertTrue(claude.prompt.contains("CONTAINS"));
+        assertFalse(claude.prompt.contains("MATCHES_REGEX"));
+    }
+
     private static class CapturingClaudeClient implements ClaudeClient {
         private String prompt;
 
