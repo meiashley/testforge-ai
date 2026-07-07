@@ -295,6 +295,11 @@ public class ExecutionPlanStructuralValidator {
                 issues.add(ValidationIssue.error("PATH_BINDING_TARGET_INVALID", fieldPath,
                         "Path binding target '" + binding.getKey() + "' is not present in pathTemplate"));
             }
+            if (isBlank(binding.getValue())) {
+                issues.add(ValidationIssue.error("PATH_BINDING_VALUE_REQUIRED", fieldPath,
+                        "Path binding value must be present and non-blank"));
+                continue;
+            }
             validateTemplateVariables(binding.getValue(), fieldPath, availableVariables, issues);
         }
 
@@ -304,6 +309,11 @@ public class ExecutionPlanStructuralValidator {
                 if (isBlank(binding.getKey())) {
                     issues.add(ValidationIssue.error("HEADER_BINDING_TARGET_REQUIRED", fieldPath,
                             "Header binding target must be present and non-blank"));
+                }
+                if (binding.getValue() == null) {
+                    issues.add(ValidationIssue.error("HEADER_BINDING_VALUE_REQUIRED", fieldPath,
+                            "Header binding value must be present"));
+                    continue;
                 }
                 validateTemplateVariables(binding.getValue(), fieldPath, availableVariables, issues);
             }

@@ -206,6 +206,79 @@ class ExecutionPlanStructuralValidatorTest {
     }
 
     @Test
+    void nullPathBindingValue_isRejected() {
+        ExecutionPlan plan = validPlan();
+        plan.getSteps().get(0).setPathTemplate("/api/payments/{paymentId}");
+        Map<String, String> bindings = new HashMap<>();
+        bindings.put("paymentId", null);
+        plan.getSteps().get(0).setPathBindings(bindings);
+
+        ExecutionPlanValidationResult result = validator.validate(null, plan, Map.of("user.token", "token"));
+
+        assertFalse(result.isValid());
+        assertCodes(result, "PATH_BINDING_VALUE_REQUIRED");
+        assertEquals("executionPlan.steps[0].pathBindings['paymentId']", result.errors().stream()
+                .filter(issue -> "PATH_BINDING_VALUE_REQUIRED".equals(issue.getCode()))
+                .findFirst().orElseThrow().getFieldPath());
+        assertFalse(codes(result).contains("UNDEFINED_EXECUTION_VARIABLE"));
+    }
+
+    @Test
+    void blankPathBindingValue_isRejected() {
+        ExecutionPlan plan = validPlan();
+        plan.getSteps().get(0).setPathTemplate("/api/payments/{paymentId}");
+        plan.getSteps().get(0).setPathBindings(Map.of("paymentId", "   "));
+
+        ExecutionPlanValidationResult result = validator.validate(null, plan, Map.of("user.token", "token"));
+
+        assertFalse(result.isValid());
+        assertCodes(result, "PATH_BINDING_VALUE_REQUIRED");
+        assertEquals("executionPlan.steps[0].pathBindings['paymentId']", result.errors().stream()
+                .filter(issue -> "PATH_BINDING_VALUE_REQUIRED".equals(issue.getCode()))
+                .findFirst().orElseThrow().getFieldPath());
+    }
+
+    @Test
+    void nullHeaderBindingValue_isRejected() {
+        ExecutionPlan plan = validPlan();
+        Map<String, String> bindings = new HashMap<>();
+        bindings.put("Authorization", null);
+        plan.getSteps().get(0).setHeaderBindings(bindings);
+
+        ExecutionPlanValidationResult result = validator.validate(null, plan, Map.of("user.token", "token"));
+
+        assertFalse(result.isValid());
+        assertCodes(result, "HEADER_BINDING_VALUE_REQUIRED");
+        assertEquals("executionPlan.steps[0].headerBindings['Authorization']", result.errors().stream()
+                .filter(issue -> "HEADER_BINDING_VALUE_REQUIRED".equals(issue.getCode()))
+                .findFirst().orElseThrow().getFieldPath());
+        assertFalse(codes(result).contains("UNDEFINED_EXECUTION_VARIABLE"));
+    }
+
+    @Test
+    void emptyHeaderBindingValue_behaviour_matchesExistingContract() {
+        ExecutionPlan plan = validPlan();
+        plan.getSteps().get(0).setHeaderBindings(Map.of("Authorization", ""));
+
+        ExecutionPlanValidationResult result = validator.validate(null, plan, Map.of("user.token", "token"));
+
+        assertTrue(result.isValid(), codes(result).toString());
+    }
+
+    @Test
+    void validBindingValues_stillPass() {
+        ExecutionPlan plan = validPlan();
+        plan.getSteps().get(1).setHeaderBindings(Map.of(
+                "X-Literal", "literal-value",
+                "X-Initial", "Bearer ${user.token}"
+        ));
+
+        ExecutionPlanValidationResult result = validator.validate(null, plan, Map.of("user.token", "token"));
+
+        assertTrue(result.isValid(), codes(result).toString());
+    }
+
+    @Test
     void invalidOutputCapture_isError() {
         ExecutionPlan plan = validPlan();
         Map<String, String> capture = new HashMap<>();
@@ -234,6 +307,22 @@ class ExecutionPlanStructuralValidatorTest {
                 "UNSUPPORTED_EXECUTION_ASSERTION_TYPE",
                 "EXECUTION_ASSERTION_EXPECTED_REQUIRED",
                 "EXECUTION_ASSERTION_EXPECTED_MUST_BE_NULL");
+    }
+
+    @Test
+    void matchesRegexAssertion_isRejectedAsUnsupported() {
+        ExecutionPlan plan = validPlan();
+        plan.getSteps().get(0).setAssertions(List.of(
+                new Assertion("$.body.status", "MATCHES_REGEX", "COMP.*")
+        ));
+
+        ExecutionPlanValidationResult result = validator.validate(null, plan, Map.of("user.token", "token"));
+
+        assertFalse(result.isValid());
+        assertEquals(1, result.getIssues().size());
+        ValidationIssue issue = result.getIssues().get(0);
+        assertEquals("UNSUPPORTED_EXECUTION_ASSERTION_TYPE", issue.getCode());
+        assertEquals("executionPlan.steps[0].assertions[0].type", issue.getFieldPath());
     }
 
     @Test

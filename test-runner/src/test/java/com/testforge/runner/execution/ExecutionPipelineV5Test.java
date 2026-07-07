@@ -7,10 +7,12 @@ import com.testforge.runner.model.HttpResponse;
 import com.testforge.runner.pipeline.ExecutionPipeline;
 import com.testforge.runner.report.ReportBuilder;
 import com.testforge.runner.report.ReportWriter;
+import com.testforge.runner.validation.ExecutionPlanValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -177,6 +179,23 @@ class ExecutionPipelineV5Test {
 
         // step2 should never have been called
         verify(httpExecutor, times(1)).execute(any(), any(), any(), any());
+    }
+
+    @Test
+    void executePlan_invalidBindingPlanDoesNotReachExecutor() {
+        Map<String, String> pathBindings = new HashMap<>();
+        pathBindings.put("id", null);
+        ScenarioStep step = step(0, "step-1", "GET", "/api/payments/{id}",
+                pathBindings, null, 200, List.of());
+
+        List<ScenarioStep> steps = List.of(step);
+        ExecutionPlanValidationException exception = assertThrows(ExecutionPlanValidationException.class,
+                () -> pipeline.executePlan(flow(steps), plan("plan-invalid-binding", steps),
+                        "http://localhost:8080"));
+
+        assertTrue(exception.getResult().getIssues().stream()
+                .anyMatch(issue -> "PATH_BINDING_VALUE_REQUIRED".equals(issue.getCode())));
+        verifyNoInteractions(httpExecutor);
     }
 
     @Test
