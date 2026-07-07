@@ -30,7 +30,7 @@ The pipeline:
 2. Detects inconsistencies between the requirement and the OpenAPI specification.
 3. Generates API-level test cases and multi-step business scenario plans.
 4. Applies deterministic structural validation to generated test cases.
-5. Validates generated tests against the OpenAPI contract.
+5. Applies limited OpenAPI contract checks for endpoint paths, HTTP methods, top-level request body fields, and documented response statuses.
 6. Validates each ExecutionPlan against its source ResolvedFlow.
 7. Executes only accepted tests and valid plans against a real API.
 8. Uses AI to diagnose the root causes of runtime failures.
@@ -184,15 +184,18 @@ The validation policy is fail-closed:
 - Invalid JSON rejects the full LLM response.
 - Duplicate test-case IDs reject the generated batch.
 - A structurally invalid individual test is rejected and does not enter OpenAPI contract validation or execution.
-- A warning-only test case remains accepted.
+- Warning-only test cases remain accepted, except `DUPLICATE_EXECUTION_CONTENT`, which rejects the later duplicate while preserving the first occurrence.
 - Contract-invalid tests do not enter accepted results, accepted cache, or execution.
+- A batch-level structural failure, such as duplicate test-case IDs or a batch with no structurally valid tests, aborts the generation run before execution while preserving diagnostics accumulated so far.
 - A malformed ExecutionPlan is rejected before any HTTP request is sent.
 - A generation run with no accepted tests fails and preserves structured diagnostics.
 - Invalid artifacts are not silently deleted; rejected items and warnings are returned through `TestGenerationOutcome`.
 
 ### Partial Acceptance
 
-A single generation run can contain both accepted and rejected tests. Only accepted tests are executed. Rejected tests and warnings are returned through `TestGenerationOutcome`. In API Gateway jobs, `partialAcceptance` is `true` when accepted and rejected items exist in the same run.
+When generation completes without a batch-level structural failure, a run can contain both accepted and rejected tests. Only accepted tests are executed. Rejected tests and warnings are returned through `TestGenerationOutcome`.
+
+In API Gateway jobs, `partialAcceptance` is `true` when accepted and rejected items exist in the same run. A failed job may still preserve accepted results accumulated before the failure, but generation-validation failures abort execution.
 
 ### V3.1 Detailed Metrics
 
@@ -274,9 +277,7 @@ curl http://localhost:8080/api/v1/jobs/{jobId}
 
 Supported prompt versions are `V1`, `V2`, `V3`, and `V3.1`. The default is `V3.1`.
 
-Implements an async generation pattern with `GenerationExecutor` + `@Async` and AOP self-invocation handled correctly.
-
-Swagger UI available at `http://localhost:8080/swagger-ui.html` after startup.
+Generation jobs run asynchronously and can be polled through the job endpoint. Swagger UI is available at `http://localhost:8080/swagger-ui.html` after startup.
 
 ### Generation Outcome
 
@@ -284,14 +285,14 @@ Swagger UI available at `http://localhost:8080/swagger-ui.html` after startup.
 |---|---|
 | `generationResults` | Accepted generated tests grouped by endpoint |
 | `rejectedTestCases` | Structurally invalid, duplicate, or OpenAPI contract-invalid generated tests |
-| `validationWarnings` | Non-blocking validation issues |
+| `validationWarnings` | Warning-severity diagnostics; most are non-blocking, while duplicate-content warnings reject the later duplicate |
 | `partialAcceptance` | `true` when accepted and rejected tests exist in the same run |
 | `report` | Runtime execution report for accepted tests |
 | `errorMessage` | Pipeline or execution failure summary |
 
 Rejected diagnostics can include the original batch index, `testCaseId` when available, stable error code, deterministic field path, human-readable message, and severity.
 
-A failed Job can still preserve accepted results produced before the failure, rejected tests, and validation warnings. If no accepted test remains, the Job fails. If accepted tests exist, only accepted tests enter execution.
+A failed Job can preserve accepted results accumulated before the failure, rejected tests, and validation warnings. Generation-validation failures abort execution. For a successful generation outcome, only accepted tests enter execution.
 
 Example shape:
 
