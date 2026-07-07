@@ -157,7 +157,7 @@ class ExecutionPipelineV5Test {
     @Test
     void executePlan_earlyTermination_step2Skipped() {
         ScenarioStep step1 = step(0, "step-1", "POST", "/api/payments",
-                null, null, 201, List.of());
+                null, Map.of("payment.id", "$.body.id"), 201, List.of());
         ScenarioStep step2 = step(1, "step-2", "GET", "/api/payments/{id}",
                 Map.of("id", "${payment.id}"), null, 200, List.of());
 
