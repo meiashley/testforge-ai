@@ -90,7 +90,7 @@ runtime execution and result validation
 
 Generated test-case structural validation checks domain-object completeness and executor-safe structure: non-blank ids, batch-unique ids, supported HTTP methods, valid expected status codes, request structure, body assertion map structure, and deterministic duplicate execution content. `scenario` is treated as diagnostic/display metadata; a missing scenario is reported as a warning, not a hard structural error. Structural validation does not validate OpenAPI schema membership.
 
-`TestCaseContractValidator` remains the OpenAPI gate. It checks endpoint method/path alignment, request fields against schema fields, and expected status codes against documented responses.
+`TestCaseContractValidator` remains the OpenAPI gate. It checks endpoint method/path alignment, request fields against schema fields, and expected status codes against documented responses. Contract violations are converted into structured `ValidationIssue` errors and `RejectedTestCase` entries in `TestGenerationOutcome`; they do not disappear into logs only.
 
 Runtime execution and result validation remain in `test-runner`: the HTTP request is sent, actual responses are parsed, body assertions are evaluated, and pass/fail/error results are reported.
 
@@ -131,9 +131,12 @@ Generated test-case validation is fail-closed:
 - Duplicate test-case ids are batch-level errors and reject the whole generated batch.
 - A structurally invalid individual test case is rejected and excluded from contract validation and execution.
 - If no structurally valid test cases remain, generation fails.
+- Contract-invalid test cases are rejected structurally in the outcome and are excluded from accepted results, accepted cache writes, and execution.
+- If a single endpoint produces no contract-valid test cases, no empty `GenerationResult` is created or cached for that endpoint.
+- If the full generation run produces no accepted test cases, generation fails closed with the full diagnostic outcome attached.
 - Duplicate execution content is reported deterministically and the later duplicate item is rejected without rejecting the whole batch.
 - The non-deprecated generation API returns a `TestGenerationOutcome` with immutable collection membership for accepted test cases, rejected test cases, and warnings. It does not deep-copy historical mutable domain objects such as `TestCase`.
-- API gateway jobs expose generation diagnostics as additive JSON fields: `generationResults`, `rejectedTestCases`, `validationWarnings`, and `partialAcceptance`. Existing `report`, `status`, and `errorMessage` fields are retained. Gateway execution keeps the full `TestGenerationOutcome` before extracting accepted generation results, so rejected items and warnings are available through job lookup rather than logs only.
+- API gateway jobs expose generation diagnostics as additive JSON fields: `generationResults`, `rejectedTestCases`, `validationWarnings`, and `partialAcceptance`. Existing `report`, `status`, and `errorMessage` fields are retained. Gateway execution keeps the full `TestGenerationOutcome` before extracting accepted generation results, so rejected items and warnings remain available through job lookup rather than logs only.
 
 ExecutionPlan validation is plan-level fail-closed:
 

@@ -10,6 +10,7 @@ import com.testforge.ai.model.TestCase;
 import com.testforge.ai.parser.ResponseParser;
 import com.testforge.ai.prompt.EndpointPromptBuilder;
 import com.testforge.ai.validation.ContractViolation;
+import com.testforge.ai.validation.GenerationValidationException;
 import com.testforge.ai.validation.RejectedTestCase;
 import com.testforge.ai.validation.StructuralValidationException;
 import com.testforge.ai.validation.TestCaseContractValidator;
@@ -18,8 +19,11 @@ import com.testforge.ai.validation.TestCaseStructuralValidator;
 import com.testforge.ai.validation.ValidationIssue;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.LinkedHashMap;
 import java.util.Optional;
+import java.util.Map;
 import java.util.Set;
 
 public class TestGenerationPipeline {
@@ -98,6 +102,7 @@ public class TestGenerationPipeline {
                 testCases = responseParser.parse(rawJson);
             }
 
+            Map<String, Integer> originalBatchIndexById = originalBatchIndexById(testCases);
             TestCaseStructuralValidationResult structuralResult = structuralValidator.validate(testCases);
             rejectedTestCases.addAll(structuralResult.getRejectedTestCases());
             warnings.addAll(structuralResult.warnings());
@@ -115,40 +120,41 @@ public class TestGenerationPipeline {
 
             List<ContractViolation> violations = contractValidator.validate(testCases, endpoint);
             if (!violations.isEmpty()) {
-                Set<String> violatingIds = new java.util.HashSet<>();
-                for (ContractViolation v : violations) {
-                    System.out.println("[contract violation] " + v.getTestCaseName() + ": " + v.getDetails());
-                    violatingIds.add(v.getTestCaseId());
+                ContractOutcome contractOutcome = applyContractViolations(
+                        violations, originalBatchIndexById, testCases, endpoint.getPath());
+                rejectedTestCases.addAll(contractOutcome.rejectedTestCases());
+                if (!contractOutcome.acceptedTestCases().isEmpty()) {
+                    if (cacheMiss) {
+                        cache.save(fingerprint, contractOutcome.acceptedTestCases());
+                    }
+                    acceptedTestCases.addAll(contractOutcome.acceptedTestCases());
+                    results.add(new GenerationResult(endpoint, contractOutcome.acceptedTestCases()));
                 }
-                testCases = testCases.stream()
-                        .filter(tc -> !violatingIds.contains(tc.getId()))
-                        .toList();
+            } else {
+                if (cacheMiss) {
+                    cache.save(fingerprint, testCases);
+                }
+                acceptedTestCases.addAll(testCases);
+                results.add(new GenerationResult(endpoint, testCases));
             }
-
-            if (cacheMiss) {
-                cache.save(fingerprint, testCases);
-            }
-
-            acceptedTestCases.addAll(testCases);
-            results.add(new GenerationResult(endpoint, testCases));
         }
 
-        return new TestGenerationOutcome(results, acceptedTestCases, rejectedTestCases, warnings);
+        TestGenerationOutcome outcome = new TestGenerationOutcome(results, acceptedTestCases, rejectedTestCases, warnings);
+        if (acceptedTestCases.isEmpty()) {
+            throw new GenerationValidationException(
+                    "Generated tests were rejected by contract validation; no accepted test cases remain",
+                    outcome);
+        }
+        return outcome;
     }
 
     @Deprecated
     public List<GenerationResult> run(String yamlContent) {
         TestGenerationOutcome outcome = generate(yamlContent);
         if (!outcome.getRejectedTestCases().isEmpty()) {
-            throw new StructuralValidationException(
-                    "Generated test cases include rejected items; use generate() for structural diagnostics",
-                    new TestCaseStructuralValidationResult(
-                            outcome.getAcceptedTestCases(),
-                            outcome.getRejectedTestCases().stream()
-                                    .flatMap(rejected -> rejected.getValidationIssues().stream())
-                                    .toList(),
-                            false,
-                            outcome.getRejectedTestCases()));
+            throw new GenerationValidationException(
+                    "Generated test cases include rejected items; use generate() for diagnostics",
+                    outcome);
         }
         return outcome.getGenerationResults();
     }
@@ -164,5 +170,68 @@ public class TestGenerationPipeline {
             System.out.println("[structural validation " + prefix + "] "
                     + issue.getCode() + " " + issue.getFieldPath() + ": " + issue.getMessage());
         }
+    }
+
+    private Map<String, Integer> originalBatchIndexById(List<TestCase> testCases) {
+        Map<String, Integer> indices = new HashMap<>();
+        for (int i = 0; i < testCases.size(); i++) {
+            TestCase testCase = testCases.get(i);
+            if (testCase != null && testCase.getId() != null && !testCase.getId().isBlank()) {
+                indices.putIfAbsent(testCase.getId(), i);
+            }
+        }
+        return indices;
+    }
+
+    private ContractOutcome applyContractViolations(List<ContractViolation> violations,
+                                                    Map<String, Integer> originalBatchIndexById,
+                                                    List<TestCase> testCases,
+                                                    String endpointPath) {
+        Map<String, List<ValidationIssue>> issuesByTestCaseId = new LinkedHashMap<>();
+        for (ContractViolation violation : violations) {
+            String testCaseId = violation.getTestCaseId();
+            Integer index = originalBatchIndexById.get(testCaseId);
+            if (index == null) {
+                throw new GenerationValidationException(
+                        "Contract violation referenced unknown testCaseId '" + testCaseId
+                                + "' for endpoint " + endpointPath,
+                        new TestGenerationOutcome(List.of(), List.of(), List.of(), List.of()));
+            }
+
+            ValidationIssue issue = ValidationIssue.error(
+                    violation.getViolationType(),
+                    contractFieldPath(violation.getViolationType(), index),
+                    violation.getDetails());
+            issuesByTestCaseId.computeIfAbsent(testCaseId, ignored -> new ArrayList<>()).add(issue);
+        }
+
+        List<RejectedTestCase> rejected = new ArrayList<>();
+        for (Map.Entry<String, List<ValidationIssue>> entry : issuesByTestCaseId.entrySet()) {
+            Integer index = originalBatchIndexById.get(entry.getKey());
+            rejected.add(new RejectedTestCase(index, entry.getKey(), entry.getValue()));
+        }
+
+        Set<String> rejectedIds = issuesByTestCaseId.keySet();
+        List<TestCase> accepted = testCases.stream()
+                .filter(testCase -> !rejectedIds.contains(testCase.getId()))
+                .toList();
+        return new ContractOutcome(accepted, rejected);
+    }
+
+    private String contractFieldPath(String violationType, int index) {
+        String base = "testCases[" + index + "]";
+        if (violationType == null) {
+            return base;
+        }
+        return switch (violationType) {
+            case "PATH_NOT_FOUND" -> base + ".request.path";
+            case "METHOD_MISMATCH" -> base + ".request.method";
+            case "FIELD_NOT_IN_SCHEMA" -> base + ".request.body";
+            case "STATUS_NOT_IN_SPEC" -> base + ".expected.status";
+            default -> base;
+        };
+    }
+
+    private record ContractOutcome(List<TestCase> acceptedTestCases, List<RejectedTestCase> rejectedTestCases) {
     }
 }

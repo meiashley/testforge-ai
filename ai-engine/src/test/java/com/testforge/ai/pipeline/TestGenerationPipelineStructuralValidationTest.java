@@ -9,6 +9,7 @@ import com.testforge.ai.parser.ResponseParser;
 import com.testforge.ai.prompt.EndpointPromptBuilder;
 import com.testforge.ai.validation.ContractViolation;
 import com.testforge.ai.validation.RejectedTestCase;
+import com.testforge.ai.validation.GenerationValidationException;
 import com.testforge.ai.validation.StructuralValidationException;
 import com.testforge.ai.validation.TestCaseContractValidator;
 import com.testforge.ai.validation.TestCaseStructuralValidationResult;
@@ -151,11 +152,11 @@ class TestGenerationPipelineStructuralValidationTest {
                 ]
                 """, cache, contractValidator);
 
-        StructuralValidationException ex = assertThrows(StructuralValidationException.class,
+        GenerationValidationException ex = assertThrows(GenerationValidationException.class,
                 () -> pipeline.run("openapi: 3.0.0"));
 
-        assertEquals(1, ex.getResult().getRejectedTestCases().size());
-        assertEquals("tc-2", ex.getResult().getRejectedTestCases().get(0).getTestCaseId());
+        assertEquals(1, ex.getOutcome().getRejectedTestCases().size());
+        assertEquals("tc-2", ex.getOutcome().getRejectedTestCases().get(0).getTestCaseId());
     }
 
     @Test

@@ -11,6 +11,7 @@ import com.testforge.ai.prompt.EndpointPromptBuilder;
 import com.testforge.ai.prompt.PromptBuilder;
 import com.testforge.ai.prompt.PromptBuilderV2;
 import com.testforge.ai.prompt.PromptBuilderV3;
+import com.testforge.ai.validation.GenerationValidationException;
 import com.testforge.runner.assertion.AssertionEvaluator;
 import com.testforge.runner.http.HttpExecutor;
 import com.testforge.runner.model.ExecutionReport;
@@ -80,6 +81,8 @@ public class GenerationExecutor {
             job.setCompletedAt(Instant.now());
             jobStore.update(job);
 
+        } catch (GenerationValidationException e) {
+            handleGenerationValidationFailure(job, e);
         } catch (Exception e) {
             job.setStatus(JobStatus.FAILED);
             job.setErrorMessage(e.toString());
@@ -103,6 +106,14 @@ public class GenerationExecutor {
         job.setValidationWarnings(outcome.getWarnings());
         job.setPartialAcceptance(!outcome.getRejectedTestCases().isEmpty()
                 && !outcome.getAcceptedTestCases().isEmpty());
+    }
+
+    void handleGenerationValidationFailure(Job job, GenerationValidationException exception) {
+        applyGenerationOutcome(job, exception.getOutcome());
+        job.setStatus(JobStatus.FAILED);
+        job.setErrorMessage(exception.getMessage());
+        job.setCompletedAt(Instant.now());
+        jobStore.update(job);
     }
 
     private String fetchYaml(String url) throws IOException {
