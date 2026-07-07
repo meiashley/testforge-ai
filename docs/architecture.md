@@ -131,12 +131,13 @@ Generated test-case validation is fail-closed:
 - Duplicate test-case ids are batch-level errors and reject the whole generated batch.
 - A structurally invalid individual test case is rejected and excluded from contract validation and execution.
 - If no structurally valid test cases remain, generation fails.
+- Structural validation failures that fail the generation run are converted at the pipeline boundary into `GenerationValidationException` with the complete `TestGenerationOutcome` accumulated so far. Lower-level `StructuralValidationException` is not allowed to cross into the API gateway.
 - Contract-invalid test cases are rejected structurally in the outcome and are excluded from accepted results, accepted cache writes, and execution.
 - If a single endpoint produces no contract-valid test cases, no empty `GenerationResult` is created or cached for that endpoint.
-- If the full generation run produces no accepted test cases, generation fails closed with the full diagnostic outcome attached.
+- If structural or contract validation leaves the full generation run with no accepted test cases, generation fails closed with the full diagnostic outcome attached.
 - Duplicate execution content is reported deterministically and the later duplicate item is rejected without rejecting the whole batch.
 - The non-deprecated generation API returns a `TestGenerationOutcome` with immutable collection membership for accepted test cases, rejected test cases, and warnings. It does not deep-copy historical mutable domain objects such as `TestCase`.
-- API gateway jobs expose generation diagnostics as additive JSON fields: `generationResults`, `rejectedTestCases`, `validationWarnings`, and `partialAcceptance`. Existing `report`, `status`, and `errorMessage` fields are retained. Gateway execution keeps the full `TestGenerationOutcome` before extracting accepted generation results, so rejected items and warnings remain available through job lookup rather than logs only.
+- API gateway jobs expose generation diagnostics as additive JSON fields: `generationResults`, `rejectedTestCases`, `validationWarnings`, and `partialAcceptance`. Existing `report`, `status`, and `errorMessage` fields are retained. Gateway execution keeps the full `TestGenerationOutcome` before extracting accepted generation results, so accepted results, rejected items, and warnings remain available through job lookup even when the job fails.
 
 ExecutionPlan validation is plan-level fail-closed:
 

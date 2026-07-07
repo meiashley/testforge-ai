@@ -154,6 +154,64 @@ class GenerationExecutorOutcomeDiagnosticsTest {
         assertEquals(1, jobStore.updatedJobs.size());
     }
 
+    @Test
+    void structuralFailureWithoutAcceptedMarksJobFailedAndPreservesDiagnostics() {
+        RecordingJobStore jobStore = new RecordingJobStore();
+        GenerationExecutor executor = new GenerationExecutor(jobStore, new OkHttpClient());
+        Job job = new Job();
+        ValidationIssue warning = ValidationIssue.warning("TEST_CASE_SCENARIO_MISSING",
+                "testCases[0].scenario", "Test case scenario is recommended for display and diagnostics");
+        ValidationIssue issue = ValidationIssue.error("UNSUPPORTED_HTTP_METHOD",
+                "testCases[0].request.method", "HTTP method 'TRACE' is not supported");
+        RejectedTestCase rejected = new RejectedTestCase(0, "tc-1", List.of(warning, issue));
+        TestGenerationOutcome outcome = new TestGenerationOutcome(List.of(), List.of(), List.of(rejected), List.of(warning));
+
+        executor.handleGenerationValidationFailure(job,
+                new GenerationValidationException("Generated test case batch has no structurally valid test cases",
+                        outcome));
+
+        assertEquals(JobStatus.FAILED, job.getStatus());
+        assertEquals("Generated test case batch has no structurally valid test cases", job.getErrorMessage());
+        assertNotNull(job.getCompletedAt());
+        assertTrue(job.getGenerationResults().isEmpty());
+        assertEquals(1, job.getRejectedTestCases().size());
+        assertEquals("tc-1", job.getRejectedTestCases().get(0).getTestCaseId());
+        assertEquals("UNSUPPORTED_HTTP_METHOD", job.getRejectedTestCases().get(0).getValidationIssues().get(1).getCode());
+        assertEquals(1, job.getValidationWarnings().size());
+        assertEquals("TEST_CASE_SCENARIO_MISSING", job.getValidationWarnings().get(0).getCode());
+        assertFalse(job.isPartialAcceptance());
+        assertEquals(1, jobStore.updatedJobs.size());
+    }
+
+    @Test
+    void structuralFailureAfterAcceptedEndpointMarksPartialAcceptance() {
+        RecordingJobStore jobStore = new RecordingJobStore();
+        GenerationExecutor executor = new GenerationExecutor(jobStore, new OkHttpClient());
+        Job job = new Job();
+        ValidationIssue warning = ValidationIssue.warning("TEST_CASE_SCENARIO_MISSING",
+                "testCases[0].scenario", "Test case scenario is recommended for display and diagnostics");
+        ValidationIssue issue = ValidationIssue.error("REQUEST_REQUIRED",
+                "testCases[0].request", "Request object must be present");
+        RejectedTestCase rejected = new RejectedTestCase(0, "tc-2", List.of(warning, issue));
+        TestGenerationOutcome outcome = new TestGenerationOutcome(
+                List.of(generation("tc-1")), List.of(testCase("tc-1")), List.of(rejected), List.of(warning));
+
+        executor.handleGenerationValidationFailure(job,
+                new GenerationValidationException("Generated test case batch failed structural validation",
+                        outcome));
+
+        assertEquals(JobStatus.FAILED, job.getStatus());
+        assertEquals("Generated test case batch failed structural validation", job.getErrorMessage());
+        assertEquals(1, job.getGenerationResults().size());
+        assertEquals("tc-1", job.getGenerationResults().get(0).getTestCases().get(0).getId());
+        assertEquals(1, job.getRejectedTestCases().size());
+        assertEquals("tc-2", job.getRejectedTestCases().get(0).getTestCaseId());
+        assertEquals(1, job.getValidationWarnings().size());
+        assertTrue(job.isPartialAcceptance());
+        assertNotNull(job.getCompletedAt());
+        assertEquals(1, jobStore.updatedJobs.size());
+    }
+
     private GenerationResult generation(String testCaseId) {
         return new GenerationResult(endpoint(), List.of(testCase(testCaseId)));
     }

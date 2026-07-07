@@ -12,7 +12,6 @@ import com.testforge.ai.prompt.EndpointPromptBuilder;
 import com.testforge.ai.validation.ContractViolation;
 import com.testforge.ai.validation.GenerationValidationException;
 import com.testforge.ai.validation.RejectedTestCase;
-import com.testforge.ai.validation.StructuralValidationException;
 import com.testforge.ai.validation.TestCaseContractValidator;
 import com.testforge.ai.validation.TestCaseStructuralValidationResult;
 import com.testforge.ai.validation.TestCaseStructuralValidator;
@@ -108,14 +107,16 @@ public class TestGenerationPipeline {
             warnings.addAll(structuralResult.warnings());
             reportStructuralIssues(structuralResult);
             if (structuralResult.isBatchRejected()) {
-                throw new StructuralValidationException(
-                        "Generated test case batch failed structural validation", structuralResult);
+                throw generationValidationException(
+                        "Generated test case batch failed structural validation",
+                        results, acceptedTestCases, rejectedTestCases, warnings);
             }
 
             testCases = structuralResult.getAcceptedTestCases();
             if (testCases.isEmpty()) {
-                throw new StructuralValidationException(
-                        "Generated test case batch has no structurally valid test cases", structuralResult);
+                throw generationValidationException(
+                        "Generated test case batch has no structurally valid test cases",
+                        results, acceptedTestCases, rejectedTestCases, warnings);
             }
 
             List<ContractViolation> violations = contractValidator.validate(testCases, endpoint);
@@ -162,6 +163,15 @@ public class TestGenerationPipeline {
     @Deprecated
     public List<ValidationIssue> getLastStructuralValidationIssues() {
         return List.of();
+    }
+
+    private GenerationValidationException generationValidationException(String message,
+                                                                        List<GenerationResult> results,
+                                                                        List<TestCase> acceptedTestCases,
+                                                                        List<RejectedTestCase> rejectedTestCases,
+                                                                        List<ValidationIssue> warnings) {
+        return new GenerationValidationException(message,
+                new TestGenerationOutcome(results, acceptedTestCases, rejectedTestCases, warnings));
     }
 
     private void reportStructuralIssues(TestCaseStructuralValidationResult result) {
