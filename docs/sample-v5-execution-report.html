@@ -85,7 +85,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <h1>TestForge AI Execution Report</h1>
 <section id="summary">
 <h2>📊 Summary</h2>
-<p class="meta">Generated 2026-05-16T05:15:04.027599Z &nbsp;|&nbsp; Duration 694ms</p>
+<p class="meta">Generated 2026-07-07T07:53:32.953395Z &nbsp;|&nbsp; Duration 567ms</p>
 <div class="cards">
 <div class="card"><div class="label">API Tests Total</div><div class="value">34</div></div>
 <div class="card"><div class="label">API Tests Passed</div><div class="value">28</div></div>
@@ -350,25 +350,25 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <div class="details-body">
 <h3>Response (HTTP 201)</h3>
 <pre><code>{
-  &quot;id&quot; : &quot;pay_6dccc4a35ef3&quot;,
+  &quot;id&quot; : &quot;pay_77f30ba84fe6&quot;,
   &quot;merchantId&quot; : &quot;merchant-001&quot;,
   &quot;customerId&quot; : &quot;customer-abc&quot;,
   &quot;amount&quot; : 250.0,
   &quot;currency&quot; : &quot;AUD&quot;,
   &quot;status&quot; : &quot;COMPLETED&quot;,
-  &quot;description&quot; : &quot;Order #ORD-20260501-001&quot;,
-  &quot;createdAt&quot; : &quot;2026-05-16T05:14:32.546660Z&quot;,
-  &quot;updatedAt&quot; : &quot;2026-05-16T05:14:32.546660Z&quot;
+  &quot;description&quot; : &quot;Order #ORD-HAPPY-001&quot;,
+  &quot;createdAt&quot; : &quot;2026-07-07T07:52:56.637941Z&quot;,
+  &quot;updatedAt&quot; : &quot;2026-07-07T07:52:56.637941Z&quot;
 }</code></pre>
 <h3>Assertions</h3>
 <table class="assertions"><thead><tr><th>Path</th><th>Type</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead><tbody>
-<tr><td><code>$.body.id</code></td><td><code>EXISTS</code></td><td><code>null</code></td><td><code>pay_6dccc4a35ef3</code></td><td>✅</td></tr>
-<tr><td><code>$.body.status</code></td><td><code>EQUALS</code></td><td><code>COMPLETED</code></td><td><code>COMPLETED</code></td><td>✅</td></tr>
+<tr><td><code>$.body.id</code></td><td><code>EXISTS</code></td><td><code>null</code></td><td><code>pay_77f30ba84fe6</code></td><td>✅</td></tr>
 <tr><td><code>$.body.amount</code></td><td><code>EQUALS</code></td><td><code>250.0</code></td><td><code>250.0</code></td><td>✅</td></tr>
 <tr><td><code>$.body.currency</code></td><td><code>EQUALS</code></td><td><code>AUD</code></td><td><code>AUD</code></td><td>✅</td></tr>
 <tr><td><code>$.body.merchantId</code></td><td><code>EQUALS</code></td><td><code>merchant-001</code></td><td><code>merchant-001</code></td><td>✅</td></tr>
 <tr><td><code>$.body.customerId</code></td><td><code>EQUALS</code></td><td><code>customer-abc</code></td><td><code>customer-abc</code></td><td>✅</td></tr>
-<tr><td><code>$.body.createdAt</code></td><td><code>EXISTS</code></td><td><code>null</code></td><td><code>2026-05-16T05:14:32.546660Z</code></td><td>✅</td></tr>
+<tr><td><code>$.body.status</code></td><td><code>EQUALS</code></td><td><code>COMPLETED</code></td><td><code>COMPLETED</code></td><td>✅</td></tr>
+<tr><td><code>$.body.createdAt</code></td><td><code>EXISTS</code></td><td><code>null</code></td><td><code>2026-07-07T07:52:56.637941Z</code></td><td>✅</td></tr>
 </tbody></table>
 </div>
 </details>
@@ -377,52 +377,54 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <div class="details-body">
 <h3>Response (HTTP 200)</h3>
 <pre><code>{
-  &quot;id&quot; : &quot;pay_6dccc4a35ef3&quot;,
+  &quot;id&quot; : &quot;pay_77f30ba84fe6&quot;,
   &quot;merchantId&quot; : &quot;merchant-001&quot;,
   &quot;customerId&quot; : &quot;customer-abc&quot;,
   &quot;amount&quot; : 250.0,
   &quot;currency&quot; : &quot;AUD&quot;,
   &quot;status&quot; : &quot;COMPLETED&quot;,
-  &quot;description&quot; : &quot;Order #ORD-20260501-001&quot;,
-  &quot;createdAt&quot; : &quot;2026-05-16T05:14:32.546660Z&quot;,
-  &quot;updatedAt&quot; : &quot;2026-05-16T05:14:32.546660Z&quot;
+  &quot;description&quot; : &quot;Order #ORD-HAPPY-001&quot;,
+  &quot;createdAt&quot; : &quot;2026-07-07T07:52:56.637941Z&quot;,
+  &quot;updatedAt&quot; : &quot;2026-07-07T07:52:56.637941Z&quot;
 }</code></pre>
 <h3>Assertions</h3>
 <table class="assertions"><thead><tr><th>Path</th><th>Type</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead><tbody>
-<tr><td><code>$.body.id</code></td><td><code>EQUALS</code></td><td><code>pay_6dccc4a35ef3</code></td><td><code>pay_6dccc4a35ef3</code></td><td>✅</td></tr>
+<tr><td><code>$.body.id</code></td><td><code>EQUALS</code></td><td><code>pay_77f30ba84fe6</code></td><td><code>pay_77f30ba84fe6</code></td><td>✅</td></tr>
 <tr><td><code>$.body.status</code></td><td><code>EQUALS</code></td><td><code>COMPLETED</code></td><td><code>COMPLETED</code></td><td>✅</td></tr>
 <tr><td><code>$.body.amount</code></td><td><code>EQUALS</code></td><td><code>250.0</code></td><td><code>250.0</code></td><td>✅</td></tr>
 <tr><td><code>$.body.currency</code></td><td><code>EQUALS</code></td><td><code>AUD</code></td><td><code>AUD</code></td><td>✅</td></tr>
+<tr><td><code>$.body.merchantId</code></td><td><code>EQUALS</code></td><td><code>merchant-001</code></td><td><code>merchant-001</code></td><td>✅</td></tr>
+<tr><td><code>$.body.customerId</code></td><td><code>EQUALS</code></td><td><code>customer-abc</code></td><td><code>customer-abc</code></td><td>✅</td></tr>
 </tbody></table>
 </div>
 </details>
 </div>
 </details>
 <details>
-<summary><span>✅</span><span class="name">Successful Full Refund Flow</span><span class="meta-info">3 steps</span></summary>
+<summary><span>✅</span><span class="name">Successful Full Refund Flow</span><span class="meta-info">4 steps</span></summary>
 <div class="details-body">
 <details style="margin:8px 0; box-shadow:none; border:1px solid #e2e8f0;">
 <summary style="background:#f0fdf4;"><span>✅</span><span class="badge" style="background:#e2e8f0;color:#475569;">creator</span><span class="name">POST /api/payments</span><span class="meta-info">HTTP 201</span></summary>
 <div class="details-body">
 <h3>Response (HTTP 201)</h3>
 <pre><code>{
-  &quot;id&quot; : &quot;pay_fce227d4520d&quot;,
+  &quot;id&quot; : &quot;pay_8b47b6a9eb6a&quot;,
   &quot;merchantId&quot; : &quot;merchant-002&quot;,
   &quot;customerId&quot; : &quot;customer-refund-001&quot;,
   &quot;amount&quot; : 500.0,
   &quot;currency&quot; : &quot;USD&quot;,
   &quot;status&quot; : &quot;COMPLETED&quot;,
-  &quot;description&quot; : &quot;Order #ORD-20260501-002&quot;,
-  &quot;createdAt&quot; : &quot;2026-05-16T05:14:32.556966Z&quot;,
-  &quot;updatedAt&quot; : &quot;2026-05-16T05:14:32.556966Z&quot;
+  &quot;description&quot; : &quot;Order #ORD-REFUND-001&quot;,
+  &quot;createdAt&quot; : &quot;2026-07-07T07:52:56.645050Z&quot;,
+  &quot;updatedAt&quot; : &quot;2026-07-07T07:52:56.645050Z&quot;
 }</code></pre>
 <h3>Assertions</h3>
 <table class="assertions"><thead><tr><th>Path</th><th>Type</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead><tbody>
-<tr><td><code>$.body.id</code></td><td><code>EXISTS</code></td><td><code>null</code></td><td><code>pay_fce227d4520d</code></td><td>✅</td></tr>
+<tr><td><code>$.body.id</code></td><td><code>EXISTS</code></td><td><code>null</code></td><td><code>pay_8b47b6a9eb6a</code></td><td>✅</td></tr>
 <tr><td><code>$.body.status</code></td><td><code>EQUALS</code></td><td><code>COMPLETED</code></td><td><code>COMPLETED</code></td><td>✅</td></tr>
 <tr><td><code>$.body.amount</code></td><td><code>EQUALS</code></td><td><code>500.0</code></td><td><code>500.0</code></td><td>✅</td></tr>
 <tr><td><code>$.body.currency</code></td><td><code>EQUALS</code></td><td><code>USD</code></td><td><code>USD</code></td><td>✅</td></tr>
-<tr><td><code>$.body.createdAt</code></td><td><code>EXISTS</code></td><td><code>null</code></td><td><code>2026-05-16T05:14:32.556966Z</code></td><td>✅</td></tr>
+<tr><td><code>$.body.createdAt</code></td><td><code>EXISTS</code></td><td><code>null</code></td><td><code>2026-07-07T07:52:56.645050Z</code></td><td>✅</td></tr>
 </tbody></table>
 </div>
 </details>
@@ -431,19 +433,19 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <div class="details-body">
 <h3>Response (HTTP 200)</h3>
 <pre><code>{
-  &quot;id&quot; : &quot;pay_fce227d4520d&quot;,
+  &quot;id&quot; : &quot;pay_8b47b6a9eb6a&quot;,
   &quot;merchantId&quot; : &quot;merchant-002&quot;,
   &quot;customerId&quot; : &quot;customer-refund-001&quot;,
   &quot;amount&quot; : 500.0,
   &quot;currency&quot; : &quot;USD&quot;,
   &quot;status&quot; : &quot;COMPLETED&quot;,
-  &quot;description&quot; : &quot;Order #ORD-20260501-002&quot;,
-  &quot;createdAt&quot; : &quot;2026-05-16T05:14:32.556966Z&quot;,
-  &quot;updatedAt&quot; : &quot;2026-05-16T05:14:32.556966Z&quot;
+  &quot;description&quot; : &quot;Order #ORD-REFUND-001&quot;,
+  &quot;createdAt&quot; : &quot;2026-07-07T07:52:56.645050Z&quot;,
+  &quot;updatedAt&quot; : &quot;2026-07-07T07:52:56.645050Z&quot;
 }</code></pre>
 <h3>Assertions</h3>
 <table class="assertions"><thead><tr><th>Path</th><th>Type</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead><tbody>
-<tr><td><code>$.body.id</code></td><td><code>EQUALS</code></td><td><code>pay_fce227d4520d</code></td><td><code>pay_fce227d4520d</code></td><td>✅</td></tr>
+<tr><td><code>$.body.id</code></td><td><code>EQUALS</code></td><td><code>pay_8b47b6a9eb6a</code></td><td><code>pay_8b47b6a9eb6a</code></td><td>✅</td></tr>
 <tr><td><code>$.body.status</code></td><td><code>EQUALS</code></td><td><code>COMPLETED</code></td><td><code>COMPLETED</code></td><td>✅</td></tr>
 </tbody></table>
 </div>
@@ -453,23 +455,47 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <div class="details-body">
 <h3>Response (HTTP 200)</h3>
 <pre><code>{
-  &quot;id&quot; : &quot;pay_fce227d4520d&quot;,
+  &quot;id&quot; : &quot;pay_8b47b6a9eb6a&quot;,
   &quot;merchantId&quot; : &quot;merchant-002&quot;,
   &quot;customerId&quot; : &quot;customer-refund-001&quot;,
   &quot;amount&quot; : 500.0,
   &quot;currency&quot; : &quot;USD&quot;,
   &quot;status&quot; : &quot;REFUNDED&quot;,
-  &quot;description&quot; : &quot;Order #ORD-20260501-002&quot;,
+  &quot;description&quot; : &quot;Order #ORD-REFUND-001&quot;,
   &quot;refundReason&quot; : &quot;Customer requested cancellation&quot;,
-  &quot;createdAt&quot; : &quot;2026-05-16T05:14:32.556966Z&quot;,
-  &quot;updatedAt&quot; : &quot;2026-05-16T05:14:32.562883Z&quot;
+  &quot;createdAt&quot; : &quot;2026-07-07T07:52:56.645050Z&quot;,
+  &quot;updatedAt&quot; : &quot;2026-07-07T07:52:56.650290Z&quot;
 }</code></pre>
 <h3>Assertions</h3>
 <table class="assertions"><thead><tr><th>Path</th><th>Type</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead><tbody>
+<tr><td><code>$.body.id</code></td><td><code>EQUALS</code></td><td><code>pay_8b47b6a9eb6a</code></td><td><code>pay_8b47b6a9eb6a</code></td><td>✅</td></tr>
 <tr><td><code>$.body.status</code></td><td><code>EQUALS</code></td><td><code>REFUNDED</code></td><td><code>REFUNDED</code></td><td>✅</td></tr>
 <tr><td><code>$.body.refundReason</code></td><td><code>EQUALS</code></td><td><code>Customer requested cancellation</code></td><td><code>Customer requested cancellation</code></td><td>✅</td></tr>
-<tr><td><code>$.body.updatedAt</code></td><td><code>EXISTS</code></td><td><code>null</code></td><td><code>2026-05-16T05:14:32.562883Z</code></td><td>✅</td></tr>
-<tr><td><code>$.body.id</code></td><td><code>EQUALS</code></td><td><code>pay_fce227d4520d</code></td><td><code>pay_fce227d4520d</code></td><td>✅</td></tr>
+</tbody></table>
+</div>
+</details>
+<details style="margin:8px 0; box-shadow:none; border:1px solid #e2e8f0;">
+<summary style="background:#f0fdf4;"><span>✅</span><span class="badge" style="background:#e2e8f0;color:#475569;">verifier</span><span class="name">GET /api/payments/{id}</span><span class="meta-info">HTTP 200</span></summary>
+<div class="details-body">
+<h3>Response (HTTP 200)</h3>
+<pre><code>{
+  &quot;id&quot; : &quot;pay_8b47b6a9eb6a&quot;,
+  &quot;merchantId&quot; : &quot;merchant-002&quot;,
+  &quot;customerId&quot; : &quot;customer-refund-001&quot;,
+  &quot;amount&quot; : 500.0,
+  &quot;currency&quot; : &quot;USD&quot;,
+  &quot;status&quot; : &quot;REFUNDED&quot;,
+  &quot;description&quot; : &quot;Order #ORD-REFUND-001&quot;,
+  &quot;refundReason&quot; : &quot;Customer requested cancellation&quot;,
+  &quot;createdAt&quot; : &quot;2026-07-07T07:52:56.645050Z&quot;,
+  &quot;updatedAt&quot; : &quot;2026-07-07T07:52:56.650290Z&quot;
+}</code></pre>
+<h3>Assertions</h3>
+<table class="assertions"><thead><tr><th>Path</th><th>Type</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead><tbody>
+<tr><td><code>$.body.id</code></td><td><code>EQUALS</code></td><td><code>pay_8b47b6a9eb6a</code></td><td><code>pay_8b47b6a9eb6a</code></td><td>✅</td></tr>
+<tr><td><code>$.body.status</code></td><td><code>EQUALS</code></td><td><code>REFUNDED</code></td><td><code>REFUNDED</code></td><td>✅</td></tr>
+<tr><td><code>$.body.refundReason</code></td><td><code>EQUALS</code></td><td><code>Customer requested cancellation</code></td><td><code>Customer requested cancellation</code></td><td>✅</td></tr>
+<tr><td><code>$.body.updatedAt</code></td><td><code>EXISTS</code></td><td><code>null</code></td><td><code>2026-07-07T07:52:56.650290Z</code></td><td>✅</td></tr>
 </tbody></table>
 </div>
 </details>
@@ -483,20 +509,21 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <div class="details-body">
 <h3>Response (HTTP 201)</h3>
 <pre><code>{
-  &quot;id&quot; : &quot;pay_960153861d4f&quot;,
+  &quot;id&quot; : &quot;pay_407b4c1f14b0&quot;,
   &quot;merchantId&quot; : &quot;merchant-003&quot;,
-  &quot;customerId&quot; : &quot;customer-userA-001&quot;,
-  &quot;amount&quot; : 750.0,
+  &quot;customerId&quot; : &quot;customer-user-a&quot;,
+  &quot;amount&quot; : 300.0,
   &quot;currency&quot; : &quot;AUD&quot;,
   &quot;status&quot; : &quot;COMPLETED&quot;,
-  &quot;description&quot; : &quot;Order #ORD-20260501-003&quot;,
-  &quot;createdAt&quot; : &quot;2026-05-16T05:14:32.566599Z&quot;,
-  &quot;updatedAt&quot; : &quot;2026-05-16T05:14:32.566599Z&quot;
+  &quot;description&quot; : &quot;Order #ORD-CROSS-001&quot;,
+  &quot;createdAt&quot; : &quot;2026-07-07T07:52:56.655692Z&quot;,
+  &quot;updatedAt&quot; : &quot;2026-07-07T07:52:56.655692Z&quot;
 }</code></pre>
 <h3>Assertions</h3>
 <table class="assertions"><thead><tr><th>Path</th><th>Type</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead><tbody>
-<tr><td><code>$.body.id</code></td><td><code>EXISTS</code></td><td><code>null</code></td><td><code>pay_960153861d4f</code></td><td>✅</td></tr>
+<tr><td><code>$.body.id</code></td><td><code>EXISTS</code></td><td><code>null</code></td><td><code>pay_407b4c1f14b0</code></td><td>✅</td></tr>
 <tr><td><code>$.body.status</code></td><td><code>EQUALS</code></td><td><code>COMPLETED</code></td><td><code>COMPLETED</code></td><td>✅</td></tr>
+<tr><td><code>$.body.amount</code></td><td><code>EQUALS</code></td><td><code>300.0</code></td><td><code>300.0</code></td><td>✅</td></tr>
 </tbody></table>
 </div>
 </details>
@@ -505,15 +532,15 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <div class="details-body">
 <h3>Response (HTTP 200)</h3>
 <pre><code>{
-  &quot;id&quot; : &quot;pay_960153861d4f&quot;,
+  &quot;id&quot; : &quot;pay_407b4c1f14b0&quot;,
   &quot;merchantId&quot; : &quot;merchant-003&quot;,
-  &quot;customerId&quot; : &quot;customer-userA-001&quot;,
-  &quot;amount&quot; : 750.0,
+  &quot;customerId&quot; : &quot;customer-user-a&quot;,
+  &quot;amount&quot; : 300.0,
   &quot;currency&quot; : &quot;AUD&quot;,
   &quot;status&quot; : &quot;COMPLETED&quot;,
-  &quot;description&quot; : &quot;Order #ORD-20260501-003&quot;,
-  &quot;createdAt&quot; : &quot;2026-05-16T05:14:32.566599Z&quot;,
-  &quot;updatedAt&quot; : &quot;2026-05-16T05:14:32.566599Z&quot;
+  &quot;description&quot; : &quot;Order #ORD-CROSS-001&quot;,
+  &quot;createdAt&quot; : &quot;2026-07-07T07:52:56.655692Z&quot;,
+  &quot;updatedAt&quot; : &quot;2026-07-07T07:52:56.655692Z&quot;
 }</code></pre>
 <h3>Assertions</h3>
 <table class="assertions"><thead><tr><th>Path</th><th>Type</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead><tbody>
@@ -526,16 +553,16 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <div class="details-body">
 <h3>Response (HTTP 200)</h3>
 <pre><code>{
-  &quot;id&quot; : &quot;pay_960153861d4f&quot;,
+  &quot;id&quot; : &quot;pay_407b4c1f14b0&quot;,
   &quot;merchantId&quot; : &quot;merchant-003&quot;,
-  &quot;customerId&quot; : &quot;customer-userA-001&quot;,
-  &quot;amount&quot; : 750.0,
+  &quot;customerId&quot; : &quot;customer-user-a&quot;,
+  &quot;amount&quot; : 300.0,
   &quot;currency&quot; : &quot;AUD&quot;,
   &quot;status&quot; : &quot;REFUNDED&quot;,
-  &quot;description&quot; : &quot;Order #ORD-20260501-003&quot;,
-  &quot;refundReason&quot; : &quot;Unauthorized refund attempt by User B&quot;,
-  &quot;createdAt&quot; : &quot;2026-05-16T05:14:32.566599Z&quot;,
-  &quot;updatedAt&quot; : &quot;2026-05-16T05:14:32.573468Z&quot;
+  &quot;description&quot; : &quot;Order #ORD-CROSS-001&quot;,
+  &quot;refundReason&quot; : &quot;Unauthorized refund attempt by different user&quot;,
+  &quot;createdAt&quot; : &quot;2026-07-07T07:52:56.655692Z&quot;,
+  &quot;updatedAt&quot; : &quot;2026-07-07T07:52:56.660590Z&quot;
 }</code></pre>
 <h3>Assertions</h3>
 <table class="assertions"><thead><tr><th>Path</th><th>Type</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead><tbody>
@@ -555,21 +582,22 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <div class="details-body">
 <h3>Response (HTTP 201)</h3>
 <pre><code>{
-  &quot;id&quot; : &quot;pay_bfd6e342ae9a&quot;,
+  &quot;id&quot; : &quot;pay_dadb55e66729&quot;,
   &quot;merchantId&quot; : &quot;merchant-004&quot;,
-  &quot;customerId&quot; : &quot;customer-double-refund-001&quot;,
-  &quot;amount&quot; : 1000.0,
+  &quot;customerId&quot; : &quot;customer-double-refund&quot;,
+  &quot;amount&quot; : 75.5,
   &quot;currency&quot; : &quot;EUR&quot;,
   &quot;status&quot; : &quot;COMPLETED&quot;,
-  &quot;description&quot; : &quot;Order #ORD-20260501-004&quot;,
-  &quot;createdAt&quot; : &quot;2026-05-16T05:14:32.576985Z&quot;,
-  &quot;updatedAt&quot; : &quot;2026-05-16T05:14:32.576985Z&quot;
+  &quot;description&quot; : &quot;Order #ORD-DBLREF-001&quot;,
+  &quot;createdAt&quot; : &quot;2026-07-07T07:52:56.663871Z&quot;,
+  &quot;updatedAt&quot; : &quot;2026-07-07T07:52:56.663871Z&quot;
 }</code></pre>
 <h3>Assertions</h3>
 <table class="assertions"><thead><tr><th>Path</th><th>Type</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead><tbody>
-<tr><td><code>$.body.id</code></td><td><code>EXISTS</code></td><td><code>null</code></td><td><code>pay_bfd6e342ae9a</code></td><td>✅</td></tr>
+<tr><td><code>$.body.id</code></td><td><code>EXISTS</code></td><td><code>null</code></td><td><code>pay_dadb55e66729</code></td><td>✅</td></tr>
 <tr><td><code>$.body.status</code></td><td><code>EQUALS</code></td><td><code>COMPLETED</code></td><td><code>COMPLETED</code></td><td>✅</td></tr>
-<tr><td><code>$.body.amount</code></td><td><code>EQUALS</code></td><td><code>1000.0</code></td><td><code>1000.0</code></td><td>✅</td></tr>
+<tr><td><code>$.body.amount</code></td><td><code>EQUALS</code></td><td><code>75.5</code></td><td><code>75.5</code></td><td>✅</td></tr>
+<tr><td><code>$.body.currency</code></td><td><code>EQUALS</code></td><td><code>EUR</code></td><td><code>EUR</code></td><td>✅</td></tr>
 </tbody></table>
 </div>
 </details>
@@ -578,16 +606,16 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <div class="details-body">
 <h3>Response (HTTP 200)</h3>
 <pre><code>{
-  &quot;id&quot; : &quot;pay_bfd6e342ae9a&quot;,
+  &quot;id&quot; : &quot;pay_dadb55e66729&quot;,
   &quot;merchantId&quot; : &quot;merchant-004&quot;,
-  &quot;customerId&quot; : &quot;customer-double-refund-001&quot;,
-  &quot;amount&quot; : 1000.0,
+  &quot;customerId&quot; : &quot;customer-double-refund&quot;,
+  &quot;amount&quot; : 75.5,
   &quot;currency&quot; : &quot;EUR&quot;,
   &quot;status&quot; : &quot;REFUNDED&quot;,
-  &quot;description&quot; : &quot;Order #ORD-20260501-004&quot;,
+  &quot;description&quot; : &quot;Order #ORD-DBLREF-001&quot;,
   &quot;refundReason&quot; : &quot;First refund - customer cancellation&quot;,
-  &quot;createdAt&quot; : &quot;2026-05-16T05:14:32.576985Z&quot;,
-  &quot;updatedAt&quot; : &quot;2026-05-16T05:14:32.580277Z&quot;
+  &quot;createdAt&quot; : &quot;2026-07-07T07:52:56.663871Z&quot;,
+  &quot;updatedAt&quot; : &quot;2026-07-07T07:52:56.666699Z&quot;
 }</code></pre>
 <h3>Assertions</h3>
 <table class="assertions"><thead><tr><th>Path</th><th>Type</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead><tbody>
@@ -601,16 +629,16 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <div class="details-body">
 <h3>Response (HTTP 200)</h3>
 <pre><code>{
-  &quot;id&quot; : &quot;pay_bfd6e342ae9a&quot;,
+  &quot;id&quot; : &quot;pay_dadb55e66729&quot;,
   &quot;merchantId&quot; : &quot;merchant-004&quot;,
-  &quot;customerId&quot; : &quot;customer-double-refund-001&quot;,
-  &quot;amount&quot; : 1000.0,
+  &quot;customerId&quot; : &quot;customer-double-refund&quot;,
+  &quot;amount&quot; : 75.5,
   &quot;currency&quot; : &quot;EUR&quot;,
   &quot;status&quot; : &quot;REFUNDED&quot;,
-  &quot;description&quot; : &quot;Order #ORD-20260501-004&quot;,
+  &quot;description&quot; : &quot;Order #ORD-DBLREF-001&quot;,
   &quot;refundReason&quot; : &quot;First refund - customer cancellation&quot;,
-  &quot;createdAt&quot; : &quot;2026-05-16T05:14:32.576985Z&quot;,
-  &quot;updatedAt&quot; : &quot;2026-05-16T05:14:32.580277Z&quot;
+  &quot;createdAt&quot; : &quot;2026-07-07T07:52:56.663871Z&quot;,
+  &quot;updatedAt&quot; : &quot;2026-07-07T07:52:56.666699Z&quot;
 }</code></pre>
 <h3>Assertions</h3>
 <table class="assertions"><thead><tr><th>Path</th><th>Type</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead><tbody>
@@ -625,14 +653,14 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <pre><code>{
   &quot;status&quot; : 422,
   &quot;code&quot; : &quot;PAYMENT_NOT_REFUNDABLE&quot;,
-  &quot;message&quot; : &quot;Payment pay_bfd6e342ae9a cannot be refunded in status: REFUNDED&quot;,
-  &quot;timestamp&quot; : &quot;2026-05-16T05:14:32.586162Z&quot;
+  &quot;message&quot; : &quot;Payment pay_dadb55e66729 cannot be refunded in status: REFUNDED&quot;,
+  &quot;timestamp&quot; : &quot;2026-07-07T07:52:56.671904Z&quot;
 }</code></pre>
 <h3>Assertions</h3>
 <table class="assertions"><thead><tr><th>Path</th><th>Type</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead><tbody>
 <tr class="assert-failed"><td><code>$.body.code</code></td><td><code>EQUALS</code></td><td><code>ALREADY_REFUNDED</code></td><td><code>PAYMENT_NOT_REFUNDABLE</code></td><td>❌</td></tr>
-<tr><td><code>$.body.message</code></td><td><code>EXISTS</code></td><td><code>null</code></td><td><code>Payment pay_bfd6e342ae9a cannot be refunded in status: REFUNDED</code></td><td>✅</td></tr>
-<tr><td><code>$.body.timestamp</code></td><td><code>EXISTS</code></td><td><code>null</code></td><td><code>2026-05-16T05:14:32.586162Z</code></td><td>✅</td></tr>
+<tr><td><code>$.body.message</code></td><td><code>EXISTS</code></td><td><code>null</code></td><td><code>Payment pay_dadb55e66729 cannot be refunded in status: REFUNDED</code></td><td>✅</td></tr>
+<tr><td><code>$.body.timestamp</code></td><td><code>EXISTS</code></td><td><code>null</code></td><td><code>2026-07-07T07:52:56.671904Z</code></td><td>✅</td></tr>
 </tbody></table>
 </div>
 </details>
@@ -648,42 +676,42 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <pre><code>{
   &quot;status&quot; : 404,
   &quot;code&quot; : &quot;PAYMENT_NOT_FOUND&quot;,
-  &quot;message&quot; : &quot;Payment not found: pay_nonexistent_99999999&quot;,
-  &quot;timestamp&quot; : &quot;2026-05-16T05:14:32.591001Z&quot;
+  &quot;message&quot; : &quot;Payment not found: pay-does-not-exist-99999&quot;,
+  &quot;timestamp&quot; : &quot;2026-07-07T07:52:56.675543Z&quot;
 }</code></pre>
 <h3>Assertions</h3>
 <table class="assertions"><thead><tr><th>Path</th><th>Type</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead><tbody>
 <tr><td><code>$.body.code</code></td><td><code>EQUALS</code></td><td><code>PAYMENT_NOT_FOUND</code></td><td><code>PAYMENT_NOT_FOUND</code></td><td>✅</td></tr>
-<tr><td><code>$.body.message</code></td><td><code>EXISTS</code></td><td><code>null</code></td><td><code>Payment not found: pay_nonexistent_99999999</code></td><td>✅</td></tr>
-<tr><td><code>$.body.timestamp</code></td><td><code>EXISTS</code></td><td><code>null</code></td><td><code>2026-05-16T05:14:32.591001Z</code></td><td>✅</td></tr>
+<tr><td><code>$.body.message</code></td><td><code>EXISTS</code></td><td><code>null</code></td><td><code>Payment not found: pay-does-not-exist-99999</code></td><td>✅</td></tr>
+<tr><td><code>$.body.timestamp</code></td><td><code>EXISTS</code></td><td><code>null</code></td><td><code>2026-07-07T07:52:56.675543Z</code></td><td>✅</td></tr>
 </tbody></table>
 </div>
 </details>
 </div>
 </details>
 <details>
-<summary class="failed"><span>❌</span><span class="name">Refund Pending Payment (REJECTED)</span><span class="meta-info">3 steps</span></summary>
+<summary class="failed"><span>❌</span><span class="name">Refund Pending Payment (REJECTED - Invalid State)</span><span class="meta-info">3 steps</span></summary>
 <div class="details-body">
 <details style="margin:8px 0; box-shadow:none; border:1px solid #e2e8f0;">
 <summary style="background:#fef2f2;"><span>❌</span><span class="badge" style="background:#e2e8f0;color:#475569;">creator</span><span class="name">POST /api/payments</span><span class="meta-info">HTTP 201</span></summary>
 <div class="details-body">
 <h3>Response (HTTP 201)</h3>
 <pre><code>{
-  &quot;id&quot; : &quot;pay_806ac95fdfce&quot;,
+  &quot;id&quot; : &quot;pay_320225be33af&quot;,
   &quot;merchantId&quot; : &quot;merchant-005&quot;,
   &quot;customerId&quot; : &quot;customer-pending-001&quot;,
-  &quot;amount&quot; : 99.99,
+  &quot;amount&quot; : 120.0,
   &quot;currency&quot; : &quot;AUD&quot;,
   &quot;status&quot; : &quot;COMPLETED&quot;,
-  &quot;description&quot; : &quot;Order #ORD-20260501-005-PENDING&quot;,
-  &quot;createdAt&quot; : &quot;2026-05-16T05:14:32.595314Z&quot;,
-  &quot;updatedAt&quot; : &quot;2026-05-16T05:14:32.595314Z&quot;
+  &quot;description&quot; : &quot;Order #ORD-PENDING-001&quot;,
+  &quot;createdAt&quot; : &quot;2026-07-07T07:52:56.678830Z&quot;,
+  &quot;updatedAt&quot; : &quot;2026-07-07T07:52:56.678830Z&quot;
 }</code></pre>
 <h3>Assertions</h3>
 <table class="assertions"><thead><tr><th>Path</th><th>Type</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead><tbody>
-<tr><td><code>$.body.id</code></td><td><code>EXISTS</code></td><td><code>null</code></td><td><code>pay_806ac95fdfce</code></td><td>✅</td></tr>
+<tr><td><code>$.body.id</code></td><td><code>EXISTS</code></td><td><code>null</code></td><td><code>pay_320225be33af</code></td><td>✅</td></tr>
 <tr class="assert-failed"><td><code>$.body.status</code></td><td><code>EQUALS</code></td><td><code>PENDING</code></td><td><code>COMPLETED</code></td><td>❌</td></tr>
-<tr><td><code>$.body.amount</code></td><td><code>EQUALS</code></td><td><code>99.99</code></td><td><code>99.99</code></td><td>✅</td></tr>
+<tr><td><code>$.body.amount</code></td><td><code>EQUALS</code></td><td><code>120.0</code></td><td><code>120.0</code></td><td>✅</td></tr>
 </tbody></table>
 </div>
 </details>
@@ -705,7 +733,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <section id="api-tests">
 <h2>⚡ API Tests</h2>
 <details>
-<summary><span>&#x2705;</span><span class="name">Create payment with all required fields</span><span class="badge badge-HAPPY_PATH">HAPPY_PATH</span><span class="meta-info">397ms</span><span class="meta-info">8/8</span></summary>
+<summary><span>&#x2705;</span><span class="name">Create payment with all required fields</span><span class="badge badge-HAPPY_PATH">HAPPY_PATH</span><span class="meta-info">316ms</span><span class="meta-info">8/8</span></summary>
 <div class="details-body">
 <h3>Request</h3>
 <pre><code>POST /api/payments
@@ -716,29 +744,29 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
   &quot;amount&quot; : 100.0,
   &quot;currency&quot; : &quot;USD&quot;
 }</code></pre>
-<h3>Response (HTTP 201, 374ms)</h3>
+<h3>Response (HTTP 201, 297ms)</h3>
 <pre><code>{
-  &quot;id&quot; : &quot;pay_cbd03f611c56&quot;,
+  &quot;id&quot; : &quot;pay_e5072a9c8b93&quot;,
   &quot;merchantId&quot; : &quot;merchant-001&quot;,
   &quot;customerId&quot; : &quot;customer-abc&quot;,
   &quot;amount&quot; : 100.0,
   &quot;currency&quot; : &quot;USD&quot;,
   &quot;status&quot; : &quot;COMPLETED&quot;,
-  &quot;createdAt&quot; : &quot;2026-05-16T05:14:32.131477Z&quot;,
-  &quot;updatedAt&quot; : &quot;2026-05-16T05:14:32.131477Z&quot;
+  &quot;createdAt&quot; : &quot;2026-07-07T07:52:56.284456Z&quot;,
+  &quot;updatedAt&quot; : &quot;2026-07-07T07:52:56.284456Z&quot;
 }</code></pre>
 <h3>Assertions (8/8 passed)</h3>
 <table class="assertions">
 <thead><tr><th>Field</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead>
 <tbody>
-<tr><td><code>id</code></td><td><code>non-null</code></td><td><code>pay_cbd03f611c56</code></td><td>&#x2705;</td></tr>
+<tr><td><code>id</code></td><td><code>non-null</code></td><td><code>pay_e5072a9c8b93</code></td><td>&#x2705;</td></tr>
 <tr><td><code>merchantId</code></td><td><code>merchant-001</code></td><td><code>merchant-001</code></td><td>&#x2705;</td></tr>
 <tr><td><code>customerId</code></td><td><code>customer-abc</code></td><td><code>customer-abc</code></td><td>&#x2705;</td></tr>
 <tr><td><code>amount</code></td><td><code>100.0</code></td><td><code>100.0</code></td><td>&#x2705;</td></tr>
 <tr><td><code>currency</code></td><td><code>USD</code></td><td><code>USD</code></td><td>&#x2705;</td></tr>
 <tr><td><code>status</code></td><td><code>COMPLETED</code></td><td><code>COMPLETED</code></td><td>&#x2705;</td></tr>
-<tr><td><code>createdAt</code></td><td><code>non-null</code></td><td><code>2026-05-16T05:14:32.131477Z</code></td><td>&#x2705;</td></tr>
-<tr><td><code>updatedAt</code></td><td><code>non-null</code></td><td><code>2026-05-16T05:14:32.131477Z</code></td><td>&#x2705;</td></tr>
+<tr><td><code>createdAt</code></td><td><code>non-null</code></td><td><code>2026-07-07T07:52:56.284456Z</code></td><td>&#x2705;</td></tr>
+<tr><td><code>updatedAt</code></td><td><code>non-null</code></td><td><code>2026-07-07T07:52:56.284456Z</code></td><td>&#x2705;</td></tr>
 </tbody></table>
 </div>
 </details>
@@ -757,34 +785,34 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 }</code></pre>
 <h3>Response (HTTP 201, 4ms)</h3>
 <pre><code>{
-  &quot;id&quot; : &quot;pay_85c0b064e723&quot;,
+  &quot;id&quot; : &quot;pay_46c002cf195c&quot;,
   &quot;merchantId&quot; : &quot;merchant-001&quot;,
   &quot;customerId&quot; : &quot;customer-abc&quot;,
   &quot;amount&quot; : 128.5,
   &quot;currency&quot; : &quot;CNY&quot;,
   &quot;status&quot; : &quot;COMPLETED&quot;,
   &quot;description&quot; : &quot;Order #ORD-20260430-001&quot;,
-  &quot;createdAt&quot; : &quot;2026-05-16T05:14:32.178195Z&quot;,
-  &quot;updatedAt&quot; : &quot;2026-05-16T05:14:32.178195Z&quot;
+  &quot;createdAt&quot; : &quot;2026-07-07T07:52:56.320352Z&quot;,
+  &quot;updatedAt&quot; : &quot;2026-07-07T07:52:56.320352Z&quot;
 }</code></pre>
 <h3>Assertions (9/9 passed)</h3>
 <table class="assertions">
 <thead><tr><th>Field</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead>
 <tbody>
-<tr><td><code>id</code></td><td><code>non-null</code></td><td><code>pay_85c0b064e723</code></td><td>&#x2705;</td></tr>
+<tr><td><code>id</code></td><td><code>non-null</code></td><td><code>pay_46c002cf195c</code></td><td>&#x2705;</td></tr>
 <tr><td><code>merchantId</code></td><td><code>merchant-001</code></td><td><code>merchant-001</code></td><td>&#x2705;</td></tr>
 <tr><td><code>customerId</code></td><td><code>customer-abc</code></td><td><code>customer-abc</code></td><td>&#x2705;</td></tr>
 <tr><td><code>amount</code></td><td><code>128.5</code></td><td><code>128.5</code></td><td>&#x2705;</td></tr>
 <tr><td><code>currency</code></td><td><code>CNY</code></td><td><code>CNY</code></td><td>&#x2705;</td></tr>
 <tr><td><code>status</code></td><td><code>COMPLETED</code></td><td><code>COMPLETED</code></td><td>&#x2705;</td></tr>
 <tr><td><code>description</code></td><td><code>Order #ORD-20260430-001</code></td><td><code>Order #ORD-20260430-001</code></td><td>&#x2705;</td></tr>
-<tr><td><code>createdAt</code></td><td><code>non-null</code></td><td><code>2026-05-16T05:14:32.178195Z</code></td><td>&#x2705;</td></tr>
-<tr><td><code>updatedAt</code></td><td><code>non-null</code></td><td><code>2026-05-16T05:14:32.178195Z</code></td><td>&#x2705;</td></tr>
+<tr><td><code>createdAt</code></td><td><code>non-null</code></td><td><code>2026-07-07T07:52:56.320352Z</code></td><td>&#x2705;</td></tr>
+<tr><td><code>updatedAt</code></td><td><code>non-null</code></td><td><code>2026-07-07T07:52:56.320352Z</code></td><td>&#x2705;</td></tr>
 </tbody></table>
 </div>
 </details>
 <details>
-<summary><span>&#x2705;</span><span class="name">Create payment with minimum valid amount</span><span class="badge badge-BOUNDARY">BOUNDARY</span><span class="meta-info">4ms</span><span class="meta-info">5/5</span></summary>
+<summary><span>&#x2705;</span><span class="name">Create payment with minimum valid amount</span><span class="badge badge-BOUNDARY">BOUNDARY</span><span class="meta-info">3ms</span><span class="meta-info">5/5</span></summary>
 <div class="details-body">
 <h3>Request</h3>
 <pre><code>POST /api/payments
@@ -793,68 +821,68 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
   &quot;merchantId&quot; : &quot;merchant-001&quot;,
   &quot;customerId&quot; : &quot;customer-abc&quot;,
   &quot;amount&quot; : 0.01,
-  &quot;currency&quot; : &quot;USD&quot;
-}</code></pre>
-<h3>Response (HTTP 201, 4ms)</h3>
-<pre><code>{
-  &quot;id&quot; : &quot;pay_a3d8a665efa1&quot;,
-  &quot;merchantId&quot; : &quot;merchant-001&quot;,
-  &quot;customerId&quot; : &quot;customer-abc&quot;,
-  &quot;amount&quot; : 0.01,
-  &quot;currency&quot; : &quot;USD&quot;,
-  &quot;status&quot; : &quot;COMPLETED&quot;,
-  &quot;createdAt&quot; : &quot;2026-05-16T05:14:32.182173Z&quot;,
-  &quot;updatedAt&quot; : &quot;2026-05-16T05:14:32.182173Z&quot;
-}</code></pre>
-<h3>Assertions (5/5 passed)</h3>
-<table class="assertions">
-<thead><tr><th>Field</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead>
-<tbody>
-<tr><td><code>id</code></td><td><code>non-null</code></td><td><code>pay_a3d8a665efa1</code></td><td>&#x2705;</td></tr>
-<tr><td><code>amount</code></td><td><code>0.01</code></td><td><code>0.01</code></td><td>&#x2705;</td></tr>
-<tr><td><code>status</code></td><td><code>COMPLETED</code></td><td><code>COMPLETED</code></td><td>&#x2705;</td></tr>
-<tr><td><code>createdAt</code></td><td><code>non-null</code></td><td><code>2026-05-16T05:14:32.182173Z</code></td><td>&#x2705;</td></tr>
-<tr><td><code>updatedAt</code></td><td><code>non-null</code></td><td><code>2026-05-16T05:14:32.182173Z</code></td><td>&#x2705;</td></tr>
-</tbody></table>
-</div>
-</details>
-<details>
-<summary><span>&#x2705;</span><span class="name">Create payment with maximum valid amount</span><span class="badge badge-BOUNDARY">BOUNDARY</span><span class="meta-info">3ms</span><span class="meta-info">5/5</span></summary>
-<div class="details-body">
-<h3>Request</h3>
-<pre><code>POST /api/payments
-
-{
-  &quot;merchantId&quot; : &quot;merchant-001&quot;,
-  &quot;customerId&quot; : &quot;customer-abc&quot;,
-  &quot;amount&quot; : 999999.99,
   &quot;currency&quot; : &quot;USD&quot;
 }</code></pre>
 <h3>Response (HTTP 201, 3ms)</h3>
 <pre><code>{
-  &quot;id&quot; : &quot;pay_bd2754cfb1d2&quot;,
+  &quot;id&quot; : &quot;pay_d08d1e36d1a4&quot;,
   &quot;merchantId&quot; : &quot;merchant-001&quot;,
   &quot;customerId&quot; : &quot;customer-abc&quot;,
-  &quot;amount&quot; : 999999.99,
+  &quot;amount&quot; : 0.01,
   &quot;currency&quot; : &quot;USD&quot;,
   &quot;status&quot; : &quot;COMPLETED&quot;,
-  &quot;createdAt&quot; : &quot;2026-05-16T05:14:32.185589Z&quot;,
-  &quot;updatedAt&quot; : &quot;2026-05-16T05:14:32.185589Z&quot;
+  &quot;createdAt&quot; : &quot;2026-07-07T07:52:56.323762Z&quot;,
+  &quot;updatedAt&quot; : &quot;2026-07-07T07:52:56.323762Z&quot;
 }</code></pre>
 <h3>Assertions (5/5 passed)</h3>
 <table class="assertions">
 <thead><tr><th>Field</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead>
 <tbody>
-<tr><td><code>id</code></td><td><code>non-null</code></td><td><code>pay_bd2754cfb1d2</code></td><td>&#x2705;</td></tr>
-<tr><td><code>amount</code></td><td><code>999999.99</code></td><td><code>999999.99</code></td><td>&#x2705;</td></tr>
+<tr><td><code>id</code></td><td><code>non-null</code></td><td><code>pay_d08d1e36d1a4</code></td><td>&#x2705;</td></tr>
+<tr><td><code>amount</code></td><td><code>0.01</code></td><td><code>0.01</code></td><td>&#x2705;</td></tr>
 <tr><td><code>status</code></td><td><code>COMPLETED</code></td><td><code>COMPLETED</code></td><td>&#x2705;</td></tr>
-<tr><td><code>createdAt</code></td><td><code>non-null</code></td><td><code>2026-05-16T05:14:32.185589Z</code></td><td>&#x2705;</td></tr>
-<tr><td><code>updatedAt</code></td><td><code>non-null</code></td><td><code>2026-05-16T05:14:32.185589Z</code></td><td>&#x2705;</td></tr>
+<tr><td><code>createdAt</code></td><td><code>non-null</code></td><td><code>2026-07-07T07:52:56.323762Z</code></td><td>&#x2705;</td></tr>
+<tr><td><code>updatedAt</code></td><td><code>non-null</code></td><td><code>2026-07-07T07:52:56.323762Z</code></td><td>&#x2705;</td></tr>
 </tbody></table>
 </div>
 </details>
 <details>
-<summary><span>&#x2705;</span><span class="name">Create payment with amount below minimum (0.00)</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">92ms</span><span class="meta-info">2/2</span></summary>
+<summary><span>&#x2705;</span><span class="name">Create payment with maximum valid amount</span><span class="badge badge-BOUNDARY">BOUNDARY</span><span class="meta-info">4ms</span><span class="meta-info">5/5</span></summary>
+<div class="details-body">
+<h3>Request</h3>
+<pre><code>POST /api/payments
+
+{
+  &quot;merchantId&quot; : &quot;merchant-001&quot;,
+  &quot;customerId&quot; : &quot;customer-abc&quot;,
+  &quot;amount&quot; : 999999.99,
+  &quot;currency&quot; : &quot;USD&quot;
+}</code></pre>
+<h3>Response (HTTP 201, 2ms)</h3>
+<pre><code>{
+  &quot;id&quot; : &quot;pay_dfc65f872b7d&quot;,
+  &quot;merchantId&quot; : &quot;merchant-001&quot;,
+  &quot;customerId&quot; : &quot;customer-abc&quot;,
+  &quot;amount&quot; : 999999.99,
+  &quot;currency&quot; : &quot;USD&quot;,
+  &quot;status&quot; : &quot;COMPLETED&quot;,
+  &quot;createdAt&quot; : &quot;2026-07-07T07:52:56.327023Z&quot;,
+  &quot;updatedAt&quot; : &quot;2026-07-07T07:52:56.327023Z&quot;
+}</code></pre>
+<h3>Assertions (5/5 passed)</h3>
+<table class="assertions">
+<thead><tr><th>Field</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td><code>id</code></td><td><code>non-null</code></td><td><code>pay_dfc65f872b7d</code></td><td>&#x2705;</td></tr>
+<tr><td><code>amount</code></td><td><code>999999.99</code></td><td><code>999999.99</code></td><td>&#x2705;</td></tr>
+<tr><td><code>status</code></td><td><code>COMPLETED</code></td><td><code>COMPLETED</code></td><td>&#x2705;</td></tr>
+<tr><td><code>createdAt</code></td><td><code>non-null</code></td><td><code>2026-07-07T07:52:56.327023Z</code></td><td>&#x2705;</td></tr>
+<tr><td><code>updatedAt</code></td><td><code>non-null</code></td><td><code>2026-07-07T07:52:56.327023Z</code></td><td>&#x2705;</td></tr>
+</tbody></table>
+</div>
+</details>
+<details>
+<summary><span>&#x2705;</span><span class="name">Create payment with amount below minimum (0.00)</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">70ms</span><span class="meta-info">2/2</span></summary>
 <div class="details-body">
 <h3>Request</h3>
 <pre><code>POST /api/payments
@@ -865,7 +893,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
   &quot;amount&quot; : 0.0,
   &quot;currency&quot; : &quot;USD&quot;
 }</code></pre>
-<h3>Response (HTTP 400, 91ms)</h3>
+<h3>Response (HTTP 400, 69ms)</h3>
 <pre><code>{
   &quot;status&quot; : 400,
   &quot;code&quot; : &quot;VALIDATION_ERROR&quot;,
@@ -874,7 +902,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
     &quot;field&quot; : &quot;amount&quot;,
     &quot;message&quot; : &quot;必须大于或等于0.01&quot;
   } ],
-  &quot;timestamp&quot; : &quot;2026-05-16T05:14:32.271642Z&quot;
+  &quot;timestamp&quot; : &quot;2026-07-07T07:52:56.392890Z&quot;
 }</code></pre>
 <h3>Assertions (2/2 passed)</h3>
 <table class="assertions">
@@ -886,7 +914,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 </div>
 </details>
 <details>
-<summary><span>&#x2705;</span><span class="name">Create payment with amount exceeding maximum</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">6ms</span><span class="meta-info">2/2</span></summary>
+<summary><span>&#x2705;</span><span class="name">Create payment with amount exceeding maximum</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">5ms</span><span class="meta-info">2/2</span></summary>
 <div class="details-body">
 <h3>Request</h3>
 <pre><code>POST /api/payments
@@ -904,12 +932,12 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
   &quot;message&quot; : &quot;Request validation failed&quot;,
   &quot;errors&quot; : [ {
     &quot;field&quot; : &quot;amount&quot;,
-    &quot;message&quot; : &quot;数字的值超出了允许范围(只允许在6位整数和2位小数范围内)&quot;
+    &quot;message&quot; : &quot;必须小于或等于999999.99&quot;
   }, {
     &quot;field&quot; : &quot;amount&quot;,
-    &quot;message&quot; : &quot;必须小于或等于999999.99&quot;
+    &quot;message&quot; : &quot;数字的值超出了允许范围(只允许在6位整数和2位小数范围内)&quot;
   } ],
-  &quot;timestamp&quot; : &quot;2026-05-16T05:14:32.282607Z&quot;
+  &quot;timestamp&quot; : &quot;2026-07-07T07:52:56.402674Z&quot;
 }</code></pre>
 <h3>Assertions (2/2 passed)</h3>
 <table class="assertions">
@@ -932,7 +960,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
   &quot;amount&quot; : 100.0,
   &quot;currency&quot; : &quot;us&quot;
 }</code></pre>
-<h3>Response (HTTP 400, 4ms)</h3>
+<h3>Response (HTTP 400, 3ms)</h3>
 <pre><code>{
   &quot;status&quot; : 400,
   &quot;code&quot; : &quot;VALIDATION_ERROR&quot;,
@@ -941,7 +969,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
     &quot;field&quot; : &quot;currency&quot;,
     &quot;message&quot; : &quot;must be a 3-letter ISO 4217 currency code&quot;
   } ],
-  &quot;timestamp&quot; : &quot;2026-05-16T05:14:32.287484Z&quot;
+  &quot;timestamp&quot; : &quot;2026-07-07T07:52:56.406521Z&quot;
 }</code></pre>
 <h3>Assertions (2/2 passed)</h3>
 <table class="assertions">
@@ -953,7 +981,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 </div>
 </details>
 <details>
-<summary><span>&#x2705;</span><span class="name">Create payment missing required field 'amount'</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">6ms</span><span class="meta-info">2/2</span></summary>
+<summary><span>&#x2705;</span><span class="name">Create payment missing required field 'amount'</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">4ms</span><span class="meta-info">2/2</span></summary>
 <div class="details-body">
 <h3>Request</h3>
 <pre><code>POST /api/payments
@@ -972,7 +1000,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
     &quot;field&quot; : &quot;amount&quot;,
     &quot;message&quot; : &quot;不能为null&quot;
   } ],
-  &quot;timestamp&quot; : &quot;2026-05-16T05:14:32.292900Z&quot;
+  &quot;timestamp&quot; : &quot;2026-07-07T07:52:56.410761Z&quot;
 }</code></pre>
 <h3>Assertions (2/2 passed)</h3>
 <table class="assertions">
@@ -984,7 +1012,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 </div>
 </details>
 <details>
-<summary><span>&#x2705;</span><span class="name">Create payment missing required field 'currency'</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">5ms</span><span class="meta-info">2/2</span></summary>
+<summary><span>&#x2705;</span><span class="name">Create payment missing required field 'currency'</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">4ms</span><span class="meta-info">2/2</span></summary>
 <div class="details-body">
 <h3>Request</h3>
 <pre><code>POST /api/payments
@@ -994,7 +1022,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
   &quot;customerId&quot; : &quot;customer-abc&quot;,
   &quot;amount&quot; : 100.0
 }</code></pre>
-<h3>Response (HTTP 400, 5ms)</h3>
+<h3>Response (HTTP 400, 4ms)</h3>
 <pre><code>{
   &quot;status&quot; : 400,
   &quot;code&quot; : &quot;VALIDATION_ERROR&quot;,
@@ -1003,7 +1031,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
     &quot;field&quot; : &quot;currency&quot;,
     &quot;message&quot; : &quot;不能为空&quot;
   } ],
-  &quot;timestamp&quot; : &quot;2026-05-16T05:14:32.298319Z&quot;
+  &quot;timestamp&quot; : &quot;2026-07-07T07:52:56.415150Z&quot;
 }</code></pre>
 <h3>Assertions (2/2 passed)</h3>
 <table class="assertions">
@@ -1015,7 +1043,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 </div>
 </details>
 <details>
-<summary><span>&#x2705;</span><span class="name">Create payment missing required field 'merchantId'</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">5ms</span><span class="meta-info">2/2</span></summary>
+<summary><span>&#x2705;</span><span class="name">Create payment missing required field 'merchantId'</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">4ms</span><span class="meta-info">2/2</span></summary>
 <div class="details-body">
 <h3>Request</h3>
 <pre><code>POST /api/payments
@@ -1025,7 +1053,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
   &quot;amount&quot; : 100.0,
   &quot;currency&quot; : &quot;USD&quot;
 }</code></pre>
-<h3>Response (HTTP 400, 5ms)</h3>
+<h3>Response (HTTP 400, 3ms)</h3>
 <pre><code>{
   &quot;status&quot; : 400,
   &quot;code&quot; : &quot;VALIDATION_ERROR&quot;,
@@ -1034,7 +1062,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
     &quot;field&quot; : &quot;merchantId&quot;,
     &quot;message&quot; : &quot;不能为空&quot;
   } ],
-  &quot;timestamp&quot; : &quot;2026-05-16T05:14:32.303197Z&quot;
+  &quot;timestamp&quot; : &quot;2026-07-07T07:52:56.419303Z&quot;
 }</code></pre>
 <h3>Assertions (2/2 passed)</h3>
 <table class="assertions">
@@ -1046,7 +1074,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 </div>
 </details>
 <details>
-<summary><span>&#x2705;</span><span class="name">Create payment missing required field 'customerId'</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">5ms</span><span class="meta-info">2/2</span></summary>
+<summary><span>&#x2705;</span><span class="name">Create payment missing required field 'customerId'</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">4ms</span><span class="meta-info">2/2</span></summary>
 <div class="details-body">
 <h3>Request</h3>
 <pre><code>POST /api/payments
@@ -1056,7 +1084,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
   &quot;amount&quot; : 100.0,
   &quot;currency&quot; : &quot;USD&quot;
 }</code></pre>
-<h3>Response (HTTP 400, 5ms)</h3>
+<h3>Response (HTTP 400, 4ms)</h3>
 <pre><code>{
   &quot;status&quot; : 400,
   &quot;code&quot; : &quot;VALIDATION_ERROR&quot;,
@@ -1065,7 +1093,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
     &quot;field&quot; : &quot;customerId&quot;,
     &quot;message&quot; : &quot;不能为空&quot;
   } ],
-  &quot;timestamp&quot; : &quot;2026-05-16T05:14:32.308163Z&quot;
+  &quot;timestamp&quot; : &quot;2026-07-07T07:52:56.423223Z&quot;
 }</code></pre>
 <h3>Assertions (2/2 passed)</h3>
 <table class="assertions">
@@ -1077,7 +1105,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 </div>
 </details>
 <details>
-<summary class="failed"><span>&#x274C;</span><span class="name">Create payment with amount as string instead of number</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">25ms</span><span class="meta-info">1/2</span></summary>
+<summary class="failed"><span>&#x274C;</span><span class="name">Create payment with amount as string instead of number</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">22ms</span><span class="meta-info">1/2</span></summary>
 <div class="details-body">
 <h3>Request</h3>
 <pre><code>POST /api/payments
@@ -1088,9 +1116,9 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
   &quot;amount&quot; : &quot;one-hundred&quot;,
   &quot;currency&quot; : &quot;USD&quot;
 }</code></pre>
-<h3>Response (HTTP 400, 24ms)</h3>
+<h3>Response (HTTP 400, 21ms)</h3>
 <pre><code>{
-  &quot;timestamp&quot; : &quot;2026-05-16T05:14:32.328+00:00&quot;,
+  &quot;timestamp&quot; : &quot;2026-07-07T07:52:56.440+00:00&quot;,
   &quot;status&quot; : 400,
   &quot;error&quot; : &quot;Bad Request&quot;,
   &quot;path&quot; : &quot;/api/payments&quot;
@@ -1105,15 +1133,15 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <details class="ai-analysis-details">
 <summary class="ai-analysis-summary">&#x1F916; AI Analysis &mdash; <span class="category-badge category-TEST_LOGIC_ERROR">TEST LOGIC ERROR</span>&nbsp;<span class="confidence-badge confidence-HIGH">HIGH confidence</span></summary>
 <div class="ai-analysis-body">
-<div class="ai-field"><strong>Root Cause:</strong> The expected_status is set to 0 (likely uninitialized/default) instead of the correct expected value of 400, and the test asserts a 'code' field that the API does not return for framework-level deserialization errors.</div>
-<div class="ai-field"><strong>Evidence:</strong> actual_status is 400 which is the semantically correct response, but expected_status is 0; the response body is a Spring default error envelope without a 'code' field, which is consistent with pre-controller type-mismatch rejection.</div>
-<div class="ai-field"><strong>Suggested Fix:</strong> Set expected_status to 400 and remove the assertion on 'code' since Spring's built-in HttpMessageNotReadableException response does not include a business-level error code; alternatively update the API's global exception handler to enrich this error with a 'code' field.</div>
+<div class="ai-field"><strong>Root Cause:</strong> The expected_status is 0 (unset/default) instead of 400, and the test asserts a 'code' field in the error response that this endpoint does not return.</div>
+<div class="ai-field"><strong>Evidence:</strong> actual_status is 400 which is correct behavior for an invalid type input, but expected_status=0 indicates no expected status was configured; additionally the error response format lacks 'code' field (uses Spring Boot default error format) which the assertion requires.</div>
+<div class="ai-field"><strong>Suggested Fix:</strong> Set expected_status to 400 and remove the assertion on 'code' field, or align the test to use the API's actual error response schema (Spring Boot default error envelope) rather than a custom error schema.</div>
 </div>
 </details>
 </div>
 </details>
 <details>
-<summary><span>&#x2705;</span><span class="name">Create payment with merchantId exceeding maxLength</span><span class="badge badge-BOUNDARY">BOUNDARY</span><span class="meta-info">5ms</span><span class="meta-info">2/2</span></summary>
+<summary><span>&#x2705;</span><span class="name">Create payment with merchantId exceeding maxLength</span><span class="badge badge-BOUNDARY">BOUNDARY</span><span class="meta-info">6ms</span><span class="meta-info">2/2</span></summary>
 <div class="details-body">
 <h3>Request</h3>
 <pre><code>POST /api/payments
@@ -1124,7 +1152,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
   &quot;amount&quot; : 100.0,
   &quot;currency&quot; : &quot;USD&quot;
 }</code></pre>
-<h3>Response (HTTP 400, 4ms)</h3>
+<h3>Response (HTTP 400, 5ms)</h3>
 <pre><code>{
   &quot;status&quot; : 400,
   &quot;code&quot; : &quot;VALIDATION_ERROR&quot;,
@@ -1133,7 +1161,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
     &quot;field&quot; : &quot;merchantId&quot;,
     &quot;message&quot; : &quot;个数必须在0和64之间&quot;
   } ],
-  &quot;timestamp&quot; : &quot;2026-05-16T05:14:32.337936Z&quot;
+  &quot;timestamp&quot; : &quot;2026-07-07T07:52:56.450811Z&quot;
 }</code></pre>
 <h3>Assertions (2/2 passed)</h3>
 <table class="assertions">
@@ -1145,7 +1173,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 </div>
 </details>
 <details>
-<summary class="failed"><span>&#x274C;</span><span class="name">Create payment with description at maxLength boundary</span><span class="badge badge-BOUNDARY">BOUNDARY</span><span class="meta-info">5ms</span><span class="meta-info">0/4</span></summary>
+<summary class="failed"><span>&#x274C;</span><span class="name">Create payment with description at maxLength boundary</span><span class="badge badge-BOUNDARY">BOUNDARY</span><span class="meta-info">4ms</span><span class="meta-info">0/4</span></summary>
 <div class="details-body">
 <h3>Request</h3>
 <pre><code>POST /api/payments
@@ -1157,7 +1185,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
   &quot;currency&quot; : &quot;USD&quot;,
   &quot;description&quot; : &quot;AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA&quot;
 }</code></pre>
-<h3>Response (HTTP 400, 5ms)</h3>
+<h3>Response (HTTP 400, 4ms)</h3>
 <pre><code>{
   &quot;status&quot; : 400,
   &quot;code&quot; : &quot;VALIDATION_ERROR&quot;,
@@ -1166,7 +1194,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
     &quot;field&quot; : &quot;description&quot;,
     &quot;message&quot; : &quot;个数必须在0和255之间&quot;
   } ],
-  &quot;timestamp&quot; : &quot;2026-05-16T05:14:32.343502Z&quot;
+  &quot;timestamp&quot; : &quot;2026-07-07T07:52:56.455209Z&quot;
 }</code></pre>
 <h3>Assertions (0/4 passed)</h3>
 <table class="assertions">
@@ -1180,15 +1208,15 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <details class="ai-analysis-details">
 <summary class="ai-analysis-summary">&#x1F916; AI Analysis &mdash; <span class="category-badge category-TEST_LOGIC_ERROR">TEST LOGIC ERROR</span>&nbsp;<span class="confidence-badge confidence-HIGH">HIGH confidence</span></summary>
 <div class="ai-analysis-body">
-<div class="ai-field"><strong>Root Cause:</strong> The description string sent is 256 characters (one over the 255-char max boundary), so the API correctly rejects it with 400, but the test expects a 201 success response with body fields like 'id' and 'createdAt'.</div>
-<div class="ai-field"><strong>Evidence:</strong> The description value contains 256 'A' characters; the API responds with VALIDATION_ERROR 'size must be between 0 and 255', confirming the boundary was exceeded by one character; expected_status is 0 (unset) and success-path fields are asserted.</div>
-<div class="ai-field"><strong>Suggested Fix:</strong> Trim the description to exactly 255 characters so the boundary test truly sits at the valid maximum, set expected_status to 201, and assert the success-response fields; or if testing the 256-char case, set expected_status to 400 and assert error fields instead.</div>
+<div class="ai-field"><strong>Root Cause:</strong> The test sends a description of 264 characters (exceeding the 255-char max) but expects a 201 success response with 'id', 'createdAt', and 'updatedAt' fields, when the correct expected outcome is a 400 validation error.</div>
+<div class="ai-field"><strong>Evidence:</strong> The description field in the request body is 264 characters long and the API correctly returns 400 VALIDATION_ERROR with message '个数必须在0和255之间'; the test assertions expect success response fields (id, createdAt, updatedAt) and compare status as String vs Integer, indicating the test was configured for a success scenario.</div>
+<div class="ai-field"><strong>Suggested Fix:</strong> Update the test to expect a 400 status code and assert on the error response fields ('code', 'message', 'errors') rather than success fields ('id', 'createdAt', 'updatedAt'). If the intent was to test the exact boundary (255 chars), trim the description to exactly 255 characters.</div>
 </div>
 </details>
 </div>
 </details>
 <details>
-<summary><span>&#x2705;</span><span class="name">Create payment with negative amount</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">4ms</span><span class="meta-info">2/2</span></summary>
+<summary><span>&#x2705;</span><span class="name">Create payment with negative amount</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">5ms</span><span class="meta-info">2/2</span></summary>
 <div class="details-body">
 <h3>Request</h3>
 <pre><code>POST /api/payments
@@ -1208,7 +1236,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
     &quot;field&quot; : &quot;amount&quot;,
     &quot;message&quot; : &quot;必须大于或等于0.01&quot;
   } ],
-  &quot;timestamp&quot; : &quot;2026-05-16T05:14:32.348276Z&quot;
+  &quot;timestamp&quot; : &quot;2026-07-07T07:52:56.459911Z&quot;
 }</code></pre>
 <h3>Assertions (2/2 passed)</h3>
 <table class="assertions">
@@ -1220,7 +1248,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 </div>
 </details>
 <details>
-<summary><span>&#x2705;</span><span class="name">Create payment with numeric currency code</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">4ms</span><span class="meta-info">2/2</span></summary>
+<summary><span>&#x2705;</span><span class="name">Create payment with numeric currency code</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">3ms</span><span class="meta-info">2/2</span></summary>
 <div class="details-body">
 <h3>Request</h3>
 <pre><code>POST /api/payments
@@ -1231,7 +1259,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
   &quot;amount&quot; : 100.0,
   &quot;currency&quot; : &quot;840&quot;
 }</code></pre>
-<h3>Response (HTTP 400, 4ms)</h3>
+<h3>Response (HTTP 400, 3ms)</h3>
 <pre><code>{
   &quot;status&quot; : 400,
   &quot;code&quot; : &quot;VALIDATION_ERROR&quot;,
@@ -1240,7 +1268,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
     &quot;field&quot; : &quot;currency&quot;,
     &quot;message&quot; : &quot;must be a 3-letter ISO 4217 currency code&quot;
   } ],
-  &quot;timestamp&quot; : &quot;2026-05-16T05:14:32.352608Z&quot;
+  &quot;timestamp&quot; : &quot;2026-07-07T07:52:56.463755Z&quot;
 }</code></pre>
 <h3>Assertions (2/2 passed)</h3>
 <table class="assertions">
@@ -1252,7 +1280,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 </div>
 </details>
 <details>
-<summary><span>&#x2705;</span><span class="name">Create payment with empty request body</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">5ms</span><span class="meta-info">2/2</span></summary>
+<summary><span>&#x2705;</span><span class="name">Create payment with empty request body</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">4ms</span><span class="meta-info">2/2</span></summary>
 <div class="details-body">
 <h3>Request</h3>
 <pre><code>POST /api/payments
@@ -1276,7 +1304,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
     &quot;field&quot; : &quot;customerId&quot;,
     &quot;message&quot; : &quot;不能为空&quot;
   } ],
-  &quot;timestamp&quot; : &quot;2026-05-16T05:14:32.357546Z&quot;
+  &quot;timestamp&quot; : &quot;2026-07-07T07:52:56.468275Z&quot;
 }</code></pre>
 <h3>Assertions (2/2 passed)</h3>
 <table class="assertions">
@@ -1291,89 +1319,89 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <summary><span>&#x2705;</span><span class="name">Get existing payment by ID</span><span class="badge badge-HAPPY_PATH">HAPPY_PATH</span><span class="meta-info">4ms</span><span class="meta-info">8/8</span></summary>
 <div class="details-body">
 <h3>Request</h3>
-<pre><code>GET /api/payments/pay_71187c7122da</code></pre>
+<pre><code>GET /api/payments/pay_1913502884e9</code></pre>
 <h3>Response (HTTP 200, 4ms)</h3>
 <pre><code>{
-  &quot;id&quot; : &quot;pay_71187c7122da&quot;,
+  &quot;id&quot; : &quot;pay_1913502884e9&quot;,
   &quot;merchantId&quot; : &quot;setup-merchant&quot;,
   &quot;customerId&quot; : &quot;setup-customer&quot;,
   &quot;amount&quot; : 100.0,
   &quot;currency&quot; : &quot;USD&quot;,
   &quot;status&quot; : &quot;COMPLETED&quot;,
-  &quot;createdAt&quot; : &quot;2026-05-16T05:14:32.363320Z&quot;,
-  &quot;updatedAt&quot; : &quot;2026-05-16T05:14:32.363320Z&quot;
+  &quot;createdAt&quot; : &quot;2026-07-07T07:52:56.473411Z&quot;,
+  &quot;updatedAt&quot; : &quot;2026-07-07T07:52:56.473411Z&quot;
 }</code></pre>
 <h3>Assertions (8/8 passed)</h3>
 <table class="assertions">
 <thead><tr><th>Field</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead>
 <tbody>
-<tr><td><code>createdAt</code></td><td><code>non-null</code></td><td><code>2026-05-16T05:14:32.363320Z</code></td><td>&#x2705;</td></tr>
+<tr><td><code>createdAt</code></td><td><code>non-null</code></td><td><code>2026-07-07T07:52:56.473411Z</code></td><td>&#x2705;</td></tr>
 <tr><td><code>amount</code></td><td><code>non-null</code></td><td><code>100.0</code></td><td>&#x2705;</td></tr>
 <tr><td><code>merchantId</code></td><td><code>non-null</code></td><td><code>setup-merchant</code></td><td>&#x2705;</td></tr>
 <tr><td><code>customerId</code></td><td><code>non-null</code></td><td><code>setup-customer</code></td><td>&#x2705;</td></tr>
 <tr><td><code>currency</code></td><td><code>non-null</code></td><td><code>USD</code></td><td>&#x2705;</td></tr>
-<tr><td><code>id</code></td><td><code>non-null</code></td><td><code>pay_71187c7122da</code></td><td>&#x2705;</td></tr>
+<tr><td><code>id</code></td><td><code>non-null</code></td><td><code>pay_1913502884e9</code></td><td>&#x2705;</td></tr>
 <tr><td><code>status</code></td><td><code>COMPLETED</code></td><td><code>COMPLETED</code></td><td>&#x2705;</td></tr>
-<tr><td><code>updatedAt</code></td><td><code>non-null</code></td><td><code>2026-05-16T05:14:32.363320Z</code></td><td>&#x2705;</td></tr>
+<tr><td><code>updatedAt</code></td><td><code>non-null</code></td><td><code>2026-07-07T07:52:56.473411Z</code></td><td>&#x2705;</td></tr>
 </tbody></table>
 </div>
 </details>
 <details>
-<summary><span>&#x2705;</span><span class="name">Get payment with non-existent ID returns 404</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">4ms</span><span class="meta-info">1/1</span></summary>
+<summary><span>&#x2705;</span><span class="name">Get payment with non-existent ID returns 404</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">3ms</span><span class="meta-info">1/1</span></summary>
 <div class="details-body">
 <h3>Request</h3>
 <pre><code>GET /api/payments/non-existent-id</code></pre>
-<h3>Response (HTTP 404, 2ms)</h3>
+<h3>Response (HTTP 404, 3ms)</h3>
 <pre><code>{
   &quot;status&quot; : 404,
   &quot;code&quot; : &quot;PAYMENT_NOT_FOUND&quot;,
   &quot;message&quot; : &quot;Payment not found: non-existent-id&quot;,
-  &quot;timestamp&quot; : &quot;2026-05-16T05:14:32.371907Z&quot;
+  &quot;timestamp&quot; : &quot;2026-07-07T07:52:56.481807Z&quot;
 }</code></pre>
 <h3>Assertions (1/1 passed)</h3>
 <table class="assertions">
 <thead><tr><th>Field</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead>
 <tbody>
-<tr><td><code>timestamp</code></td><td><code>non-null</code></td><td><code>2026-05-16T05:14:32.371907Z</code></td><td>&#x2705;</td></tr>
+<tr><td><code>timestamp</code></td><td><code>non-null</code></td><td><code>2026-07-07T07:52:56.481807Z</code></td><td>&#x2705;</td></tr>
 </tbody></table>
 </div>
 </details>
 <details>
-<summary class="failed"><span>&#x274C;</span><span class="name">Response body contains all defined fields for existing payment</span><span class="badge badge-HAPPY_PATH">HAPPY_PATH</span><span class="meta-info">3ms</span><span class="meta-info">8/9</span></summary>
+<summary class="failed"><span>&#x274C;</span><span class="name">Response body contains all defined fields for existing payment</span><span class="badge badge-HAPPY_PATH">HAPPY_PATH</span><span class="meta-info">2ms</span><span class="meta-info">8/9</span></summary>
 <div class="details-body">
 <h3>Request</h3>
-<pre><code>GET /api/payments/pay_4f5ee92bf505</code></pre>
+<pre><code>GET /api/payments/pay_e0b06ccd0a99</code></pre>
 <h3>Response (HTTP 200, 2ms)</h3>
 <pre><code>{
-  &quot;id&quot; : &quot;pay_4f5ee92bf505&quot;,
+  &quot;id&quot; : &quot;pay_e0b06ccd0a99&quot;,
   &quot;merchantId&quot; : &quot;setup-merchant&quot;,
   &quot;customerId&quot; : &quot;setup-customer&quot;,
   &quot;amount&quot; : 100.0,
   &quot;currency&quot; : &quot;USD&quot;,
   &quot;status&quot; : &quot;COMPLETED&quot;,
-  &quot;createdAt&quot; : &quot;2026-05-16T05:14:32.375589Z&quot;,
-  &quot;updatedAt&quot; : &quot;2026-05-16T05:14:32.375589Z&quot;
+  &quot;createdAt&quot; : &quot;2026-07-07T07:52:56.485078Z&quot;,
+  &quot;updatedAt&quot; : &quot;2026-07-07T07:52:56.485078Z&quot;
 }</code></pre>
 <h3>Assertions (8/9 passed)</h3>
 <table class="assertions">
 <thead><tr><th>Field</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead>
 <tbody>
-<tr><td><code>createdAt</code></td><td><code>non-null</code></td><td><code>2026-05-16T05:14:32.375589Z</code></td><td>&#x2705;</td></tr>
+<tr><td><code>createdAt</code></td><td><code>non-null</code></td><td><code>2026-07-07T07:52:56.485078Z</code></td><td>&#x2705;</td></tr>
 <tr><td><code>amount</code></td><td><code>non-null</code></td><td><code>100.0</code></td><td>&#x2705;</td></tr>
 <tr><td><code>merchantId</code></td><td><code>non-null</code></td><td><code>setup-merchant</code></td><td>&#x2705;</td></tr>
 <tr><td><code>customerId</code></td><td><code>non-null</code></td><td><code>setup-customer</code></td><td>&#x2705;</td></tr>
 <tr class="assert-failed"><td><code>description</code></td><td><code>non-null</code></td><td><code>null</code></td><td>&#x274C;</td></tr>
 <tr><td><code>currency</code></td><td><code>non-null</code></td><td><code>USD</code></td><td>&#x2705;</td></tr>
-<tr><td><code>id</code></td><td><code>non-null</code></td><td><code>pay_4f5ee92bf505</code></td><td>&#x2705;</td></tr>
+<tr><td><code>id</code></td><td><code>non-null</code></td><td><code>pay_e0b06ccd0a99</code></td><td>&#x2705;</td></tr>
 <tr><td><code>status</code></td><td><code>COMPLETED</code></td><td><code>COMPLETED</code></td><td>&#x2705;</td></tr>
-<tr><td><code>updatedAt</code></td><td><code>non-null</code></td><td><code>2026-05-16T05:14:32.375589Z</code></td><td>&#x2705;</td></tr>
+<tr><td><code>updatedAt</code></td><td><code>non-null</code></td><td><code>2026-07-07T07:52:56.485078Z</code></td><td>&#x2705;</td></tr>
 </tbody></table>
 <details class="ai-analysis-details">
 <summary class="ai-analysis-summary">&#x1F916; AI Analysis &mdash; <span class="category-badge category-ASSERTION_TOO_STRICT">ASSERTION TOO STRICT</span>&nbsp;<span class="confidence-badge confidence-HIGH">HIGH confidence</span></summary>
 <div class="ai-analysis-body">
-<div class="ai-field"><strong>Root Cause:</strong> The test asserts that 'description' must be present in the response, but the stored payment was created without a description field and the API correctly omits absent optional fields.</div>
-<div class="ai-field"><strong>Evidence:</strong> The actual response contains all other expected fields correctly (id, merchantId, customerId, amount, currency, status, createdAt, updatedAt) and returns 200, but 'description' is absent because the seed payment has no description value.</div>
-<div class="ai-field"><strong>Suggested Fix:</strong> Either make the 'description' assertion conditional/optional in the test, or update the test setup data to include a description value when seeding 'pay_4f5ee92bf505'.</div>
+<div class="ai-field"><strong>Root Cause:</strong> The test asserts that 'description' must be present in the response, but the stored payment was created without a description and the API correctly omits optional absent fields.</div>
+<div class="ai-field"><strong>Evidence:</strong> The actual response body contains all other expected fields correctly (id, merchantId, customerId, amount, currency, status, createdAt, updatedAt) but 'description' is absent, which is valid if the payment was created without one.</div>
+<div class="ai-field"><strong>Suggested Fix:</strong> Either update the test setup to create the payment with a description and assert its value, or make the 'description' field assertion conditional/optional since it is not a required field.</div>
 </div>
 </details>
 </div>
@@ -1383,86 +1411,86 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <div class="details-body">
 <h3>Request</h3>
 <pre><code>GET /api/payments/does-not-exist</code></pre>
-<h3>Response (HTTP 404, 3ms)</h3>
+<h3>Response (HTTP 404, 2ms)</h3>
 <pre><code>{
   &quot;status&quot; : 404,
   &quot;code&quot; : &quot;PAYMENT_NOT_FOUND&quot;,
   &quot;message&quot; : &quot;Payment not found: does-not-exist&quot;,
-  &quot;timestamp&quot; : &quot;2026-05-16T05:14:32.381678Z&quot;
+  &quot;timestamp&quot; : &quot;2026-07-07T07:52:56.490037Z&quot;
 }</code></pre>
 <h3>Assertions (1/1 passed)</h3>
 <table class="assertions">
 <thead><tr><th>Field</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead>
 <tbody>
-<tr><td><code>timestamp</code></td><td><code>non-null</code></td><td><code>2026-05-16T05:14:32.381678Z</code></td><td>&#x2705;</td></tr>
+<tr><td><code>timestamp</code></td><td><code>non-null</code></td><td><code>2026-07-07T07:52:56.490037Z</code></td><td>&#x2705;</td></tr>
 </tbody></table>
 </div>
 </details>
 <details>
-<summary><span>&#x2705;</span><span class="name">refundReason field absent for COMPLETED payment</span><span class="badge badge-HAPPY_PATH">HAPPY_PATH</span><span class="meta-info">3ms</span><span class="meta-info">4/4</span></summary>
+<summary><span>&#x2705;</span><span class="name">refundReason field absent for COMPLETED payment</span><span class="badge badge-HAPPY_PATH">HAPPY_PATH</span><span class="meta-info">2ms</span><span class="meta-info">4/4</span></summary>
 <div class="details-body">
 <h3>Request</h3>
-<pre><code>GET /api/payments/pay_620794303def</code></pre>
+<pre><code>GET /api/payments/pay_e223b2b9cda6</code></pre>
 <h3>Response (HTTP 200, 2ms)</h3>
 <pre><code>{
-  &quot;id&quot; : &quot;pay_620794303def&quot;,
+  &quot;id&quot; : &quot;pay_e223b2b9cda6&quot;,
   &quot;merchantId&quot; : &quot;setup-merchant&quot;,
   &quot;customerId&quot; : &quot;setup-customer&quot;,
   &quot;amount&quot; : 100.0,
   &quot;currency&quot; : &quot;USD&quot;,
   &quot;status&quot; : &quot;COMPLETED&quot;,
-  &quot;createdAt&quot; : &quot;2026-05-16T05:14:32.385124Z&quot;,
-  &quot;updatedAt&quot; : &quot;2026-05-16T05:14:32.385124Z&quot;
+  &quot;createdAt&quot; : &quot;2026-07-07T07:52:56.492866Z&quot;,
+  &quot;updatedAt&quot; : &quot;2026-07-07T07:52:56.492866Z&quot;
 }</code></pre>
 <h3>Assertions (4/4 passed)</h3>
 <table class="assertions">
 <thead><tr><th>Field</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead>
 <tbody>
-<tr><td><code>createdAt</code></td><td><code>non-null</code></td><td><code>2026-05-16T05:14:32.385124Z</code></td><td>&#x2705;</td></tr>
-<tr><td><code>id</code></td><td><code>non-null</code></td><td><code>pay_620794303def</code></td><td>&#x2705;</td></tr>
+<tr><td><code>createdAt</code></td><td><code>non-null</code></td><td><code>2026-07-07T07:52:56.492866Z</code></td><td>&#x2705;</td></tr>
+<tr><td><code>id</code></td><td><code>non-null</code></td><td><code>pay_e223b2b9cda6</code></td><td>&#x2705;</td></tr>
 <tr><td><code>status</code></td><td><code>COMPLETED</code></td><td><code>COMPLETED</code></td><td>&#x2705;</td></tr>
-<tr><td><code>updatedAt</code></td><td><code>non-null</code></td><td><code>2026-05-16T05:14:32.385124Z</code></td><td>&#x2705;</td></tr>
+<tr><td><code>updatedAt</code></td><td><code>non-null</code></td><td><code>2026-07-07T07:52:56.492866Z</code></td><td>&#x2705;</td></tr>
 </tbody></table>
 </div>
 </details>
 <details>
-<summary><span>&#x2705;</span><span class="name">Full refund omitting amount (full payment amount refunded)</span><span class="badge badge-HAPPY_PATH">HAPPY_PATH</span><span class="meta-info">10ms</span><span class="meta-info">5/5</span></summary>
+<summary><span>&#x2705;</span><span class="name">Full refund omitting amount (full payment amount refunded)</span><span class="badge badge-HAPPY_PATH">HAPPY_PATH</span><span class="meta-info">9ms</span><span class="meta-info">5/5</span></summary>
 <div class="details-body">
 <h3>Request</h3>
-<pre><code>POST /api/payments/pay_b28efe9920c3/refund
+<pre><code>POST /api/payments/pay_ad4c2c92b182/refund
 
 {
   &quot;reason&quot; : &quot;Customer requested cancellation&quot;
 }</code></pre>
-<h3>Response (HTTP 200, 9ms)</h3>
+<h3>Response (HTTP 200, 7ms)</h3>
 <pre><code>{
-  &quot;id&quot; : &quot;pay_b28efe9920c3&quot;,
+  &quot;id&quot; : &quot;pay_ad4c2c92b182&quot;,
   &quot;merchantId&quot; : &quot;setup-merchant&quot;,
   &quot;customerId&quot; : &quot;setup-customer&quot;,
   &quot;amount&quot; : 100.0,
   &quot;currency&quot; : &quot;USD&quot;,
   &quot;status&quot; : &quot;REFUNDED&quot;,
   &quot;refundReason&quot; : &quot;Customer requested cancellation&quot;,
-  &quot;createdAt&quot; : &quot;2026-05-16T05:14:32.391111Z&quot;,
-  &quot;updatedAt&quot; : &quot;2026-05-16T05:14:32.401445Z&quot;
+  &quot;createdAt&quot; : &quot;2026-07-07T07:52:56.498429Z&quot;,
+  &quot;updatedAt&quot; : &quot;2026-07-07T07:52:56.506427Z&quot;
 }</code></pre>
 <h3>Assertions (5/5 passed)</h3>
 <table class="assertions">
 <thead><tr><th>Field</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead>
 <tbody>
-<tr><td><code>createdAt</code></td><td><code>non-null</code></td><td><code>2026-05-16T05:14:32.391111Z</code></td><td>&#x2705;</td></tr>
+<tr><td><code>createdAt</code></td><td><code>non-null</code></td><td><code>2026-07-07T07:52:56.498429Z</code></td><td>&#x2705;</td></tr>
 <tr><td><code>refundReason</code></td><td><code>Customer requested cancellation</code></td><td><code>Customer requested cancellation</code></td><td>&#x2705;</td></tr>
-<tr><td><code>id</code></td><td><code>non-null</code></td><td><code>pay_b28efe9920c3</code></td><td>&#x2705;</td></tr>
+<tr><td><code>id</code></td><td><code>non-null</code></td><td><code>pay_ad4c2c92b182</code></td><td>&#x2705;</td></tr>
 <tr><td><code>status</code></td><td><code>REFUNDED</code></td><td><code>REFUNDED</code></td><td>&#x2705;</td></tr>
-<tr><td><code>updatedAt</code></td><td><code>non-null</code></td><td><code>2026-05-16T05:14:32.401445Z</code></td><td>&#x2705;</td></tr>
+<tr><td><code>updatedAt</code></td><td><code>non-null</code></td><td><code>2026-07-07T07:52:56.506427Z</code></td><td>&#x2705;</td></tr>
 </tbody></table>
 </div>
 </details>
 <details>
-<summary><span>&#x2705;</span><span class="name">Partial refund with amount less than payment amount</span><span class="badge badge-HAPPY_PATH">HAPPY_PATH</span><span class="meta-info">5ms</span><span class="meta-info">5/5</span></summary>
+<summary><span>&#x2705;</span><span class="name">Partial refund with amount less than payment amount</span><span class="badge badge-HAPPY_PATH">HAPPY_PATH</span><span class="meta-info">3ms</span><span class="meta-info">5/5</span></summary>
 <div class="details-body">
 <h3>Request</h3>
-<pre><code>POST /api/payments/pay_c4be4fab836d/refund
+<pre><code>POST /api/payments/pay_cb8c329aa1d0/refund
 
 {
   &quot;reason&quot; : &quot;Partial cancellation requested&quot;,
@@ -1470,48 +1498,48 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 }</code></pre>
 <h3>Response (HTTP 200, 3ms)</h3>
 <pre><code>{
-  &quot;id&quot; : &quot;pay_c4be4fab836d&quot;,
+  &quot;id&quot; : &quot;pay_cb8c329aa1d0&quot;,
   &quot;merchantId&quot; : &quot;setup-merchant&quot;,
   &quot;customerId&quot; : &quot;setup-customer&quot;,
   &quot;amount&quot; : 100.0,
   &quot;currency&quot; : &quot;USD&quot;,
   &quot;status&quot; : &quot;PARTIALLY_REFUNDED&quot;,
   &quot;refundReason&quot; : &quot;Partial cancellation requested&quot;,
-  &quot;createdAt&quot; : &quot;2026-05-16T05:14:32.405296Z&quot;,
-  &quot;updatedAt&quot; : &quot;2026-05-16T05:14:32.409420Z&quot;
+  &quot;createdAt&quot; : &quot;2026-07-07T07:52:56.510053Z&quot;,
+  &quot;updatedAt&quot; : &quot;2026-07-07T07:52:56.513574Z&quot;
 }</code></pre>
 <h3>Assertions (5/5 passed)</h3>
 <table class="assertions">
 <thead><tr><th>Field</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead>
 <tbody>
-<tr><td><code>createdAt</code></td><td><code>non-null</code></td><td><code>2026-05-16T05:14:32.405296Z</code></td><td>&#x2705;</td></tr>
+<tr><td><code>createdAt</code></td><td><code>non-null</code></td><td><code>2026-07-07T07:52:56.510053Z</code></td><td>&#x2705;</td></tr>
 <tr><td><code>refundReason</code></td><td><code>Partial cancellation requested</code></td><td><code>Partial cancellation requested</code></td><td>&#x2705;</td></tr>
-<tr><td><code>id</code></td><td><code>non-null</code></td><td><code>pay_c4be4fab836d</code></td><td>&#x2705;</td></tr>
+<tr><td><code>id</code></td><td><code>non-null</code></td><td><code>pay_cb8c329aa1d0</code></td><td>&#x2705;</td></tr>
 <tr><td><code>status</code></td><td><code>PARTIALLY_REFUNDED</code></td><td><code>PARTIALLY_REFUNDED</code></td><td>&#x2705;</td></tr>
-<tr><td><code>updatedAt</code></td><td><code>non-null</code></td><td><code>2026-05-16T05:14:32.409420Z</code></td><td>&#x2705;</td></tr>
+<tr><td><code>updatedAt</code></td><td><code>non-null</code></td><td><code>2026-07-07T07:52:56.513574Z</code></td><td>&#x2705;</td></tr>
 </tbody></table>
 </div>
 </details>
 <details>
-<summary class="failed"><span>&#x274C;</span><span class="name">Refund on already-REFUNDED payment returns 422</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">4ms</span><span class="meta-info">0/3</span></summary>
+<summary class="failed"><span>&#x274C;</span><span class="name">Refund on already-REFUNDED payment returns 422</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">3ms</span><span class="meta-info">0/3</span></summary>
 <div class="details-body">
 <h3>Request</h3>
-<pre><code>POST /api/payments/pay_041437b689e7/refund
+<pre><code>POST /api/payments/pay_a48f2419731d/refund
 
 {
   &quot;reason&quot; : &quot;Attempting duplicate refund&quot;
 }</code></pre>
 <h3>Response (HTTP 200, 3ms)</h3>
 <pre><code>{
-  &quot;id&quot; : &quot;pay_041437b689e7&quot;,
+  &quot;id&quot; : &quot;pay_a48f2419731d&quot;,
   &quot;merchantId&quot; : &quot;setup-merchant&quot;,
   &quot;customerId&quot; : &quot;setup-customer&quot;,
   &quot;amount&quot; : 100.0,
   &quot;currency&quot; : &quot;USD&quot;,
   &quot;status&quot; : &quot;REFUNDED&quot;,
   &quot;refundReason&quot; : &quot;Attempting duplicate refund&quot;,
-  &quot;createdAt&quot; : &quot;2026-05-16T05:14:32.413245Z&quot;,
-  &quot;updatedAt&quot; : &quot;2026-05-16T05:14:32.416711Z&quot;
+  &quot;createdAt&quot; : &quot;2026-07-07T07:52:56.517161Z&quot;,
+  &quot;updatedAt&quot; : &quot;2026-07-07T07:52:56.520550Z&quot;
 }</code></pre>
 <h3>Assertions (0/3 passed)</h3>
 <table class="assertions">
@@ -1524,9 +1552,9 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <details class="ai-analysis-details">
 <summary class="ai-analysis-summary">&#x1F916; AI Analysis &mdash; <span class="category-badge category-ASSERTION_TOO_STRICT">ASSERTION TOO STRICT</span>&nbsp;<span class="confidence-badge confidence-HIGH">HIGH confidence</span></summary>
 <div class="ai-analysis-body">
-<div class="ai-field"><strong>Root Cause:</strong> The test asserts that 'description' must be present in the response, but the stored payment was created without a description field and the API correctly omits absent optional fields.</div>
-<div class="ai-field"><strong>Evidence:</strong> The actual response contains all other expected fields correctly (id, merchantId, customerId, amount, currency, status, createdAt, updatedAt) and returns 200, but 'description' is absent because the seed payment has no description value.</div>
-<div class="ai-field"><strong>Suggested Fix:</strong> Either make the 'description' assertion conditional/optional in the test, or update the test setup data to include a description value when seeding 'pay_4f5ee92bf505'.</div>
+<div class="ai-field"><strong>Root Cause:</strong> The test asserts that 'description' must be present in the response, but the stored payment was created without a description and the API correctly omits optional absent fields.</div>
+<div class="ai-field"><strong>Evidence:</strong> The actual response body contains all other expected fields correctly (id, merchantId, customerId, amount, currency, status, createdAt, updatedAt) but 'description' is absent, which is valid if the payment was created without one.</div>
+<div class="ai-field"><strong>Suggested Fix:</strong> Either update the test setup to create the payment with a description and assert its value, or make the 'description' field assertion conditional/optional since it is not a required field.</div>
 </div>
 </details>
 </div>
@@ -1545,7 +1573,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
   &quot;status&quot; : 404,
   &quot;code&quot; : &quot;PAYMENT_NOT_FOUND&quot;,
   &quot;message&quot; : &quot;Payment not found: non-existent-id&quot;,
-  &quot;timestamp&quot; : &quot;2026-05-16T05:14:32.420409Z&quot;
+  &quot;timestamp&quot; : &quot;2026-07-07T07:52:56.523787Z&quot;
 }</code></pre>
 <h3>Assertions (2/2 passed)</h3>
 <table class="assertions">
@@ -1557,10 +1585,10 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 </div>
 </details>
 <details>
-<summary><span>&#x2705;</span><span class="name">Missing required reason field returns 400</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">5ms</span><span class="meta-info">3/3</span></summary>
+<summary><span>&#x2705;</span><span class="name">Missing required reason field returns 400</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">4ms</span><span class="meta-info">3/3</span></summary>
 <div class="details-body">
 <h3>Request</h3>
-<pre><code>POST /api/payments/pay_0b0a98a40935/refund
+<pre><code>POST /api/payments/pay_39e9d11df1c4/refund
 
 {
   &quot;amount&quot; : 10.0
@@ -1574,7 +1602,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
     &quot;field&quot; : &quot;reason&quot;,
     &quot;message&quot; : &quot;不能为空&quot;
   } ],
-  &quot;timestamp&quot; : &quot;2026-05-16T05:14:32.427896Z&quot;
+  &quot;timestamp&quot; : &quot;2026-07-07T07:52:56.530816Z&quot;
 }</code></pre>
 <h3>Assertions (3/3 passed)</h3>
 <table class="assertions">
@@ -1587,10 +1615,10 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 </div>
 </details>
 <details>
-<summary><span>&#x2705;</span><span class="name">Amount at minimum boundary (0.01) is accepted</span><span class="badge badge-BOUNDARY">BOUNDARY</span><span class="meta-info">5ms</span><span class="meta-info">5/5</span></summary>
+<summary><span>&#x2705;</span><span class="name">Amount at minimum boundary (0.01) is accepted</span><span class="badge badge-BOUNDARY">BOUNDARY</span><span class="meta-info">3ms</span><span class="meta-info">5/5</span></summary>
 <div class="details-body">
 <h3>Request</h3>
-<pre><code>POST /api/payments/pay_4b0c36421b45/refund
+<pre><code>POST /api/payments/pay_fb33715e9c78/refund
 
 {
   &quot;reason&quot; : &quot;Minimum refund test&quot;,
@@ -1598,39 +1626,39 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 }</code></pre>
 <h3>Response (HTTP 200, 3ms)</h3>
 <pre><code>{
-  &quot;id&quot; : &quot;pay_4b0c36421b45&quot;,
+  &quot;id&quot; : &quot;pay_fb33715e9c78&quot;,
   &quot;merchantId&quot; : &quot;setup-merchant&quot;,
   &quot;customerId&quot; : &quot;setup-customer&quot;,
   &quot;amount&quot; : 100.0,
   &quot;currency&quot; : &quot;USD&quot;,
   &quot;status&quot; : &quot;PARTIALLY_REFUNDED&quot;,
   &quot;refundReason&quot; : &quot;Minimum refund test&quot;,
-  &quot;createdAt&quot; : &quot;2026-05-16T05:14:32.431522Z&quot;,
-  &quot;updatedAt&quot; : &quot;2026-05-16T05:14:32.435913Z&quot;
+  &quot;createdAt&quot; : &quot;2026-07-07T07:52:56.534079Z&quot;,
+  &quot;updatedAt&quot; : &quot;2026-07-07T07:52:56.537700Z&quot;
 }</code></pre>
 <h3>Assertions (5/5 passed)</h3>
 <table class="assertions">
 <thead><tr><th>Field</th><th>Expected</th><th>Actual</th><th>Status</th></tr></thead>
 <tbody>
-<tr><td><code>createdAt</code></td><td><code>non-null</code></td><td><code>2026-05-16T05:14:32.431522Z</code></td><td>&#x2705;</td></tr>
+<tr><td><code>createdAt</code></td><td><code>non-null</code></td><td><code>2026-07-07T07:52:56.534079Z</code></td><td>&#x2705;</td></tr>
 <tr><td><code>refundReason</code></td><td><code>Minimum refund test</code></td><td><code>Minimum refund test</code></td><td>&#x2705;</td></tr>
-<tr><td><code>id</code></td><td><code>non-null</code></td><td><code>pay_4b0c36421b45</code></td><td>&#x2705;</td></tr>
+<tr><td><code>id</code></td><td><code>non-null</code></td><td><code>pay_fb33715e9c78</code></td><td>&#x2705;</td></tr>
 <tr><td><code>status</code></td><td><code>PARTIALLY_REFUNDED</code></td><td><code>PARTIALLY_REFUNDED</code></td><td>&#x2705;</td></tr>
-<tr><td><code>updatedAt</code></td><td><code>non-null</code></td><td><code>2026-05-16T05:14:32.435913Z</code></td><td>&#x2705;</td></tr>
+<tr><td><code>updatedAt</code></td><td><code>non-null</code></td><td><code>2026-07-07T07:52:56.537700Z</code></td><td>&#x2705;</td></tr>
 </tbody></table>
 </div>
 </details>
 <details>
-<summary><span>&#x2705;</span><span class="name">Amount below minimum (0.00) returns 400</span><span class="badge badge-BOUNDARY">BOUNDARY</span><span class="meta-info">4ms</span><span class="meta-info">4/4</span></summary>
+<summary><span>&#x2705;</span><span class="name">Amount below minimum (0.00) returns 400</span><span class="badge badge-BOUNDARY">BOUNDARY</span><span class="meta-info">5ms</span><span class="meta-info">4/4</span></summary>
 <div class="details-body">
 <h3>Request</h3>
-<pre><code>POST /api/payments/pay_504766b39795/refund
+<pre><code>POST /api/payments/pay_c97f8c8dadc4/refund
 
 {
   &quot;reason&quot; : &quot;Zero amount refund attempt&quot;,
   &quot;amount&quot; : 0.0
 }</code></pre>
-<h3>Response (HTTP 400, 4ms)</h3>
+<h3>Response (HTTP 400, 3ms)</h3>
 <pre><code>{
   &quot;status&quot; : 400,
   &quot;code&quot; : &quot;VALIDATION_ERROR&quot;,
@@ -1639,7 +1667,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
     &quot;field&quot; : &quot;amount&quot;,
     &quot;message&quot; : &quot;必须大于或等于0.01&quot;
   } ],
-  &quot;timestamp&quot; : &quot;2026-05-16T05:14:32.443556Z&quot;
+  &quot;timestamp&quot; : &quot;2026-07-07T07:52:56.544963Z&quot;
 }</code></pre>
 <h3>Assertions (4/4 passed)</h3>
 <table class="assertions">
@@ -1656,7 +1684,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <summary><span>&#x2705;</span><span class="name">Negative amount returns 400</span><span class="badge badge-BOUNDARY">BOUNDARY</span><span class="meta-info">4ms</span><span class="meta-info">3/3</span></summary>
 <div class="details-body">
 <h3>Request</h3>
-<pre><code>POST /api/payments/pay_1434e30dd4f1/refund
+<pre><code>POST /api/payments/pay_25da2797362d/refund
 
 {
   &quot;reason&quot; : &quot;Negative amount test&quot;,
@@ -1671,7 +1699,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
     &quot;field&quot; : &quot;amount&quot;,
     &quot;message&quot; : &quot;必须大于或等于0.01&quot;
   } ],
-  &quot;timestamp&quot; : &quot;2026-05-16T05:14:32.451220Z&quot;
+  &quot;timestamp&quot; : &quot;2026-07-07T07:52:56.553122Z&quot;
 }</code></pre>
 <h3>Assertions (3/3 passed)</h3>
 <table class="assertions">
@@ -1687,13 +1715,13 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <summary class="failed"><span>&#x274C;</span><span class="name">Reason field at maximum length (255 chars) is accepted</span><span class="badge badge-BOUNDARY">BOUNDARY</span><span class="meta-info">5ms</span><span class="meta-info">0/5</span></summary>
 <div class="details-body">
 <h3>Request</h3>
-<pre><code>POST /api/payments/pay_5940701cc0d1/refund
+<pre><code>POST /api/payments/pay_ee93bc3f1004/refund
 
 {
   &quot;reason&quot; : &quot;AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA&quot;,
   &quot;amount&quot; : 10.0
 }</code></pre>
-<h3>Response (HTTP 400, 5ms)</h3>
+<h3>Response (HTTP 400, 4ms)</h3>
 <pre><code>{
   &quot;status&quot; : 400,
   &quot;code&quot; : &quot;VALIDATION_ERROR&quot;,
@@ -1702,7 +1730,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
     &quot;field&quot; : &quot;reason&quot;,
     &quot;message&quot; : &quot;个数必须在0和255之间&quot;
   } ],
-  &quot;timestamp&quot; : &quot;2026-05-16T05:14:32.459261Z&quot;
+  &quot;timestamp&quot; : &quot;2026-07-07T07:52:56.560726Z&quot;
 }</code></pre>
 <h3>Assertions (0/5 passed)</h3>
 <table class="assertions">
@@ -1717,24 +1745,24 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <details class="ai-analysis-details">
 <summary class="ai-analysis-summary">&#x1F916; AI Analysis &mdash; <span class="category-badge category-TEST_LOGIC_ERROR">TEST LOGIC ERROR</span>&nbsp;<span class="confidence-badge confidence-HIGH">HIGH confidence</span></summary>
 <div class="ai-analysis-body">
-<div class="ai-field"><strong>Root Cause:</strong> The reason string is 257 characters long (exceeding the 255-char maximum), so the API correctly rejects it, but the test expects a successful refund response.</div>
-<div class="ai-field"><strong>Evidence:</strong> The reason value contains 257 'A' characters; the API returns VALIDATION_ERROR 'size must be between 0 and 255', confirming the value is one character over the limit; the test asserts success-path fields like 'id', 'refundReason', 'createdAt', and 'updatedAt'.</div>
-<div class="ai-field"><strong>Suggested Fix:</strong> Trim the reason string to exactly 255 characters to correctly represent the maximum-length boundary, set expected_status to the appropriate success code, and assert success-response fields; verify the character count programmatically before running the test.</div>
+<div class="ai-field"><strong>Root Cause:</strong> The reason string in the request is 265 characters long (exceeding the 255-char max), so the API correctly rejects it, but the test expects a success response.</div>
+<div class="ai-field"><strong>Evidence:</strong> The reason field contains 265 'A' characters and the API returns 400 VALIDATION_ERROR '个数必须在0和255之间'; the test name claims 255 chars but the actual payload is 265 chars, and the assertions target success response fields (id, refundReason, createdAt, updatedAt).</div>
+<div class="ai-field"><strong>Suggested Fix:</strong> Trim the reason string to exactly 255 characters to correctly test the maximum-length boundary, and update expected_status to 200 with success response assertions.</div>
 </div>
 </details>
 </div>
 </details>
 <details>
-<summary><span>&#x2705;</span><span class="name">Reason field exceeding maximum length (256 chars) returns 400</span><span class="badge badge-BOUNDARY">BOUNDARY</span><span class="meta-info">4ms</span><span class="meta-info">3/3</span></summary>
+<summary><span>&#x2705;</span><span class="name">Reason field exceeding maximum length (256 chars) returns 400</span><span class="badge badge-BOUNDARY">BOUNDARY</span><span class="meta-info">5ms</span><span class="meta-info">3/3</span></summary>
 <div class="details-body">
 <h3>Request</h3>
-<pre><code>POST /api/payments/pay_106f25a2d02f/refund
+<pre><code>POST /api/payments/pay_bf4f9ff4451c/refund
 
 {
   &quot;reason&quot; : &quot;AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA&quot;,
   &quot;amount&quot; : 10.0
 }</code></pre>
-<h3>Response (HTTP 400, 3ms)</h3>
+<h3>Response (HTTP 400, 4ms)</h3>
 <pre><code>{
   &quot;status&quot; : 400,
   &quot;code&quot; : &quot;VALIDATION_ERROR&quot;,
@@ -1743,7 +1771,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
     &quot;field&quot; : &quot;reason&quot;,
     &quot;message&quot; : &quot;个数必须在0和255之间&quot;
   } ],
-  &quot;timestamp&quot; : &quot;2026-05-16T05:14:32.466688Z&quot;
+  &quot;timestamp&quot; : &quot;2026-07-07T07:52:56.568916Z&quot;
 }</code></pre>
 <h3>Assertions (3/3 passed)</h3>
 <table class="assertions">
@@ -1756,21 +1784,21 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 </div>
 </details>
 <details>
-<summary class="failed"><span>&#x274C;</span><span class="name">Wrong type for amount field (string) returns 400</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">6ms</span><span class="meta-info">1/3</span></summary>
+<summary class="failed"><span>&#x274C;</span><span class="name">Wrong type for amount field (string) returns 400</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">4ms</span><span class="meta-info">1/3</span></summary>
 <div class="details-body">
 <h3>Request</h3>
-<pre><code>POST /api/payments/pay_9833a2c06fe1/refund
+<pre><code>POST /api/payments/pay_2e1ad80b55be/refund
 
 {
   &quot;reason&quot; : &quot;Wrong type for amount&quot;,
   &quot;amount&quot; : &quot;fifty&quot;
 }</code></pre>
-<h3>Response (HTTP 400, 6ms)</h3>
+<h3>Response (HTTP 400, 4ms)</h3>
 <pre><code>{
-  &quot;timestamp&quot; : &quot;2026-05-16T05:14:32.476+00:00&quot;,
+  &quot;timestamp&quot; : &quot;2026-07-07T07:52:56.576+00:00&quot;,
   &quot;status&quot; : 400,
   &quot;error&quot; : &quot;Bad Request&quot;,
-  &quot;path&quot; : &quot;/api/payments/pay_9833a2c06fe1/refund&quot;
+  &quot;path&quot; : &quot;/api/payments/pay_2e1ad80b55be/refund&quot;
 }</code></pre>
 <h3>Assertions (1/3 passed)</h3>
 <table class="assertions">
@@ -1783,9 +1811,9 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <details class="ai-analysis-details">
 <summary class="ai-analysis-summary">&#x1F916; AI Analysis &mdash; <span class="category-badge category-TEST_LOGIC_ERROR">TEST LOGIC ERROR</span>&nbsp;<span class="confidence-badge confidence-HIGH">HIGH confidence</span></summary>
 <div class="ai-analysis-body">
-<div class="ai-field"><strong>Root Cause:</strong> The test expects a business-level error envelope with 'code' and 'message' fields, but passing a non-numeric string for 'amount' triggers a Spring framework deserialization error that returns a minimal error response without those fields.</div>
-<div class="ai-field"><strong>Evidence:</strong> The actual response is the Spring default error format {timestamp, status, error, path} without 'code' or 'message', identical to tc-012's pattern, indicating the rejection happens before the controller/business logic layer.</div>
-<div class="ai-field"><strong>Suggested Fix:</strong> Either update the global exception handler to wrap HttpMessageNotReadableException with a structured error body including 'code' and 'message', or update the test assertions to match the actual Spring error response format and set expected_status to 400.</div>
+<div class="ai-field"><strong>Root Cause:</strong> The expected_status is 0 (unset) and the test asserts 'code' and 'message' fields that are not present in the API's default error format for type-mismatch deserialization errors.</div>
+<div class="ai-field"><strong>Evidence:</strong> The API returns a standard Spring Boot error envelope without 'code' or 'message' fields (only 'timestamp', 'status', 'error', 'path') because the error occurs at deserialization before reaching business logic; expected_status=0 also indicates the status expectation was never set.</div>
+<div class="ai-field"><strong>Suggested Fix:</strong> Set expected_status to 400 and either update assertions to match the Spring Boot default error envelope fields ('error', 'path'), or configure the API to normalize all error responses through a consistent error handler that includes 'code' and 'message'.</div>
 </div>
 </details>
 </div>
@@ -1794,13 +1822,13 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <summary><span>&#x2705;</span><span class="name">Empty reason string returns 400</span><span class="badge badge-NEGATIVE">NEGATIVE</span><span class="meta-info">4ms</span><span class="meta-info">3/3</span></summary>
 <div class="details-body">
 <h3>Request</h3>
-<pre><code>POST /api/payments/pay_7abbe842e923/refund
+<pre><code>POST /api/payments/pay_8c7c6c099da9/refund
 
 {
   &quot;reason&quot; : &quot;&quot;,
   &quot;amount&quot; : 10.0
 }</code></pre>
-<h3>Response (HTTP 400, 3ms)</h3>
+<h3>Response (HTTP 400, 4ms)</h3>
 <pre><code>{
   &quot;status&quot; : 400,
   &quot;code&quot; : &quot;VALIDATION_ERROR&quot;,
@@ -1809,7 +1837,7 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
     &quot;field&quot; : &quot;reason&quot;,
     &quot;message&quot; : &quot;不能为空&quot;
   } ],
-  &quot;timestamp&quot; : &quot;2026-05-16T05:14:32.483415Z&quot;
+  &quot;timestamp&quot; : &quot;2026-07-07T07:52:56.583724Z&quot;
 }</code></pre>
 <h3>Assertions (3/3 passed)</h3>
 <table class="assertions">
@@ -1833,75 +1861,75 @@ footer { margin-top: 32px; text-align: center; color: #6b7280; font-size: 0.8rem
 <details>
 <summary><span class="name">Cross-User Refund Attempt (REJECTED) | refunder</span><span class="category-badge category-API_BUG">API BUG</span>&nbsp;<span class="confidence-badge confidence-HIGH">HIGH</span></summary>
 <div class="details-body">
-<div class="ai-field"><strong>Root Cause:</strong> The API does not enforce ownership authorization on the refund endpoint, allowing User B to successfully refund a payment belonging to User A instead of returning 403 FORBIDDEN_OWNERSHIP.</div>
-<div class="ai-field"><strong>Evidence:</strong> The request is made by 'refunder' (User B) on payment 'pay_960153861d4f' owned by 'customer-userA-001', yet the API returns 200 with status REFUNDED, proving no ownership check is performed.</div>
-<div class="ai-field"><strong>Suggested Fix:</strong> Implement an ownership/authorization check in the refund handler that compares the authenticated user's identity against the payment's merchantId or customerId and returns 403 with code FORBIDDEN_OWNERSHIP when they do not match.</div>
+<div class="ai-field"><strong>Root Cause:</strong> The API does not enforce ownership authorization on the refund endpoint, allowing a different user/merchant to successfully refund a payment that does not belong to them.</div>
+<div class="ai-field"><strong>Evidence:</strong> The request is made by 'refunder' on payment 'pay_407b4c1f14b0' belonging to 'merchant-003/customer-user-a', yet the API returns 200 with status REFUNDED instead of 403 FORBIDDEN_OWNERSHIP, indicating no ownership check is implemented.</div>
+<div class="ai-field"><strong>Suggested Fix:</strong> Implement an authorization check in the refund endpoint that validates the requesting user/merchant owns the payment, and return 403 with body containing 'code: FORBIDDEN_OWNERSHIP' when the check fails.</div>
 </div>
 </details>
 <details>
-<summary><span class="name">Refund Pending Payment (REJECTED) | creator</span><span class="category-badge category-API_BUG">API BUG</span>&nbsp;<span class="confidence-badge confidence-HIGH">HIGH</span></summary>
+<summary><span class="name">Refund Pending Payment (REJECTED - Invalid State) | creator</span><span class="category-badge category-API_BUG">API BUG</span>&nbsp;<span class="confidence-badge confidence-HIGH">HIGH</span></summary>
 <div class="details-body">
-<div class="ai-field"><strong>Root Cause:</strong> The API immediately transitions newly created payments to COMPLETED status instead of the expected PENDING status, violating the intended payment lifecycle.</div>
-<div class="ai-field"><strong>Evidence:</strong> The POST /api/payments response for the newly created payment returns status 'COMPLETED' rather than 'PENDING', even though the test (and presumably the spec) expects new payments to start in a PENDING state.</div>
-<div class="ai-field"><strong>Suggested Fix:</strong> Fix the payment creation logic to set the initial status to PENDING; status transitions to COMPLETED should occur only after explicit confirmation or processing steps defined in the payment workflow.</div>
+<div class="ai-field"><strong>Root Cause:</strong> The API creates payments in COMPLETED status immediately instead of PENDING, indicating the payment lifecycle/state machine is not implemented or is skipping the PENDING state.</div>
+<div class="ai-field"><strong>Evidence:</strong> The request creates a new payment and the response shows 'status: COMPLETED' immediately upon creation, while the test (and presumably the spec) expects 'status: PENDING' for a newly created payment.</div>
+<div class="ai-field"><strong>Suggested Fix:</strong> Fix the API to set payment status to PENDING upon creation and transition to COMPLETED only after payment processing/confirmation is completed asynchronously or via a separate action.</div>
 </div>
 </details>
 <details>
 <summary><span class="name">Response body contains all defined fields for existing payment</span><span class="category-badge category-API_BUG">API BUG</span>&nbsp;<span class="confidence-badge confidence-HIGH">HIGH</span></summary>
 <div class="details-body">
-<div class="ai-field"><strong>Root Cause:</strong> The API allows a refund to be applied to an already-REFUNDED payment instead of rejecting it with 422, indicating missing idempotency/state-guard logic in the refund endpoint.</div>
-<div class="ai-field"><strong>Evidence:</strong> The payment 'pay_041437b689e7' already has status REFUNDED, yet POST /refund returns 200 with an updated refundReason and a new updatedAt timestamp, meaning the refund was processed again rather than rejected.</div>
-<div class="ai-field"><strong>Suggested Fix:</strong> Add a pre-condition check in the refund handler that returns 422 (e.g., PAYMENT_NOT_REFUNDABLE or ALREADY_REFUNDED) when the payment status is already REFUNDED; also set expected_status to 422 in the test and assert the error code/message fields.</div>
+<div class="ai-field"><strong>Root Cause:</strong> The API allows a refund on an already-REFUNDED payment and returns 200 instead of rejecting with 422, indicating missing idempotency/state guard logic.</div>
+<div class="ai-field"><strong>Evidence:</strong> The payment 'pay_a48f2419731d' already has status 'REFUNDED' yet the API accepted the refund request and returned 200 with status still 'REFUNDED' and updated 'refundReason', when it should have returned 422 with an appropriate error code.</div>
+<div class="ai-field"><strong>Suggested Fix:</strong> Add a pre-condition check in the refund endpoint to reject refund requests on payments already in REFUNDED status with a 422 response and appropriate error body (code, message).</div>
 </div>
 </details>
 <h3>TEST LOGIC ERROR</h3>
 <details>
 <summary><span class="name">Create payment with amount as string instead of number</span><span class="category-badge category-TEST_LOGIC_ERROR">TEST LOGIC ERROR</span>&nbsp;<span class="confidence-badge confidence-HIGH">HIGH</span></summary>
 <div class="details-body">
-<div class="ai-field"><strong>Root Cause:</strong> The expected_status is set to 0 (likely uninitialized/default) instead of the correct expected value of 400, and the test asserts a 'code' field that the API does not return for framework-level deserialization errors.</div>
-<div class="ai-field"><strong>Evidence:</strong> actual_status is 400 which is the semantically correct response, but expected_status is 0; the response body is a Spring default error envelope without a 'code' field, which is consistent with pre-controller type-mismatch rejection.</div>
-<div class="ai-field"><strong>Suggested Fix:</strong> Set expected_status to 400 and remove the assertion on 'code' since Spring's built-in HttpMessageNotReadableException response does not include a business-level error code; alternatively update the API's global exception handler to enrich this error with a 'code' field.</div>
+<div class="ai-field"><strong>Root Cause:</strong> The expected_status is 0 (unset/default) instead of 400, and the test asserts a 'code' field in the error response that this endpoint does not return.</div>
+<div class="ai-field"><strong>Evidence:</strong> actual_status is 400 which is correct behavior for an invalid type input, but expected_status=0 indicates no expected status was configured; additionally the error response format lacks 'code' field (uses Spring Boot default error format) which the assertion requires.</div>
+<div class="ai-field"><strong>Suggested Fix:</strong> Set expected_status to 400 and remove the assertion on 'code' field, or align the test to use the API's actual error response schema (Spring Boot default error envelope) rather than a custom error schema.</div>
 </div>
 </details>
 <details>
 <summary><span class="name">Create payment with description at maxLength boundary</span><span class="category-badge category-TEST_LOGIC_ERROR">TEST LOGIC ERROR</span>&nbsp;<span class="confidence-badge confidence-HIGH">HIGH</span></summary>
 <div class="details-body">
-<div class="ai-field"><strong>Root Cause:</strong> The description string sent is 256 characters (one over the 255-char max boundary), so the API correctly rejects it with 400, but the test expects a 201 success response with body fields like 'id' and 'createdAt'.</div>
-<div class="ai-field"><strong>Evidence:</strong> The description value contains 256 'A' characters; the API responds with VALIDATION_ERROR 'size must be between 0 and 255', confirming the boundary was exceeded by one character; expected_status is 0 (unset) and success-path fields are asserted.</div>
-<div class="ai-field"><strong>Suggested Fix:</strong> Trim the description to exactly 255 characters so the boundary test truly sits at the valid maximum, set expected_status to 201, and assert the success-response fields; or if testing the 256-char case, set expected_status to 400 and assert error fields instead.</div>
+<div class="ai-field"><strong>Root Cause:</strong> The test sends a description of 264 characters (exceeding the 255-char max) but expects a 201 success response with 'id', 'createdAt', and 'updatedAt' fields, when the correct expected outcome is a 400 validation error.</div>
+<div class="ai-field"><strong>Evidence:</strong> The description field in the request body is 264 characters long and the API correctly returns 400 VALIDATION_ERROR with message '个数必须在0和255之间'; the test assertions expect success response fields (id, createdAt, updatedAt) and compare status as String vs Integer, indicating the test was configured for a success scenario.</div>
+<div class="ai-field"><strong>Suggested Fix:</strong> Update the test to expect a 400 status code and assert on the error response fields ('code', 'message', 'errors') rather than success fields ('id', 'createdAt', 'updatedAt'). If the intent was to test the exact boundary (255 chars), trim the description to exactly 255 characters.</div>
 </div>
 </details>
 <details>
 <summary><span class="name">Double Refund Attempt (REJECTED) | refunder</span><span class="category-badge category-TEST_LOGIC_ERROR">TEST LOGIC ERROR</span>&nbsp;<span class="confidence-badge confidence-HIGH">HIGH</span></summary>
 <div class="details-body">
-<div class="ai-field"><strong>Root Cause:</strong> The test expects the error code 'ALREADY_REFUNDED' but the API returns the functionally equivalent code 'PAYMENT_NOT_REFUNDABLE', indicating a mismatch between the expected error code and the API's actual contract.</div>
-<div class="ai-field"><strong>Evidence:</strong> actual_status is correctly 422 and the response body contains a valid error message ('Payment pay_bfd6e342ae9a cannot be refunded in status: REFUNDED'), but the asserted code 'ALREADY_REFUNDED' differs from the actual code 'PAYMENT_NOT_REFUNDABLE'.</div>
-<div class="ai-field"><strong>Suggested Fix:</strong> Update the test's expected error code from 'ALREADY_REFUNDED' to 'PAYMENT_NOT_REFUNDABLE' to match the API's documented or actual error codes; alternatively, if the spec mandates 'ALREADY_REFUNDED', update the API to return that specific code for the already-refunded state.</div>
+<div class="ai-field"><strong>Root Cause:</strong> The test expects error code 'ALREADY_REFUNDED' but the API uses the code 'PAYMENT_NOT_REFUNDABLE' for this scenario, which is a semantically valid but differently named code.</div>
+<div class="ai-field"><strong>Evidence:</strong> actual_response_body contains 'code: PAYMENT_NOT_REFUNDABLE' with a descriptive message 'Payment pay_dadb55e66729 cannot be refunded in status: REFUNDED'; the HTTP status 422 matches, only the error code string differs from the expected 'ALREADY_REFUNDED'.</div>
+<div class="ai-field"><strong>Suggested Fix:</strong> Update the test assertion to expect 'PAYMENT_NOT_REFUNDABLE' instead of 'ALREADY_REFUNDED', or update the API to use 'ALREADY_REFUNDED' as the code if the spec mandates that specific value.</div>
 </div>
 </details>
 <details>
 <summary><span class="name">Reason field at maximum length (255 chars) is accepted</span><span class="category-badge category-TEST_LOGIC_ERROR">TEST LOGIC ERROR</span>&nbsp;<span class="confidence-badge confidence-HIGH">HIGH</span></summary>
 <div class="details-body">
-<div class="ai-field"><strong>Root Cause:</strong> The reason string is 257 characters long (exceeding the 255-char maximum), so the API correctly rejects it, but the test expects a successful refund response.</div>
-<div class="ai-field"><strong>Evidence:</strong> The reason value contains 257 'A' characters; the API returns VALIDATION_ERROR 'size must be between 0 and 255', confirming the value is one character over the limit; the test asserts success-path fields like 'id', 'refundReason', 'createdAt', and 'updatedAt'.</div>
-<div class="ai-field"><strong>Suggested Fix:</strong> Trim the reason string to exactly 255 characters to correctly represent the maximum-length boundary, set expected_status to the appropriate success code, and assert success-response fields; verify the character count programmatically before running the test.</div>
+<div class="ai-field"><strong>Root Cause:</strong> The reason string in the request is 265 characters long (exceeding the 255-char max), so the API correctly rejects it, but the test expects a success response.</div>
+<div class="ai-field"><strong>Evidence:</strong> The reason field contains 265 'A' characters and the API returns 400 VALIDATION_ERROR '个数必须在0和255之间'; the test name claims 255 chars but the actual payload is 265 chars, and the assertions target success response fields (id, refundReason, createdAt, updatedAt).</div>
+<div class="ai-field"><strong>Suggested Fix:</strong> Trim the reason string to exactly 255 characters to correctly test the maximum-length boundary, and update expected_status to 200 with success response assertions.</div>
 </div>
 </details>
 <details>
 <summary><span class="name">Wrong type for amount field (string) returns 400</span><span class="category-badge category-TEST_LOGIC_ERROR">TEST LOGIC ERROR</span>&nbsp;<span class="confidence-badge confidence-HIGH">HIGH</span></summary>
 <div class="details-body">
-<div class="ai-field"><strong>Root Cause:</strong> The test expects a business-level error envelope with 'code' and 'message' fields, but passing a non-numeric string for 'amount' triggers a Spring framework deserialization error that returns a minimal error response without those fields.</div>
-<div class="ai-field"><strong>Evidence:</strong> The actual response is the Spring default error format {timestamp, status, error, path} without 'code' or 'message', identical to tc-012's pattern, indicating the rejection happens before the controller/business logic layer.</div>
-<div class="ai-field"><strong>Suggested Fix:</strong> Either update the global exception handler to wrap HttpMessageNotReadableException with a structured error body including 'code' and 'message', or update the test assertions to match the actual Spring error response format and set expected_status to 400.</div>
+<div class="ai-field"><strong>Root Cause:</strong> The expected_status is 0 (unset) and the test asserts 'code' and 'message' fields that are not present in the API's default error format for type-mismatch deserialization errors.</div>
+<div class="ai-field"><strong>Evidence:</strong> The API returns a standard Spring Boot error envelope without 'code' or 'message' fields (only 'timestamp', 'status', 'error', 'path') because the error occurs at deserialization before reaching business logic; expected_status=0 also indicates the status expectation was never set.</div>
+<div class="ai-field"><strong>Suggested Fix:</strong> Set expected_status to 400 and either update assertions to match the Spring Boot default error envelope fields ('error', 'path'), or configure the API to normalize all error responses through a consistent error handler that includes 'code' and 'message'.</div>
 </div>
 </details>
 <h3>ASSERTION TOO STRICT</h3>
 <details>
 <summary><span class="name">Response body contains all defined fields for existing payment</span><span class="category-badge category-ASSERTION_TOO_STRICT">ASSERTION TOO STRICT</span>&nbsp;<span class="confidence-badge confidence-HIGH">HIGH</span></summary>
 <div class="details-body">
-<div class="ai-field"><strong>Root Cause:</strong> The test asserts that 'description' must be present in the response, but the stored payment was created without a description field and the API correctly omits absent optional fields.</div>
-<div class="ai-field"><strong>Evidence:</strong> The actual response contains all other expected fields correctly (id, merchantId, customerId, amount, currency, status, createdAt, updatedAt) and returns 200, but 'description' is absent because the seed payment has no description value.</div>
-<div class="ai-field"><strong>Suggested Fix:</strong> Either make the 'description' assertion conditional/optional in the test, or update the test setup data to include a description value when seeding 'pay_4f5ee92bf505'.</div>
+<div class="ai-field"><strong>Root Cause:</strong> The test asserts that 'description' must be present in the response, but the stored payment was created without a description and the API correctly omits optional absent fields.</div>
+<div class="ai-field"><strong>Evidence:</strong> The actual response body contains all other expected fields correctly (id, merchantId, customerId, amount, currency, status, createdAt, updatedAt) but 'description' is absent, which is valid if the payment was created without one.</div>
+<div class="ai-field"><strong>Suggested Fix:</strong> Either update the test setup to create the payment with a description and assert its value, or make the 'description' field assertion conditional/optional since it is not a required field.</div>
 </div>
 </details>
 </section>
