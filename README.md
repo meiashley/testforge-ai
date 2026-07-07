@@ -58,7 +58,7 @@ Results may include accepted tests, rejected generated artifacts, validation war
 - 🧪 **Deterministic LLM output validation** — validates generated test structure, limited OpenAPI contract checks for paths, methods, documented response statuses, top-level request body fields, ExecutionPlan integrity, bindings, variable dependencies, supported assertions, and other pre-runtime requirements.
 - 🛡️ **Fail-closed execution safety** — structurally invalid tests do not reach contract validation or execution; contract-invalid tests do not enter accepted cache or execution; malformed ExecutionPlans are rejected before any HTTP request is sent; generation fails when no accepted test remains.
 - 📋 **Structured generation diagnostics** — API Gateway exposes accepted tests, rejected tests, validation warnings, and partial-acceptance status through job results.
-- 🤖 **AI Failure Diagnoser** — when runtime tests fail, Claude diagnoses root cause across 6 categories (TEST_LOGIC_ERROR / API_BUG / etc.) with confidence labels.
+- 🤖 **AI Failure Analyzer** — when runtime tests fail, Claude diagnoses root cause across 6 categories (TEST_LOGIC_ERROR / API_BUG / etc.) with confidence labels.
 - 💰 **Validation-preserving caching** — warm runs can avoid repeated LLM calls while preserving the same validation gates.
 - ✅ **Multi-layer quality controls** — deterministic pre-execution validation, runtime assertions, code coverage, and AI-assisted failure diagnosis.
 
@@ -88,7 +88,7 @@ graph TB
         OCV --> TGO[TestGenerationOutcome]:::data
     end
 
-    RA <-->|prompts / JSON| C([Claude API<br/>Sonnet 4.5]):::external
+    RA <-->|prompts / JSON| C([Claude API]):::external
     CC <-.->|prompts / JSON| C
     MAP <-.->|prompts / JSON| C
     AFR <-.->|prompts / JSON| C
@@ -102,6 +102,7 @@ graph TB
     TGO -->|accepted generation results| AGR[Accepted GenerationResults]:::data
     AGR --> D
     TGO -->|accepted / rejected / warnings| H[api-gateway<br/>REST entry point]:::module
+    H -.->|starts generation| TG
     D -->|HTTP| E[mock-banking-api<br/>+ JaCoCo agent]:::module
     D --> F([Unified Report<br/>HTML / JSON / MD]):::output
     E -.->|coverage data| G([JaCoCo Coverage Report]):::output
@@ -253,20 +254,25 @@ Each diagnosis includes: category, summary, evidence (specific data points from 
 
 ## ⚙️ REST API and Generation Outcome
 
-The pipeline is exposed as an async REST API for integration into CI/CD.
+The current API gateway exposes the API-level test generation flow as an asynchronous REST API for CI/CD integration. Full V5 requirement-driven workflow exposure remains on the roadmap.
 
 ```bash
 # Start the gateway
 mvn spring-boot:run -pl api-gateway
 
 # Submit a generation job
-curl -X POST http://localhost:8080/api/test-generations \
+curl -X POST http://localhost:8080/api/v1/generate-tests \
   -H "Content-Type: application/json" \
-  -d '{"specPath": "/path/to/openapi.yaml", "promptVersion": "v4"}'
+  -d '{
+    "openApiUrl": "https://example.com/openapi.yaml",
+    "promptVersion": "V3.1"
+  }'
 
 # Poll for results
-curl http://localhost:8080/api/test-generations/{job-id}
+curl http://localhost:8080/api/v1/jobs/{jobId}
 ```
+
+Supported prompt versions are `V1`, `V2`, `V3`, and `V3.1`. The default is `V3.1`.
 
 Implements an async generation pattern with `GenerationExecutor` + `@Async` and AOP self-invocation handled correctly.
 
@@ -351,36 +357,26 @@ Cache hits are still revalidated through structural and contract checks. Warm ru
 
 ---
 
-## 🗺️ Project Evolution and Roadmap
+## 🗺️ Roadmap
 
-### Implemented
-
-- Iterative V1–V3.1 reliability improvements.
-- V4 dimension-driven API test generation.
-- AI Failure Analyzer.
-- JaCoCo coverage integration.
-- Generated TestCase structural validation.
-- OpenAPI contract validation with structured rejection diagnostics.
-- Flow-aware ExecutionPlan validation.
-- Fail-closed generation and execution semantics.
-- API Gateway outcome fields for accepted results, rejected tests, warnings, and partial acceptance.
-- V5 requirement-driven pipeline with consistency checking and scenario execution.
-
-### Next
-
-- Embed JaCoCo metrics directly into the unified execution report (currently rendered as a standalone JaCoCo HTML page).
-- Expose the complete V5 workflow through `api-gateway`.
-- Requirement-to-test provenance and traceability.
-- Offline golden evaluation suite.
-- Deeper OpenAPI schema validation:
-  - nested schemas
-  - required fields
-  - data types
-  - enums
-  - constraints
-  - response-body schemas
-- Mutation testing: inject synthetic API defects to validate test detection power.
-- Multi-spec batch processing in CI.
+- [x] V1 → V3.1: iterative reliability and pass-rate improvements
+- [x] V4: dimension-driven API test generation
+- [x] AI Failure Analyzer with batch root-cause diagnosis
+- [x] JaCoCo coverage integration
+- [x] Generated TestCase structural validation
+- [x] OpenAPI contract validation with structured rejection diagnostics
+- [x] Flow-aware ExecutionPlan validation
+- [x] Fail-closed generation and execution semantics
+- [x] API Gateway outcome fields for accepted results, rejected tests, warnings, and partial acceptance
+- [x] Architecture diagram and plugin-pattern reporting
+- [x] V5: requirement-driven pipeline with consistency checking and scenario execution
+- [ ] Embed JaCoCo metrics directly into the unified execution report
+- [ ] Expose the complete V5 workflow through `api-gateway`
+- [ ] Add requirement-to-test provenance and traceability
+- [ ] Build an offline golden evaluation suite
+- [ ] Extend OpenAPI validation to nested schemas, required fields, data types, enums, constraints, and response bodies
+- [ ] Add mutation testing to measure generated-test defect-detection power
+- [ ] Support multi-spec batch processing in CI
 
 ---
 
