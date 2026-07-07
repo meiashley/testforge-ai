@@ -1,6 +1,6 @@
 # TestForge AI
 
-> AI-powered test engineering platform that turns OpenAPI specs + business requirements into executable test suites — with consistency checking, multi-step scenarios, and AI-driven failure diagnosis.
+> AI-powered test engineering platform that turns OpenAPI specifications and business requirements into validated, executable test suites — with deterministic LLM output validation, consistency checking, multi-step scenarios, and AI-assisted failure diagnosis.
 
 ![CI](https://github.com/meiashley/testforge-ai/actions/workflows/test.yml/badge.svg)
 ![Java](https://img.shields.io/badge/Java-21-blue)
@@ -15,7 +15,7 @@
 [![V3.1 Baseline](https://img.shields.io/badge/V3.1_Baseline-Live-brightgreen?style=for-the-badge)](https://meiashley.github.io/testforge-ai/sample-execution-report.html)
 [![JaCoCo Coverage](https://img.shields.io/badge/JaCoCo_Coverage-Live-yellow?style=for-the-badge)](https://meiashley.github.io/testforge-ai/coverage/index.html)
 
-🆕 **V5** combines PRD-driven scenarios + AI-augmented API tests + automatic consistency check between requirements and OpenAPI spec + AI-driven failure diagnosis (categorizes failures into 6 root-cause types).
+🆕 **V5** combines PRD-driven scenarios + AI-augmented API tests + automatic consistency check between requirements and OpenAPI spec + deterministic pre-execution validation + AI-driven failure diagnosis (categorizes failures into 6 root-cause types).
 
 ---
 
@@ -26,13 +26,16 @@ Feed in:
 - A **product requirement document** (business intent, Markdown)
 
 The pipeline:
-1. Extracts structured business constraints from the requirement
-2. Detects inconsistencies between requirement and OpenAPI spec
-3. Generates API-level tests + multi-step business scenario tests
-4. Executes everything against a real API
-5. Uses AI to diagnose root causes of failures
+1. Extracts structured business constraints from the requirement.
+2. Detects inconsistencies between the requirement and the OpenAPI specification.
+3. Generates API-level test cases and multi-step business scenario plans.
+4. Applies deterministic structural validation to generated test cases.
+5. Validates generated tests against the OpenAPI contract.
+6. Validates each ExecutionPlan against its source ResolvedFlow.
+7. Executes only accepted tests and valid plans against a real API.
+8. Uses AI to diagnose the root causes of runtime failures.
 
-The result is a single unified report covering contract conformance, code coverage, scenario validation, requirement-API alignment, and AI failure analysis.
+Results may include accepted tests, rejected generated artifacts, validation warnings, execution results, consistency findings, coverage data, and AI-assisted failure analysis.
 
 ---
 
@@ -49,12 +52,15 @@ The result is a single unified report covering contract conformance, code covera
 
 ## 🌟 Key Highlights
 
-- 🧠 **Requirement-driven test generation** — AI reads PRD Markdown and extracts 26 structured business constraints
-- 🔍 **Consistency check** — automatically surfaces 23 mismatches between requirement and OpenAPI (e.g., undocumented ownership rules, missing idempotency)
-- 🎬 **Multi-step business scenarios** — generates execution plans like "User A pays, User B attempts refund (should be rejected)"
-- 🤖 **AI Failure Diagnoser** — when tests fail, Claude diagnoses root cause across 6 categories (TEST_LOGIC_ERROR / API_BUG / etc.) with confidence labels
-- 💰 **Prompt-level caching** — SHA256(model + prompt); 85% time reduction on warm runs ($0.30 → $0)
-- 🛡️ **4-layer quality validation** — contract / runtime / coverage / AI diagnosis
+- 🧠 **Requirement-driven test generation** — AI reads PRD Markdown and extracts 26 structured business constraints.
+- 🔍 **Consistency check** — automatically surfaces 23 mismatches between requirement and OpenAPI (e.g., undocumented ownership rules, missing idempotency).
+- 🎬 **Multi-step business scenarios** — generates execution plans like "User A pays, User B attempts refund (should be rejected)".
+- 🧪 **Deterministic LLM output validation** — validates generated test structure, limited OpenAPI contract checks for paths, methods, documented response statuses, top-level request body fields, ExecutionPlan integrity, bindings, variable dependencies, supported assertions, and other pre-runtime requirements.
+- 🛡️ **Fail-closed execution safety** — structurally invalid tests do not reach contract validation or execution; contract-invalid tests do not enter accepted cache or execution; malformed ExecutionPlans are rejected before any HTTP request is sent; generation fails when no accepted test remains.
+- 📋 **Structured generation diagnostics** — API Gateway exposes accepted tests, rejected tests, validation warnings, and partial-acceptance status through job results.
+- 🤖 **AI Failure Diagnoser** — when runtime tests fail, Claude diagnoses root cause across 6 categories (TEST_LOGIC_ERROR / API_BUG / etc.) with confidence labels.
+- 💰 **Validation-preserving caching** — warm runs can avoid repeated LLM calls while preserving the same validation gates.
+- ✅ **Multi-layer quality controls** — deterministic pre-execution validation, runtime assertions, code coverage, and AI-assisted failure diagnosis.
 
 ---
 
@@ -71,8 +77,15 @@ graph TB
         O --> CC[ConsistencyChecker]:::ai
         O --> MAP[RequirementApiMapper]:::ai
         O --> AFR[ApiFlowResolver]:::ai
-        O --> SP[ScenarioPlanner]:::ai
+        AFR --> RF[ResolvedFlow]:::data
+        RF --> SP[ScenarioPlanner]:::ai
+        SP --> EP[ExecutionPlan]:::data
         O --> FA[FailureAnalyzer]:::ai
+
+        TG[TestCase Generation]:::ai --> RP[ResponseParser]:::gate
+        RP --> TSV[TestCase Structural Validator]:::gate
+        TSV --> OCV[OpenAPI Contract Validator]:::gate
+        OCV --> TGO[TestGenerationOutcome]:::data
     end
 
     RA <-->|prompts / JSON| C([Claude API<br/>Sonnet 4.5]):::external
@@ -81,12 +94,17 @@ graph TB
     AFR <-.->|prompts / JSON| C
     SP <-.->|prompts / JSON| C
     FA <-.->|prompts / JSON| C
+    TG <-.->|prompts / JSON| C
 
-    O -->|ExecutionPlans| D[test-runner]:::module
+    RF --> EPV[ExecutionPlan Validator]:::gate
+    EP --> EPV
+    EPV -->|valid plans only| D[test-runner]:::module
+    TGO -->|accepted generation results| AGR[Accepted GenerationResults]:::data
+    AGR --> D
+    TGO -->|accepted / rejected / warnings| H[api-gateway<br/>REST entry point]:::module
     D -->|HTTP| E[mock-banking-api<br/>+ JaCoCo agent]:::module
     D --> F([Unified Report<br/>HTML / JSON / MD]):::output
     E -.->|coverage data| G([JaCoCo Coverage Report]):::output
-    H[api-gateway<br/>REST entry point]:::module -.->|invokes| AIENGINE
 
     classDef module fill:#dbeafe,stroke:#93c5fd,color:#1e3a5f
     classDef ai fill:#e0e7ff,stroke:#a5b4fc,color:#312e81
@@ -94,17 +112,19 @@ graph TB
     classDef input fill:#f0fdf4,stroke:#86efac,color:#14532d
     classDef output fill:#fefce8,stroke:#fde047,color:#713f12
     classDef external fill:#faf5ff,stroke:#d8b4fe,color:#4a044e
+    classDef gate fill:#fee2e2,stroke:#fca5a5,color:#7f1d1d
+    classDef data fill:#f1f5f9,stroke:#cbd5e1,color:#0f172a
 ```
 
-End-to-end flow: OpenAPI spec + requirement document → Orchestrator coordinates 6 AI components (RequirementAnalyzer, ConsistencyChecker, RequirementApiMapper, ApiFlowResolver, ScenarioPlanner, FailureAnalyzer) — all pure orchestration, no business logic in the orchestrator. Each component is independently testable. The resulting ExecutionPlans run against mock-banking-api (instrumented with JaCoCo), producing a unified report. `api-gateway` exposes the V3.1/V4 generation flow as a REST entry point (V5 pipeline exposure pending).
+Generated API tests pass through raw response parsing, deterministic structural validation, and OpenAPI contract validation before they are cached as accepted artifacts or executed. Multi-step ExecutionPlans are compared with their source ResolvedFlow before any HTTP request is sent. API Gateway keeps the generation outcome: accepted results, rejected tests, validation warnings, and partial-acceptance information.
 
 See [docs/architecture.md](docs/architecture.md) for module boundary details.
 
 ---
 
-## 🧠 V5 Pipeline
+## 🧠 V5 AI Pipeline and Deterministic Execution Gate
 
-V5 introduces a 6-stage requirement-driven pipeline orchestrated by `QualityPipelineOrchestrator` (pure orchestration, no business logic).
+V5 introduces a 6-stage requirement-driven AI pipeline orchestrated by `QualityPipelineOrchestrator` (pure orchestration, no business logic).
 
 | Stage                      | Component             | What It Does                                                       |
 |----------------------------|-----------------------|-------------------------------------------------------------------|
@@ -117,44 +137,61 @@ V5 introduces a 6-stage requirement-driven pipeline orchestrated by `QualityPipe
 
 Strict separation of concerns: Mapper finds endpoints, Resolver orders them, Planner adds business logic. Shared state lives in `QualityContext` to prevent parameter sprawl in the orchestrator.
 
----
+### Deterministic Execution Gate
 
-## 🤖 AI Failure Analyzer
+Before execution, every `ExecutionPlan` is checked against the original `ResolvedFlow`. The validator checks:
 
-When tests fail, the system sends a batch request to Claude (one call diagnoses all failures) and gets back structured root causes.
+- Plan and step completeness.
+- One-to-one correspondence with resolved flow steps.
+- Step identity and execution list order.
+- Immutable method, path template, path bindings, header bindings, role, order, and output capture.
+- Supported HTTP methods.
+- Supported assertion types.
+- Path and header binding structure.
+- Initial inputs, `metadata.testData`, and inter-step output captures.
+- Unresolved placeholders and forward references.
 
-**Categories**
-- `TEST_LOGIC_ERROR` — Test expectations don't match the spec
-- `API_BUG` — API behaves incorrectly per the spec
-- `DATA_DEPENDENCY` — Required prerequisite data missing or in wrong state
-- `ASSERTION_TOO_STRICT` — Assertions check fields not actually required
-- `ENVIRONMENT` — Network/timeout/infrastructure
-- `UNCERTAIN` — Multiple plausible causes; needs human review
+`ScenarioPlanner` can populate test data, request body, expected status, assertions, and step descriptions. It must not reorder steps or modify the resolved call structure. Any structural plan error rejects the whole plan before an HTTP request is sent.
 
-**V5 baseline diagnosis breakdown (9 failures analyzed)**
-
-| Category               | Count | Note                                                  |
-|------------------------|-------|-------------------------------------------------------|
-| `API_BUG`              | **3** | Real defects in `mock-banking-api`                    |
-| `TEST_LOGIC_ERROR`     | 5     | AI-generated test expectations not aligning with spec |
-| `ASSERTION_TOO_STRICT` | 1     | Assertion checks a field not actually required        |
-
-The AI doesn't just report failures — it flagged **3 real production-relevant defects** in `mock-banking-api`, including the V4-discovered refund idempotency gap (refunding an already-REFUNDED payment returns 200 instead of 422) plus 2 additional bugs surfaced by V5 multi-step scenarios.
-
-Each diagnosis includes: category, summary, evidence (specific data points from response), suggested fix, and confidence label. Results render inline in failed test rows in the HTML report.
+Current ExecutionPlan assertion types are:
+- `EQUALS`
+- `NOT_EQUALS`
+- `EXISTS`
+- `NOT_EXISTS`
+- `CONTAINS`
 
 ---
 
 ## 🛡️ Quality Validation
 
-Quality is measured on 4 independent layers — passing rate alone is insufficient.
+Quality is controlled across deterministic pre-execution gates, runtime checks, and post-execution analysis. Passing rate alone is insufficient.
 
-| Layer                              | What It Catches                                          |
-|------------------------------------|----------------------------------------------------------|
-| 1. Pre-execution: Contract Validator | Tests with invalid paths, methods, or schemas (blocked before execution) |
-| 2. Runtime: Pass rate + assertions | Functional correctness against live API                  |
-| 3. Post-execution: JaCoCo Coverage | Whether passing tests actually exercise the code         |
-| 4. Post-execution: AI Failure Analyzer | Root-cause categorization of failures (test bug vs API bug) |
+| Stage | Control | What It Checks |
+|---|---|---|
+| Parsing | `ResponseParser` | Raw-text cleanup, JSON syntax, deserialization, and conversion to the `TestCase` model |
+| Pre-execution | TestCase structural validation | Required fields, supported methods, valid status codes, request/assertion structure, unique IDs, and deterministic duplicate content |
+| Pre-execution | OpenAPI contract validation | Endpoint path and method alignment, request body top-level fields, and documented response status codes |
+| Pre-execution | ExecutionPlan validation | Resolved-flow integrity, step completeness and order, bindings, variable dependencies, supported assertions, and unresolved references |
+| Runtime | HTTP execution and assertions | Actual response status, body values, headers, and multi-step workflow behaviour |
+| Post-execution | JaCoCo coverage | Whether generated tests exercise the implementation |
+| Post-execution | AI Failure Analyzer | Whether failures are caused by test logic, API behaviour, data, assertions, or environment |
+
+### Fail-Closed Behaviour
+
+The validation policy is fail-closed:
+
+- Invalid JSON rejects the full LLM response.
+- Duplicate test-case IDs reject the generated batch.
+- A structurally invalid individual test is rejected and does not enter OpenAPI contract validation or execution.
+- A warning-only test case remains accepted.
+- Contract-invalid tests do not enter accepted results, accepted cache, or execution.
+- A malformed ExecutionPlan is rejected before any HTTP request is sent.
+- A generation run with no accepted tests fails and preserves structured diagnostics.
+- Invalid artifacts are not silently deleted; rejected items and warnings are returned through `TestGenerationOutcome`.
+
+### Partial Acceptance
+
+A single generation run can contain both accepted and rejected tests. Only accepted tests are executed. Rejected tests and warnings are returned through `TestGenerationOutcome`. In API Gateway jobs, `partialAcceptance` is `true` when accepted and rejected items exist in the same run.
 
 ### V3.1 Detailed Metrics
 
@@ -188,11 +225,35 @@ Quality is measured on 4 independent layers — passing rate alone is insufficie
 
 ---
 
-## ⚙️ REST API (api-gateway)
+## 🤖 AI Failure Analyzer
+
+When tests fail, the system sends a batch request to Claude (one call diagnoses all failures) and gets back structured root causes.
+
+**Categories**
+- `TEST_LOGIC_ERROR` — Test expectations don't match the spec
+- `API_BUG` — API behaves incorrectly per the spec
+- `DATA_DEPENDENCY` — Required prerequisite data missing or in wrong state
+- `ASSERTION_TOO_STRICT` — Assertions check fields not actually required
+- `ENVIRONMENT` — Network/timeout/infrastructure
+- `UNCERTAIN` — Multiple plausible causes; needs human review
+
+**V5 baseline diagnosis breakdown (9 failures analyzed)**
+
+| Category               | Count | Note                                                  |
+|------------------------|-------|-------------------------------------------------------|
+| `API_BUG`              | **3** | Real defects in `mock-banking-api`                    |
+| `TEST_LOGIC_ERROR`     | 5     | AI-generated test expectations not aligning with spec |
+| `ASSERTION_TOO_STRICT` | 1     | Assertion checks a field not actually required        |
+
+The AI flagged **3 real production-relevant defects** in `mock-banking-api`, including the V4-discovered refund idempotency gap (refunding an already-REFUNDED payment returns 200 instead of 422) plus 2 additional bugs surfaced by V5 multi-step scenarios.
+
+Each diagnosis includes: category, summary, evidence (specific data points from response), suggested fix, and confidence label. Results render inline in failed test rows in the HTML report.
+
+---
+
+## ⚙️ REST API and Generation Outcome
 
 The pipeline is exposed as an async REST API for integration into CI/CD.
-
-### Quick Start
 
 ```bash
 # Start the gateway
@@ -210,6 +271,48 @@ curl http://localhost:8080/api/test-generations/{job-id}
 Implements an async generation pattern with `GenerationExecutor` + `@Async` and AOP self-invocation handled correctly.
 
 Swagger UI available at `http://localhost:8080/swagger-ui.html` after startup.
+
+### Generation Outcome
+
+| Field | Meaning |
+|---|---|
+| `generationResults` | Accepted generated tests grouped by endpoint |
+| `rejectedTestCases` | Structurally invalid, duplicate, or OpenAPI contract-invalid generated tests |
+| `validationWarnings` | Non-blocking validation issues |
+| `partialAcceptance` | `true` when accepted and rejected tests exist in the same run |
+| `report` | Runtime execution report for accepted tests |
+| `errorMessage` | Pipeline or execution failure summary |
+
+Rejected diagnostics can include the original batch index, `testCaseId` when available, stable error code, deterministic field path, human-readable message, and severity.
+
+A failed Job can still preserve accepted results produced before the failure, rejected tests, and validation warnings. If no accepted test remains, the Job fails. If accepted tests exist, only accepted tests enter execution.
+
+Example shape:
+
+```json
+{
+  "jobId": "job-123",
+  "status": "FAILED",
+  "generationResults": [],
+  "rejectedTestCases": [
+    {
+      "batchIndex": 0,
+      "testCaseId": "tc-invalid",
+      "validationIssues": [
+        {
+          "code": "STATUS_NOT_IN_SPEC",
+          "fieldPath": "testCases[0].expected.status",
+          "message": "Expected status is not documented for this endpoint",
+          "severity": "ERROR"
+        }
+      ]
+    }
+  ],
+  "validationWarnings": [],
+  "partialAcceptance": false,
+  "errorMessage": "Generated tests were rejected by validation"
+}
+```
 
 ---
 
@@ -232,24 +335,52 @@ mvn test -pl test-runner -Dtest=V5BaselinePipelineTest
 open test-runner/target/v5-execution-report.html
 ```
 
-Prompt-level caching is automatic — re-runs with the same model + prompt are free.
+---
+
+## 💾 Caching
+
+### Raw LLM response cache
+
+`RealClaudeClient` caches raw LLM text by model and prompt fingerprint. A raw cache hit is still parsed and must pass deterministic validation before becoming an accepted artifact. The cache hit revalidation step ensures cached raw output cannot bypass validators.
+
+### Accepted endpoint test cache
+
+`EndpointCache` stores accepted endpoint-level `TestCase` lists by prompt fingerprint. Only non-empty tests that pass structural validation and OpenAPI contract validation are saved as accepted artifacts. Structurally invalid and contract-invalid tests are not cached as accepted results.
+
+Cache hits are still revalidated through structural and contract checks. Warm runs can avoid repeated LLM calls while preserving the same validation gates.
 
 ---
 
-## 🗺️ Roadmap
+## 🗺️ Project Evolution and Roadmap
 
-- [x] V1 → V3.1: iterative pass rate improvement
-- [x] V4: Dimension-driven generation
-- [x] AI Failure Analyzer (batch root-cause diagnosis)
-- [x] JaCoCo code coverage integration
-- [x] TestCaseContractValidator (pre-execution structural check)
-- [x] Architecture diagram + plugin-pattern reporting
-- [x] V5: Requirement-driven pipeline + consistency check + scenario execution
-- [ ] JaCoCo coverage integration: embed coverage metrics directly into the unified execution report (currently rendered as a standalone JaCoCo HTML page)
-- [ ] api-gateway: expose V5 requirement-driven pipeline (currently only V3.1/V4 generation flows are wired)
-- [ ] V6: Requirement-aware API test generation (replace V4 fallback with native V5-style API planner)
-- [ ] Mutation testing: inject synthetic API defects to validate test detection power
-- [ ] Multi-spec batch processing in CI
+### Implemented
+
+- Iterative V1–V3.1 reliability improvements.
+- V4 dimension-driven API test generation.
+- AI Failure Analyzer.
+- JaCoCo coverage integration.
+- Generated TestCase structural validation.
+- OpenAPI contract validation with structured rejection diagnostics.
+- Flow-aware ExecutionPlan validation.
+- Fail-closed generation and execution semantics.
+- API Gateway outcome fields for accepted results, rejected tests, warnings, and partial acceptance.
+- V5 requirement-driven pipeline with consistency checking and scenario execution.
+
+### Next
+
+- Embed JaCoCo metrics directly into the unified execution report (currently rendered as a standalone JaCoCo HTML page).
+- Expose the complete V5 workflow through `api-gateway`.
+- Requirement-to-test provenance and traceability.
+- Offline golden evaluation suite.
+- Deeper OpenAPI schema validation:
+  - nested schemas
+  - required fields
+  - data types
+  - enums
+  - constraints
+  - response-body schemas
+- Mutation testing: inject synthetic API defects to validate test detection power.
+- Multi-spec batch processing in CI.
 
 ---
 
