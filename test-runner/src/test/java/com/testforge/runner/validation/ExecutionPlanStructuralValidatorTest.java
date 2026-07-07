@@ -330,6 +330,31 @@ class ExecutionPlanStructuralValidatorTest {
     }
 
     @Test
+    void unsupportedStatusSource_isRejectedWithPreciseDiagnostic() {
+        ExecutionPlan plan = validPlan();
+        plan.setSteps(List.of(plan.getSteps().get(0)));
+        plan.getSteps().get(0).setOutputCapture(Map.of("crossRefund.statusCode", "$.status"));
+
+        ExecutionPlanValidationResult result = validator.validate(flowFrom(plan), plan,
+                Map.of("user.token", "token"));
+
+        assertFalse(result.isValid());
+        List<ValidationIssue> unsupportedSourceIssues = result.getIssues().stream()
+                .filter(issue -> "OUTPUT_CAPTURE_SOURCE_UNSUPPORTED".equals(issue.getCode()))
+                .toList();
+        assertEquals(1, unsupportedSourceIssues.size(), result.getIssues().toString());
+        ValidationIssue issue = unsupportedSourceIssues.get(0);
+        assertEquals("executionPlan.steps[0].outputCapture['crossRefund.statusCode']", issue.getFieldPath());
+        assertTrue(issue.getMessage().contains("$.statusCode"), issue.getMessage());
+        assertTrue(issue.getMessage().contains("$.body"), issue.getMessage());
+        assertTrue(issue.getMessage().contains("$.body.<field>"), issue.getMessage());
+        assertTrue(issue.getMessage().contains("$.headers.<header>"), issue.getMessage());
+
+        assertEquals(List.of("OUTPUT_CAPTURE_SOURCE_UNSUPPORTED"), codes(result),
+                "Fixture should only fail because $.status is not a canonical output capture source");
+    }
+
+    @Test
     void unsupportedAssertionAndMissingExpected_areErrors() {
         ExecutionPlan plan = validPlan();
         plan.getSteps().get(0).setAssertions(List.of(
@@ -428,6 +453,27 @@ class ExecutionPlanStructuralValidatorTest {
         return result.getIssues().stream()
                 .map(ValidationIssue::getCode)
                 .toList();
+    }
+
+    private ResolvedFlow flowFrom(ExecutionPlan plan) {
+        return ResolvedFlow.builder()
+                .flowId("flow-" + plan.getScenarioId())
+                .featureId("feature-" + plan.getScenarioId())
+                .description(plan.getScenarioName())
+                .steps(plan.getSteps().stream()
+                        .map(step -> FlowStep.builder()
+                                .order(step.getOrder())
+                                .stepId(step.getStepId())
+                                .role(step.getRole())
+                                .method(step.getMethod())
+                                .pathTemplate(step.getPathTemplate())
+                                .pathBindings(step.getPathBindings())
+                                .headerBindings(step.getHeaderBindings())
+                                .bodyBinding(step.getBodyBinding())
+                                .outputCapture(step.getOutputCapture())
+                                .build())
+                        .toList())
+                .build();
     }
 
     private ResolvedFlow flow() {

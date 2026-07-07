@@ -60,6 +60,26 @@ class ExecutionPipelinePlanValidationTest {
         assertEquals(2, httpExecutor.calls);
     }
 
+    @Test
+    void unsupportedStatusSourceDoesNotCallExecutor() {
+        TrackingHttpExecutor httpExecutor = new TrackingHttpExecutor();
+        ExecutionPipeline pipeline = pipeline(httpExecutor);
+        ExecutionPlan plan = validPlan();
+        plan.setSteps(List.of(plan.getSteps().get(0)));
+        plan.getSteps().get(0).setOutputCapture(Map.of("crossRefund.statusCode", "$.status"));
+
+        ExecutionPlanValidationException ex = assertThrows(ExecutionPlanValidationException.class,
+                () -> pipeline.executePlan(flowFrom(plan), plan, "http://example.invalid",
+                        Map.of("user.token", "token")));
+
+        assertFalse(ex.getResult().isValid());
+        assertTrue(ex.getResult().getIssues().stream()
+                .anyMatch(issue -> "OUTPUT_CAPTURE_SOURCE_UNSUPPORTED".equals(issue.getCode())
+                        && "executionPlan.steps[0].outputCapture['crossRefund.statusCode']"
+                        .equals(issue.getFieldPath())));
+        assertEquals(0, httpExecutor.calls);
+    }
+
     private ExecutionPipeline pipeline(HttpExecutor httpExecutor) {
         return new ExecutionPipeline(
                 httpExecutor,
@@ -80,6 +100,27 @@ class ExecutionPipelinePlanValidationTest {
             }
             return new HttpResponse(200, Map.of("id", "pay-1"), "", Map.of(), 1);
         }
+    }
+
+    private ResolvedFlow flowFrom(ExecutionPlan plan) {
+        return ResolvedFlow.builder()
+                .flowId("flow-" + plan.getScenarioId())
+                .featureId("feature-" + plan.getScenarioId())
+                .description(plan.getScenarioName())
+                .steps(plan.getSteps().stream()
+                        .map(step -> FlowStep.builder()
+                                .order(step.getOrder())
+                                .stepId(step.getStepId())
+                                .role(step.getRole())
+                                .method(step.getMethod())
+                                .pathTemplate(step.getPathTemplate())
+                                .pathBindings(step.getPathBindings())
+                                .headerBindings(step.getHeaderBindings())
+                                .bodyBinding(step.getBodyBinding())
+                                .outputCapture(step.getOutputCapture())
+                                .build())
+                        .toList())
+                .build();
     }
 
     private ResolvedFlow flow() {
