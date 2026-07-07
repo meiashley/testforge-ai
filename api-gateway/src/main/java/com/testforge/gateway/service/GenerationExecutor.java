@@ -5,11 +5,13 @@ import com.testforge.ai.client.RealClaudeClient;
 import com.testforge.ai.model.GenerationResult;
 import com.testforge.ai.parser.ResponseParser;
 import com.testforge.ai.pipeline.SwaggerOpenApiLoader;
+import com.testforge.ai.pipeline.TestGenerationOutcome;
 import com.testforge.ai.pipeline.TestGenerationPipeline;
 import com.testforge.ai.prompt.EndpointPromptBuilder;
 import com.testforge.ai.prompt.PromptBuilder;
 import com.testforge.ai.prompt.PromptBuilderV2;
 import com.testforge.ai.prompt.PromptBuilderV3;
+import com.testforge.ai.validation.GenerationValidationException;
 import com.testforge.runner.assertion.AssertionEvaluator;
 import com.testforge.runner.http.HttpExecutor;
 import com.testforge.runner.model.ExecutionReport;
@@ -57,7 +59,9 @@ public class GenerationExecutor {
             TestGenerationPipeline pipeline = new TestGenerationPipeline(
                     new SwaggerOpenApiLoader(), promptBuilder, claudeClient, new ResponseParser());
 
-            List<GenerationResult> results = pipeline.run(yaml);
+            TestGenerationOutcome outcome = pipeline.generate(yaml);
+            applyGenerationOutcome(job, outcome);
+            List<GenerationResult> results = outcome.getGenerationResults();
 
             ExecutionReport report;
             if ("V3".equals(promptVersion) || "V3.1".equals(promptVersion)) {
@@ -77,6 +81,8 @@ public class GenerationExecutor {
             job.setCompletedAt(Instant.now());
             jobStore.update(job);
 
+        } catch (GenerationValidationException e) {
+            handleGenerationValidationFailure(job, e);
         } catch (Exception e) {
             job.setStatus(JobStatus.FAILED);
             job.setErrorMessage(e.toString());
@@ -92,6 +98,22 @@ public class GenerationExecutor {
             case "V3", "V3.1" -> new PromptBuilderV3();
             default -> throw new IllegalArgumentException("Unknown promptVersion: " + promptVersion);
         };
+    }
+
+    void applyGenerationOutcome(Job job, TestGenerationOutcome outcome) {
+        job.setGenerationResults(outcome.getGenerationResults());
+        job.setRejectedTestCases(outcome.getRejectedTestCases());
+        job.setValidationWarnings(outcome.getWarnings());
+        job.setPartialAcceptance(!outcome.getRejectedTestCases().isEmpty()
+                && !outcome.getAcceptedTestCases().isEmpty());
+    }
+
+    void handleGenerationValidationFailure(Job job, GenerationValidationException exception) {
+        applyGenerationOutcome(job, exception.getOutcome());
+        job.setStatus(JobStatus.FAILED);
+        job.setErrorMessage(exception.getMessage());
+        job.setCompletedAt(Instant.now());
+        jobStore.update(job);
     }
 
     private String fetchYaml(String url) throws IOException {

@@ -71,4 +71,23 @@ class HttpExecutorTest {
         assertEquals("OK", response.getRawBody());
         assertTrue(response.getDurationMs() >= 0);
     }
+
+    @Test
+    void headRequestExecutesWithoutRequestBody() {
+        wireMock.stubFor(head(urlEqualTo("/health"))
+                .willReturn(aResponse()
+                        .withStatus(204)
+                        .withHeader("X-Health", "ok")));
+
+        TestCaseRequest request = new TestCaseRequest();
+        request.setMethod("HEAD");
+        request.setPath("/health");
+
+        HttpResponse response = executor.execute(request, "http://localhost:" + wireMock.port());
+
+        assertEquals(204, response.getStatusCode());
+        assertNull(response.getBody());
+        assertEquals("ok", response.getHeaders().get("X-Health"));
+        wireMock.verify(headRequestedFor(urlEqualTo("/health")));
+    }
 }

@@ -8,6 +8,7 @@ import com.testforge.ai.model.GenerationResult;
 import com.testforge.ai.model.TestCase;
 import com.testforge.ai.scenario.Assertion;
 import com.testforge.ai.scenario.ExecutionPlan;
+import com.testforge.ai.scenario.ResolvedFlow;
 import com.testforge.ai.scenario.ScenarioStep;
 import com.testforge.ai.scenario.StepDataContext;
 import com.testforge.runner.assertion.AssertionEvaluator;
@@ -20,6 +21,10 @@ import com.testforge.runner.model.*;
 import com.testforge.runner.report.ReportBuilder;
 import com.testforge.runner.report.ReportWriter;
 import com.testforge.runner.setup.SetupRunner;
+import com.testforge.runner.validation.ExecutionPlanStructuralValidator;
+import com.testforge.runner.validation.ExecutionPlanValidationException;
+import com.testforge.runner.validation.ExecutionPlanValidationResult;
+import com.testforge.ai.validation.ValidationIssue;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -37,15 +42,24 @@ public class ExecutionPipeline {
     private final ReportBuilder reportBuilder;
     private final ReportWriter reportWriter;
     private final BindingResolver bindingResolver;
+    private final ExecutionPlanStructuralValidator planValidator;
     private FailureAnalyzer failureAnalyzer;
 
     public ExecutionPipeline(HttpExecutor httpExecutor, AssertionEvaluator assertionEvaluator,
                              ReportBuilder reportBuilder, ReportWriter reportWriter) {
+        this(httpExecutor, assertionEvaluator, reportBuilder, reportWriter,
+                new ExecutionPlanStructuralValidator());
+    }
+
+    public ExecutionPipeline(HttpExecutor httpExecutor, AssertionEvaluator assertionEvaluator,
+                             ReportBuilder reportBuilder, ReportWriter reportWriter,
+                             ExecutionPlanStructuralValidator planValidator) {
         this.httpExecutor = httpExecutor;
         this.assertionEvaluator = assertionEvaluator;
         this.reportBuilder = reportBuilder;
         this.reportWriter = reportWriter;
         this.bindingResolver = new BindingResolver();
+        this.planValidator = planValidator;
     }
 
     public ExecutionPipeline withFailureAnalyzer(FailureAnalyzer analyzer) {
@@ -96,8 +110,36 @@ public class ExecutionPipeline {
 
     // === V5: multi-step ExecutionPlan support ===
 
+    @Deprecated
     public PlanExecutionResult executePlan(ExecutionPlan plan, String baseUrl) {
+        throw new ExecutionPlanValidationException(
+                "ExecutionPlan execution requires its source ResolvedFlow.",
+                new ExecutionPlanValidationResult(List.of(ValidationIssue.error(
+                        "RESOLVED_FLOW_REQUIRED",
+                        "resolvedFlow",
+                        "ExecutionPlan execution requires its source ResolvedFlow."))));
+    }
+
+    public PlanExecutionResult executePlan(ResolvedFlow flow, ExecutionPlan plan, String baseUrl) {
+        return executePlan(flow, plan, baseUrl, Map.of());
+    }
+
+    public PlanExecutionResult executePlan(ResolvedFlow flow, ExecutionPlan plan, String baseUrl,
+                                           Map<String, ?> initialInputs) {
+        ExecutionPlanValidationResult validationResult = planValidator.validate(flow, plan, initialInputs);
+        if (!validationResult.isValid()) {
+            for (var issue : validationResult.getIssues()) {
+                System.out.println("[execution plan validation " + issue.getSeverity().name().toLowerCase() + "] "
+                        + issue.getCode() + " " + issue.getFieldPath() + ": " + issue.getMessage());
+            }
+            throw new ExecutionPlanValidationException("ExecutionPlan failed structural validation", validationResult);
+        }
+
         StepDataContext context = new StepDataContext();
+
+        if (initialInputs != null) {
+            initialInputs.forEach((k, v) -> context.put(k, v));
+        }
 
         if (plan.getMetadata() != null && plan.getMetadata().get("testData") instanceof Map<?, ?> testData) {
             testData.forEach((k, v) -> context.put(String.valueOf(k), v));

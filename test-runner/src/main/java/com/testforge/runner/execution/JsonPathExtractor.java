@@ -7,6 +7,10 @@ public class JsonPathExtractor {
     public static Object extract(HttpResponse response, String jsonPath) {
         if (jsonPath == null || response == null) return null;
 
+        if ("$.statusCode".equals(jsonPath)) {
+            return response.getStatusCode();
+        }
+
         if (jsonPath.startsWith("$.body.") && response.getBody() != null) {
             String field = jsonPath.substring("$.body.".length());
             return response.getBody().get(field);

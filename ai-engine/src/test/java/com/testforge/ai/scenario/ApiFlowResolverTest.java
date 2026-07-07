@@ -136,4 +136,27 @@ class ApiFlowResolverTest {
                 () -> resolver.resolve(List.of(sampleMapping()), List.of("some scenario"), "openapi: 3.0.0"));
         assertTrue(ex.getMessage().contains("Failed to parse ApiFlowResolver response"));
     }
+
+    @Test
+    void prompt_listsSupportedOutputCaptureSourcesIncludingStatusCode() {
+        CapturingClaudeClient claude = new CapturingClaudeClient();
+        ApiFlowResolver resolver = new ApiFlowResolver(claude);
+
+        resolver.resolve(List.of(sampleMapping()), List.of("Successful Refund Flow"), "openapi: 3.0.0");
+
+        assertTrue(claude.prompt.contains("$.statusCode"));
+        assertTrue(claude.prompt.contains("$.body"));
+        assertTrue(claude.prompt.contains("$.body.<field>"));
+        assertTrue(claude.prompt.contains("$.headers.<header>"));
+    }
+
+    private static class CapturingClaudeClient implements ClaudeClient {
+        private String prompt;
+
+        @Override
+        public String generate(String prompt) {
+            this.prompt = prompt;
+            return ONE_FLOW_JSON;
+        }
+    }
 }

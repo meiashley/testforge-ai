@@ -166,4 +166,54 @@ class ScenarioPlannerTest {
                 () -> planner.plan(List.of(sampleFlow()), sampleAnalysis(), "openapi: 3.0.0"));
         assertTrue(ex.getMessage().contains("Failed to parse ScenarioPlanner response"));
     }
+
+    @Test
+    void prompt_marksMethodAsNonResponsibility() {
+        CapturingClaudeClient claude = new CapturingClaudeClient();
+        ScenarioPlanner planner = new ScenarioPlanner(claude);
+
+        planner.plan(List.of(sampleFlow()), sampleAnalysis(), "openapi: 3.0.0");
+
+        assertTrue(claude.prompt.contains("order, method, pathTemplate, role, pathBindings, headerBindings, outputCapture"));
+    }
+
+    @Test
+    void scenarioPlannerPrompt_containsOnlyExecutableAssertionTypes() {
+        CapturingClaudeClient claude = new CapturingClaudeClient();
+        ScenarioPlanner planner = new ScenarioPlanner(claude);
+
+        planner.plan(List.of(sampleFlow()), sampleAnalysis(), "openapi: 3.0.0");
+
+        assertTrue(claude.prompt.contains("EQUALS / NOT_EQUALS"));
+        assertTrue(claude.prompt.contains("EXISTS / NOT_EXISTS"));
+        assertTrue(claude.prompt.contains("CONTAINS"));
+        assertFalse(claude.prompt.contains("MATCHES_REGEX"));
+    }
+
+    @Test
+    void scenarioPlannerPrompt_documentsStatusCodeOutputCaptureProtocol() {
+        CapturingClaudeClient claude = new CapturingClaudeClient();
+        ScenarioPlanner planner = new ScenarioPlanner(claude);
+
+        planner.plan(List.of(sampleFlow()), sampleAnalysis(), "openapi: 3.0.0");
+
+        assertTrue(claude.prompt.contains("Supported output capture sources"));
+        assertTrue(claude.prompt.contains("$.statusCode"));
+        assertTrue(claude.prompt.contains("$.body"));
+        assertTrue(claude.prompt.contains("$.body.<field>"));
+        assertTrue(claude.prompt.contains("$.headers.<header>"));
+        assertTrue(claude.prompt.contains("expectedStatusCode validates the current step response status"));
+        assertTrue(claude.prompt.contains("outputCapture can use \"$.statusCode\" to save the actual HTTP response status"));
+        assertFalse(claude.prompt.contains("\"$.httpStatus\""));
+    }
+
+    private static class CapturingClaudeClient implements ClaudeClient {
+        private String prompt;
+
+        @Override
+        public String generate(String prompt) {
+            this.prompt = prompt;
+            return ONE_PLAN_JSON;
+        }
+    }
 }

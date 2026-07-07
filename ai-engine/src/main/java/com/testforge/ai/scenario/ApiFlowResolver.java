@@ -49,7 +49,11 @@ public class ApiFlowResolver {
                 - Each flow corresponds to one scenario from the identifiedScenarios list
                 - Order endpoints logically (creator before refunder, refunder before verifier)
                 - Specify data bindings using ${variable} syntax with namespaced keys
-                - outputCapture uses JSONPath ($.body.id, $.headers.location, etc) to extract response data into context
+                - outputCapture uses supported response sources to extract response data into context:
+                  - $.statusCode
+                  - $.body
+                  - $.body.<field>
+                  - $.headers.<header>
                 - Path/header/body bindings reference variables produced by earlier steps (or external inputs like ${user.token})
                 - DO NOT include assertions or expected values; those are added by ScenarioPlanner
                 - DO NOT add test data; only specify how data flows between steps
@@ -70,7 +74,7 @@ public class ApiFlowResolver {
                         "pathBindings": {},
                         "headerBindings": { "Authorization": "Bearer ${user.token}" },
                         "bodyBinding": null,
-                        "outputCapture": { "payment.id": "$.body.id", "payment.status": "$.body.status" }
+                        "outputCapture": { "payment.id": "$.body.id", "payment.statusCode": "$.statusCode", "payment.status": "$.body.status" }
                       },
                       {
                         "order": 1,

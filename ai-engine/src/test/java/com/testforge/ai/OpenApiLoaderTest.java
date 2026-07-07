@@ -108,6 +108,30 @@ class OpenApiLoaderTest {
     }
 
     @Test
+    void parsesHeadEndpoint() {
+        String yaml = """
+                openapi: 3.0.3
+                info:
+                  title: Test API
+                  version: 1.0.0
+                paths:
+                  /health:
+                    head:
+                      operationId: headHealth
+                      summary: Head health
+                      responses:
+                        '200':
+                          description: OK
+                """;
+
+        List<EndpointSpec> specs = loader.parse(yaml);
+
+        assertEquals(1, specs.size());
+        assertEquals("HEAD", specs.get(0).getMethod());
+        assertEquals("headHealth", specs.get(0).getOperationId());
+    }
+
+    @Test
     void throwsIllegalArgumentExceptionForMalformedYaml() {
         String badYaml = "this is not: valid: openapi: [unclosed";
 

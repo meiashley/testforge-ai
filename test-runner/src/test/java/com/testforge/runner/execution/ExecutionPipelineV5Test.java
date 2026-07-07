@@ -7,10 +7,12 @@ import com.testforge.runner.model.HttpResponse;
 import com.testforge.runner.pipeline.ExecutionPipeline;
 import com.testforge.runner.report.ReportBuilder;
 import com.testforge.runner.report.ReportWriter;
+import com.testforge.runner.validation.ExecutionPlanValidationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -76,7 +78,8 @@ class ExecutionPipelineV5Test {
         when(httpExecutor.execute(eq("POST"), contains("/api/payments"), any(), any()))
                 .thenReturn(httpResponse(201, Map.of("id", "pay-001", "status", "COMPLETED")));
 
-        PlanExecutionResult result = pipeline.executePlan(plan("plan-1", List.of(step)), "http://localhost:8080");
+        List<ScenarioStep> steps = List.of(step);
+        PlanExecutionResult result = pipeline.executePlan(flow(steps), plan("plan-1", steps), "http://localhost:8080");
 
         assertTrue(result.isPassed());
         assertEquals(1, result.getSteps().size());
@@ -107,8 +110,9 @@ class ExecutionPipelineV5Test {
         when(httpExecutor.execute(eq("POST"), contains("/api/payments/pay-abc/refund"), any(), any()))
                 .thenReturn(httpResponse(200, Map.of("status", "REFUNDED")));
 
+        List<ScenarioStep> steps = List.of(step1, step2);
         PlanExecutionResult result = pipeline.executePlan(
-                plan("plan-2", List.of(step1, step2)), "http://localhost:8080");
+                flow(steps), plan("plan-2", steps), "http://localhost:8080");
 
         assertTrue(result.isPassed());
         assertEquals(2, result.getSteps().size());
@@ -140,8 +144,9 @@ class ExecutionPipelineV5Test {
         when(httpExecutor.execute(eq("GET"), contains("/api/payments/pay-abc"), any(), any()))
                 .thenReturn(httpResponse(200, Map.of("id", "pay-abc", "status", "COMPLETED")));
 
+        List<ScenarioStep> steps = List.of(step1, step2);
         PlanExecutionResult result = pipeline.executePlan(
-                plan("plan-assertion-binding", List.of(step1, step2)), "http://localhost:8080");
+                flow(steps), plan("plan-assertion-binding", steps), "http://localhost:8080");
 
         assertTrue(result.isPassed());
         StepResult verifier = result.getSteps().get(1);
@@ -152,9 +157,42 @@ class ExecutionPipelineV5Test {
     }
 
     @Test
+    void executePlan_statusCodeOutputCapture_resolvesInLaterStepHeader() {
+        ScenarioStep step1 = step(0, "step-1", "POST", "/api/payments",
+                null,
+                Map.of("first.statusCode", "$.statusCode"),
+                202, List.of());
+
+        ScenarioStep step2 = step(1, "step-2", "GET", "/api/status-check",
+                null,
+                Map.of(),
+                200, List.of());
+        step2.setHeaderBindings(Map.of("X-Previous-Status", "${first.statusCode}"));
+
+        when(httpExecutor.execute(eq("POST"), contains("/api/payments"), any(), any()))
+                .thenReturn(httpResponse(202, Map.of("id", "pay-abc")));
+        when(httpExecutor.execute(eq("GET"), contains("/api/status-check"), any(), any()))
+                .thenReturn(httpResponse(200, Map.of("checked", true)));
+
+        List<ScenarioStep> steps = List.of(step1, step2);
+        PlanExecutionResult result = pipeline.executePlan(
+                flow(steps), plan("plan-status-capture", steps), "http://localhost:8080");
+
+        assertTrue(result.isPassed(), result.getSteps().toString());
+        assertEquals(2, result.getSteps().size());
+        assertTrue(result.getSteps().get(0).isStatusMatch());
+        assertTrue(result.getSteps().get(1).isPassed());
+
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<Map<String, String>> headersCaptor = ArgumentCaptor.forClass(Map.class);
+        verify(httpExecutor).execute(eq("GET"), contains("/api/status-check"), headersCaptor.capture(), any());
+        assertEquals("202", headersCaptor.getValue().get("X-Previous-Status"));
+    }
+
+    @Test
     void executePlan_earlyTermination_step2Skipped() {
         ScenarioStep step1 = step(0, "step-1", "POST", "/api/payments",
-                null, null, 201, List.of());
+                null, Map.of("payment.id", "$.body.id"), 201, List.of());
         ScenarioStep step2 = step(1, "step-2", "GET", "/api/payments/{id}",
                 Map.of("id", "${payment.id}"), null, 200, List.of());
 
@@ -162,8 +200,9 @@ class ExecutionPipelineV5Test {
         when(httpExecutor.execute(eq("POST"), any(), any(), any()))
                 .thenReturn(httpResponse(400, Map.of("error", "bad request")));
 
+        List<ScenarioStep> steps = List.of(step1, step2);
         PlanExecutionResult result = pipeline.executePlan(
-                plan("plan-3", List.of(step1, step2)), "http://localhost:8080");
+                flow(steps), plan("plan-3", steps), "http://localhost:8080");
 
         assertFalse(result.isPassed());
         assertEquals(2, result.getSteps().size());
@@ -173,6 +212,39 @@ class ExecutionPipelineV5Test {
 
         // step2 should never have been called
         verify(httpExecutor, times(1)).execute(any(), any(), any(), any());
+    }
+
+    @Test
+    void executePlan_invalidBindingPlanDoesNotReachExecutor() {
+        Map<String, String> pathBindings = new HashMap<>();
+        pathBindings.put("id", null);
+        ScenarioStep step = step(0, "step-1", "GET", "/api/payments/{id}",
+                pathBindings, null, 200, List.of());
+
+        List<ScenarioStep> steps = List.of(step);
+        ExecutionPlanValidationException exception = assertThrows(ExecutionPlanValidationException.class,
+                () -> pipeline.executePlan(flow(steps), plan("plan-invalid-binding", steps),
+                        "http://localhost:8080"));
+
+        assertTrue(exception.getResult().getIssues().stream()
+                .anyMatch(issue -> "PATH_BINDING_VALUE_REQUIRED".equals(issue.getCode())));
+        verifyNoInteractions(httpExecutor);
+    }
+
+    @Test
+    void executePlan_unsupportedOutputCaptureSourceDoesNotReachExecutor() {
+        ScenarioStep step = step(0, "step-1", "POST", "/api/payments",
+                null, Map.of("payment.statusCode", "$.status"), 201, List.of());
+
+        List<ScenarioStep> steps = List.of(step);
+        ExecutionPlanValidationException exception = assertThrows(ExecutionPlanValidationException.class,
+                () -> pipeline.executePlan(flow(steps), plan("plan-invalid-capture", steps),
+                        "http://localhost:8080"));
+
+        assertTrue(exception.getResult().getIssues().stream()
+                .anyMatch(issue -> "OUTPUT_CAPTURE_SOURCE_UNSUPPORTED".equals(issue.getCode())
+                        && "executionPlan.steps[0].outputCapture['payment.statusCode']".equals(issue.getFieldPath())));
+        verifyNoInteractions(httpExecutor);
     }
 
     @Test
@@ -186,8 +258,9 @@ class ExecutionPipelineV5Test {
         when(httpExecutor.execute(eq("POST"), any(), any(), any()))
                 .thenReturn(httpResponse(403, Map.of("code", "UNAUTHORIZED")));
 
+        List<ScenarioStep> steps = List.of(step);
         PlanExecutionResult result = pipeline.executePlan(
-                plan("plan-4", List.of(step)), "http://localhost:8080");
+                flow(steps), plan("plan-4", steps), "http://localhost:8080");
 
         assertFalse(result.isPassed());
         StepResult sr = result.getSteps().get(0);
@@ -196,5 +269,26 @@ class ExecutionPipelineV5Test {
         assertEquals(1, sr.getAssertionResults().size());
         assertFalse(sr.getAssertionResults().get(0).isPassed());
         assertEquals("UNAUTHORIZED", sr.getAssertionResults().get(0).getActualValue());
+    }
+
+    private ResolvedFlow flow(List<ScenarioStep> steps) {
+        return ResolvedFlow.builder()
+                .flowId("flow-test")
+                .featureId("feature-test")
+                .description("Test flow")
+                .steps(steps.stream()
+                        .map(step -> FlowStep.builder()
+                                .order(step.getOrder())
+                                .stepId(step.getStepId())
+                                .role(step.getRole())
+                                .method(step.getMethod())
+                                .pathTemplate(step.getPathTemplate())
+                                .pathBindings(step.getPathBindings())
+                                .headerBindings(step.getHeaderBindings())
+                                .bodyBinding(step.getBodyBinding())
+                                .outputCapture(step.getOutputCapture())
+                                .build())
+                        .toList())
+                .build();
     }
 }

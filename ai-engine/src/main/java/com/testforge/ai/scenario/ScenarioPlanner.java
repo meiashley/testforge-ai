@@ -49,7 +49,7 @@ public class ScenarioPlanner {
         return """
                 You are an expert test scenario designer. Given resolved API flows and requirement constraints, produce executable test plans with concrete business assertions and test data.
 
-                Prompt Version: scenario-planner-v2-assertion-rules-2026-05-16
+                Prompt Version: scenario-planner-v2-status-capture-2026-07-07
 
                 Your responsibilities:
                 - Add testData (concrete values for ${variables}) within metadata
@@ -60,7 +60,7 @@ public class ScenarioPlanner {
                 - Set scenarioId/scenarioName matching the flow
 
                 Your NON-responsibilities (do NOT change these from the input):
-                - order, pathTemplate, role, pathBindings, headerBindings, outputCapture (already resolved by ApiFlowResolver)
+                - order, method, pathTemplate, role, pathBindings, headerBindings, outputCapture (already resolved by ApiFlowResolver)
 
                 For "REJECTED" scenarios (like cross-user refund, double refund):
                 - The final step's expectedStatusCode should be 4xx (403, 422, etc.)
@@ -74,6 +74,8 @@ public class ScenarioPlanner {
 
                 1. HTTP status code is ALREADY validated via the "expectedStatusCode" field on each step.
                    NEVER add an assertion with path "$.status" or "$.statusCode" — those paths do not exist in the response body.
+                   expectedStatusCode validates the current step response status.
+                   outputCapture can use "$.statusCode" to save the actual HTTP response status for later steps.
 
                 2. Assertion paths MUST reference body or headers only:
                    - $.body.fieldName  (e.g. $.body.status, $.body.id, $.body.amount)
@@ -82,7 +84,6 @@ public class ScenarioPlanner {
                 3. Assertion type whitelist — use ONLY these types:
                    - EQUALS / NOT_EQUALS: expected is a single value (string, number, boolean)
                    - EXISTS / NOT_EXISTS: expected is null
-                   - MATCHES_REGEX: expected is a regex pattern string
                    - CONTAINS: expected is a single substring/element
 
                    DO NOT use ONE_OF, IN, MEMBER_OF or any other type. They are not supported.
@@ -94,6 +95,15 @@ public class ScenarioPlanner {
 
                 5. For SUCCESS scenarios, assertions validate the final expected state.
                    For REJECTED scenarios (4xx response), assertions validate the error structure ($.body.code, $.body.message).
+
+                Supported output capture sources:
+                - $.statusCode
+                - $.body
+                - $.body.<field>
+                - $.headers.<header>
+
+                Use "$.statusCode" only when a later step or scenario check needs the actual HTTP status code.
+                Do not write status-code captures as body JSONPath, "$.status", "$.code", or any other response metadata source.
 
                 Output structure (JSON array, no surrounding text):
                 [
@@ -113,7 +123,11 @@ public class ScenarioPlanner {
                         "headerBindings": { "Authorization": "Bearer ${userA.token}" },
                         "bodyBinding": null,
                         "requestBody": "{\\"amount\\": 100, \\"currency\\": \\"AUD\\", \\"payerId\\": \\"${userA.id}\\"}",
-                        "outputCapture": { "payment.id": "$.body.id" },
+                        "outputCapture": {
+                          "payment.id": "$.body.id",
+                          "payment.statusCode": "$.statusCode",
+                          "payment.requestId": "$.headers.x-request-id"
+                        },
                         "expectedStatusCode": 201,
                         "assertions": [
                           { "path": "$.body.status", "type": "EQUALS", "expected": "COMPLETED" }
