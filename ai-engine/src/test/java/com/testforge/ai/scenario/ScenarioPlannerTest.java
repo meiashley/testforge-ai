@@ -190,6 +190,23 @@ class ScenarioPlannerTest {
         assertFalse(claude.prompt.contains("MATCHES_REGEX"));
     }
 
+    @Test
+    void scenarioPlannerPrompt_documentsStatusCodeOutputCaptureProtocol() {
+        CapturingClaudeClient claude = new CapturingClaudeClient();
+        ScenarioPlanner planner = new ScenarioPlanner(claude);
+
+        planner.plan(List.of(sampleFlow()), sampleAnalysis(), "openapi: 3.0.0");
+
+        assertTrue(claude.prompt.contains("Supported output capture sources"));
+        assertTrue(claude.prompt.contains("$.statusCode"));
+        assertTrue(claude.prompt.contains("$.body"));
+        assertTrue(claude.prompt.contains("$.body.<field>"));
+        assertTrue(claude.prompt.contains("$.headers.<header>"));
+        assertTrue(claude.prompt.contains("expectedStatusCode validates the current step response status"));
+        assertTrue(claude.prompt.contains("outputCapture can use \"$.statusCode\" to save the actual HTTP response status"));
+        assertFalse(claude.prompt.contains("\"$.httpStatus\""));
+    }
+
     private static class CapturingClaudeClient implements ClaudeClient {
         private String prompt;
 

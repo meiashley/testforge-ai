@@ -157,6 +157,39 @@ class ExecutionPipelineV5Test {
     }
 
     @Test
+    void executePlan_statusCodeOutputCapture_resolvesInLaterStepHeader() {
+        ScenarioStep step1 = step(0, "step-1", "POST", "/api/payments",
+                null,
+                Map.of("first.statusCode", "$.statusCode"),
+                202, List.of());
+
+        ScenarioStep step2 = step(1, "step-2", "GET", "/api/status-check",
+                null,
+                Map.of(),
+                200, List.of());
+        step2.setHeaderBindings(Map.of("X-Previous-Status", "${first.statusCode}"));
+
+        when(httpExecutor.execute(eq("POST"), contains("/api/payments"), any(), any()))
+                .thenReturn(httpResponse(202, Map.of("id", "pay-abc")));
+        when(httpExecutor.execute(eq("GET"), contains("/api/status-check"), any(), any()))
+                .thenReturn(httpResponse(200, Map.of("checked", true)));
+
+        List<ScenarioStep> steps = List.of(step1, step2);
+        PlanExecutionResult result = pipeline.executePlan(
+                flow(steps), plan("plan-status-capture", steps), "http://localhost:8080");
+
+        assertTrue(result.isPassed(), result.getSteps().toString());
+        assertEquals(2, result.getSteps().size());
+        assertTrue(result.getSteps().get(0).isStatusMatch());
+        assertTrue(result.getSteps().get(1).isPassed());
+
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<Map<String, String>> headersCaptor = ArgumentCaptor.forClass(Map.class);
+        verify(httpExecutor).execute(eq("GET"), contains("/api/status-check"), headersCaptor.capture(), any());
+        assertEquals("202", headersCaptor.getValue().get("X-Previous-Status"));
+    }
+
+    @Test
     void executePlan_earlyTermination_step2Skipped() {
         ScenarioStep step1 = step(0, "step-1", "POST", "/api/payments",
                 null, Map.of("payment.id", "$.body.id"), 201, List.of());
@@ -195,6 +228,22 @@ class ExecutionPipelineV5Test {
 
         assertTrue(exception.getResult().getIssues().stream()
                 .anyMatch(issue -> "PATH_BINDING_VALUE_REQUIRED".equals(issue.getCode())));
+        verifyNoInteractions(httpExecutor);
+    }
+
+    @Test
+    void executePlan_unsupportedOutputCaptureSourceDoesNotReachExecutor() {
+        ScenarioStep step = step(0, "step-1", "POST", "/api/payments",
+                null, Map.of("payment.statusCode", "$.status"), 201, List.of());
+
+        List<ScenarioStep> steps = List.of(step);
+        ExecutionPlanValidationException exception = assertThrows(ExecutionPlanValidationException.class,
+                () -> pipeline.executePlan(flow(steps), plan("plan-invalid-capture", steps),
+                        "http://localhost:8080"));
+
+        assertTrue(exception.getResult().getIssues().stream()
+                .anyMatch(issue -> "OUTPUT_CAPTURE_SOURCE_UNSUPPORTED".equals(issue.getCode())
+                        && "executionPlan.steps[0].outputCapture['payment.statusCode']".equals(issue.getFieldPath())));
         verifyNoInteractions(httpExecutor);
     }
 

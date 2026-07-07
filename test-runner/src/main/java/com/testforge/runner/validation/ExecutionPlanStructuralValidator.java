@@ -382,7 +382,7 @@ public class ExecutionPlanStructuralValidator {
                         "Output capture source must be present and non-blank"));
             } else if (!isSupportedJsonPath(capture.getValue())) {
                 issues.add(ValidationIssue.error("OUTPUT_CAPTURE_SOURCE_UNSUPPORTED", fieldPath,
-                        "Output capture source must be $.body, $.body.<field>, or $.headers.<header>"));
+                        "Output capture source must be $.statusCode, $.body, $.body.<field>, or $.headers.<header>"));
             }
         }
     }
@@ -442,7 +442,8 @@ public class ExecutionPlanStructuralValidator {
     }
 
     private boolean isSupportedJsonPath(String path) {
-        return "$.body".equals(path)
+        return "$.statusCode".equals(path)
+                || "$.body".equals(path)
                 || path.startsWith("$.body.")
                 || path.startsWith("$.headers.");
     }

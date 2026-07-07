@@ -292,6 +292,44 @@ class ExecutionPlanStructuralValidatorTest {
     }
 
     @Test
+    void statusCodeOutputCapture_isSupported() {
+        ExecutionPlan plan = validPlan();
+        plan.getSteps().get(0).setOutputCapture(Map.of(
+                "payment.id", "$.body.id",
+                "payment.statusCode", "$.statusCode"));
+
+        ExecutionPlanValidationResult result = validator.validate(null, plan, Map.of("user.token", "token"));
+
+        assertTrue(result.isValid(), codes(result).toString());
+        assertFalse(codes(result).contains("OUTPUT_CAPTURE_SOURCE_UNSUPPORTED"));
+    }
+
+    @Test
+    void unsupportedStatusCodeAliases_areRejected() {
+        Map<String, String> unsupportedSources = Map.of(
+                "statusCode.value", "$.statusCode.value",
+                "status", "$.status",
+                "httpStatus", "$.httpStatus",
+                "response.status", "$.response.status"
+        );
+
+        for (Map.Entry<String, String> unsupported : unsupportedSources.entrySet()) {
+            ExecutionPlan plan = validPlan();
+            plan.getSteps().get(0).setOutputCapture(Map.of(unsupported.getKey(), unsupported.getValue()));
+
+            ExecutionPlanValidationResult result = validator.validate(null, plan, Map.of("user.token", "token"));
+
+            assertFalse(result.isValid(), unsupported.toString());
+            ValidationIssue issue = result.errors().stream()
+                    .filter(i -> "OUTPUT_CAPTURE_SOURCE_UNSUPPORTED".equals(i.getCode()))
+                    .findFirst()
+                    .orElseThrow();
+            assertEquals("executionPlan.steps[0].outputCapture['" + unsupported.getKey() + "']",
+                    issue.getFieldPath());
+        }
+    }
+
+    @Test
     void unsupportedAssertionAndMissingExpected_areErrors() {
         ExecutionPlan plan = validPlan();
         plan.getSteps().get(0).setAssertions(List.of(

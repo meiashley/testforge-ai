@@ -154,6 +154,8 @@ Before execution, every `ExecutionPlan` is checked against the original `Resolve
 
 `ScenarioPlanner` can populate test data, request body, expected status, assertions, and step descriptions. It must not reorder steps or modify the resolved call structure. Any structural plan error rejects the whole plan before an HTTP request is sent.
 
+Output captures support `$.statusCode`, `$.body`, `$.body.<field>`, and `$.headers.<header>`. `expectedStatusCode` validates the current step's HTTP response status; `$.statusCode` captures the actual response status for later step references.
+
 Current ExecutionPlan assertion types are:
 - `EQUALS`
 - `NOT_EQUALS`

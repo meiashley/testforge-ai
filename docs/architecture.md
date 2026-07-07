@@ -119,7 +119,7 @@ ExecutionPlan validation compares planner output with the original resolved flow
 
 Plan validation also checks resolved-flow/plan completeness: step counts must match, every resolved `FlowStep` must appear exactly once in the `ExecutionPlan`, no extra plan step is allowed, and the `ExecutionPlan.steps` list order must match `ResolvedFlow.steps` because the executor runs list order directly. The deprecated `executePlan(ExecutionPlan, String)` entry point fails closed with `RESOLVED_FLOW_REQUIRED`; plan execution requires the source `ResolvedFlow`.
 
-Plan validation also checks step ids and order uniqueness, supported methods, path binding targets, supported JSONPath forms (`$.body`, `$.body.<field>`, `$.headers.<header>`), supported assertion types, and variable references. Variables must come from initial inputs, `metadata.testData`, or captures produced by earlier executed steps. Forward references and unresolved placeholders are rejected before any HTTP call is made. Supported HTTP methods are shared by OpenAPI loading and structural validation: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, and `HEAD`; `OPTIONS` is not supported.
+Plan validation also checks step ids and order uniqueness, supported methods, path binding targets, supported output capture sources (`$.statusCode`, `$.body`, `$.body.<field>`, `$.headers.<header>`), supported assertion types, and variable references. `expectedStatusCode` validates the current step response status; `$.statusCode` captures the actual response status for later use. Variables must come from initial inputs, `metadata.testData`, or captures produced by earlier executed steps. Forward references and unresolved placeholders are rejected before any HTTP call is made. Supported HTTP methods are shared by OpenAPI loading and structural validation: `GET`, `POST`, `PUT`, `PATCH`, `DELETE`, and `HEAD`; `OPTIONS` is not supported.
 
 Validation field paths use Java-style dot/bracket notation. List items use indexes such as `executionPlan.steps[0]`; map keys use quoted bracket notation with stable escaping, such as `executionPlan.steps[0].pathBindings['order.id']`.
 
@@ -182,7 +182,7 @@ A single shared state container preventing "parameter black hole" in the orchest
 Data flows between steps using `${variable}` placeholders with flat namespaced keys.
 
 ```
-Step 1 outputCapture: { "payment.id": "$.body.id" }
+Step 1 outputCapture: { "payment.id": "$.body.id", "payment.statusCode": "$.statusCode" }
         ↓ context["payment.id"] = "pmt_abc"
 Step 2 pathBindings:  { "id": "${payment.id}" }
         ↓ /api/payments/{id}/refund → /api/payments/pmt_abc/refund
