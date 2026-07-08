@@ -24,6 +24,7 @@ import com.testforge.runner.execution.StepResult;
 import com.testforge.runner.http.HttpExecutor;
 import com.testforge.runner.model.ExecutionReport;
 import com.testforge.runner.model.ExecutionSummary;
+import com.testforge.runner.model.CoverageSummary;
 import com.testforge.runner.model.TestCaseResult;
 import com.testforge.runner.model.TestResultStatus;
 import com.testforge.runner.pipeline.ExecutionPipeline;
@@ -178,6 +179,7 @@ class V5BaselinePipelineTest {
         );
 
         ExecutionReport report = new ExecutionReport(summary, apiResults);
+        report.setCoverage(CoverageSummary.pending("mock-banking-api"));
         report.setScenarioResults(planResults);
         report.setConsistencyResult(context.getConsistencyResult());
         report.setRequirementAnalysis(context.getRequirementAnalysis());

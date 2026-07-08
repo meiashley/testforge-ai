@@ -30,6 +30,7 @@
         <springdoc.version>2.5.0</springdoc.version>
         <swagger-parser.version>2.1.22</swagger-parser.version>
         <junit5.version>5.10.2</junit5.version>
+        <jacoco.version>0.8.11</jacoco.version>
         <rest-assured.version>5.4.0</rest-assured.version>
         <cucumber.version>7.17.0</cucumber.version>
         <lombok.version>1.18.32</lombok.version>

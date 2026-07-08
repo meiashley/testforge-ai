@@ -16,6 +16,7 @@ public class HtmlReportGenerator {
                 new ConsistencySection(),
                 new ScenarioSection(),
                 new ApiSection(),
+                new CoverageSection(),
                 new FailureAnalysisSection()
         );
         this.navigationRenderer = new NavigationRenderer();
@@ -88,6 +89,23 @@ public class HtmlReportGenerator {
                 + "table.assertions td { padding: 6px 10px; font-size: 0.825rem;"
                 + " border-bottom: 1px solid #f1f5f9; vertical-align: top; }\n"
                 + "table.assertions tr.assert-failed { background: #fef2f2; }\n"
+                + "table.coverage-table { width: 100%; table-layout: fixed; border-collapse: collapse;"
+                + " margin: 12px 0 16px; }\n"
+                + "table.coverage-table th, table.coverage-table td { padding: 8px 10px;"
+                + " font-size: 0.85rem; border-bottom: 1px solid #f1f5f9; }\n"
+                + "table.coverage-table th { background: #0f766e; color: #fff;"
+                + " font-size: 0.75rem; text-transform: uppercase; }\n"
+                + "table.coverage-table .metric-col { width: 28%; text-align: left; }\n"
+                + "table.coverage-table .number-col { width: 18%; text-align: right;"
+                + " font-variant-numeric: tabular-nums; }\n"
+                + ".coverage-state { background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412;"
+                + " border-radius: 8px; padding: 12px 14px; font-size: 0.9rem; }\n"
+                + ".coverage-link.action-link { display: inline-flex; align-items: center; gap: 6px;"
+                + " color: #0f766e; background: #ccfbf1; border: 1px solid #5eead4;"
+                + " border-radius: 9999px; font-weight: 700; text-decoration: none;"
+                + " margin-top: 4px; padding: 8px 14px; }\n"
+                + ".coverage-link.action-link:hover { background: #99f6e4; color: #115e59; }\n"
+                + ".coverage-link.action-link:focus-visible { outline: 3px solid #14b8a6; outline-offset: 2px; }\n"
                 + "code { font-family: SFMono-Regular, Menlo, Monaco, Consolas, monospace;"
                 + " font-size: 0.85em; }\n"
                 + ".name { flex: 1; }\n"

@@ -81,7 +81,22 @@
             <version>2.3.1</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.jacoco</groupId>
+            <artifactId>org.jacoco.core</artifactId>
+            <version>${jacoco.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jacoco</groupId>
+            <artifactId>org.jacoco.report</artifactId>
+            <version>${jacoco.version}</version>
+        </dependency>
     </dependencies>
+
+    <properties>
+        <testforge.jacoco.destFile>${project.basedir}/../mock-banking-api/target/jacoco.exec</testforge.jacoco.destFile>
+        <testforge.jacoco.append>true</testforge.jacoco.append>
+    </properties>
 
     <build>
         <plugins>
@@ -98,17 +113,77 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.11</version>
+                <version>${jacoco.version}</version>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
                         <goals><goal>prepare-agent</goal></goals>
                         <configuration>
-                            <destFile>${project.basedir}/../mock-banking-api/target/jacoco.exec</destFile>
+                            <destFile>${testforge.jacoco.destFile}</destFile>
+                            <append>${testforge.jacoco.append}</append>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>v5-with-coverage</id>
+            <properties>
+                <testforge.jacoco.destFile>${project.build.directory}/coverage/jacoco-v5.exec</testforge.jacoco.destFile>
+                <testforge.jacoco.append>false</testforge.jacoco.append>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>3.1.0</version>
+                        <executions>
+                            <execution>
+                                <id>clean-v5-coverage-output</id>
+                                <phase>initialize</phase>
+                                <configuration>
+                                    <target>
+                                        <delete file="${project.build.directory}/coverage/jacoco-v5.exec"/>
+                                        <delete dir="${project.build.directory}/coverage/jacoco"/>
+                                    </target>
+                                </configuration>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>3.3.0</version>
+                        <executions>
+                            <execution>
+                                <id>enrich-v5-report-with-coverage</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                                <configuration>
+                                    <mainClass>com.testforge.runner.coverage.V5CoverageReportUpdater</mainClass>
+                                    <arguments>
+                                        <argument>${project.build.directory}/v5-execution-report.json</argument>
+                                        <argument>${project.build.directory}</argument>
+                                        <argument>${project.build.directory}/coverage/jacoco-v5.exec</argument>
+                                        <argument>${project.basedir}/../mock-banking-api/target/classes</argument>
+                                        <argument>${project.basedir}/../mock-banking-api/src/main/java</argument>
+                                        <argument>${project.build.directory}/coverage/jacoco</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
