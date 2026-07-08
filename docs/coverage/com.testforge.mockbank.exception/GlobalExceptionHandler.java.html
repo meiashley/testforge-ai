@@ -28,12 +28,12 @@ import java.util.List;
     @ExceptionHandler(PaymentNotRefundableException.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     public ErrorResponse handleNotRefundable(PaymentNotRefundableException ex) {
-<span class="nc" id="L31">        return ErrorResponse.builder()</span>
-<span class="nc" id="L32">                .status(422)</span>
-<span class="nc" id="L33">                .code(&quot;PAYMENT_NOT_REFUNDABLE&quot;)</span>
-<span class="nc" id="L34">                .message(ex.getMessage())</span>
-<span class="nc" id="L35">                .timestamp(Instant.now())</span>
-<span class="nc" id="L36">                .build();</span>
+<span class="fc" id="L31">        return ErrorResponse.builder()</span>
+<span class="fc" id="L32">                .status(422)</span>
+<span class="fc" id="L33">                .code(&quot;PAYMENT_NOT_REFUNDABLE&quot;)</span>
+<span class="fc" id="L34">                .message(ex.getMessage())</span>
+<span class="fc" id="L35">                .timestamp(Instant.now())</span>
+<span class="fc" id="L36">                .build();</span>
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

@@ -59,6 +59,10 @@ OpenAPI spec + Requirement (markdown)
         │
         ▼
    Unified HTML / JSON / MD report
+        │
+        ▼
+   Optional V5 coverage profile enriches the same report paths
+   after the test JVM exits and JaCoCo data is generated.
 ```
 
 ## Deterministic Validation Boundaries
@@ -93,6 +97,33 @@ Generated test-case structural validation checks domain-object completeness and 
 `TestCaseContractValidator` remains the OpenAPI gate. It checks endpoint method/path alignment, request fields against schema fields, and expected status codes against documented responses. Contract violations are converted into structured `ValidationIssue` errors and `RejectedTestCase` entries in `TestGenerationOutcome`; they do not disappear into logs only.
 
 Runtime execution and result validation remain in `test-runner`: the HTTP request is sent, actual responses are parsed, body assertions are evaluated, and pass/fail/error results are reported.
+
+### V5 Coverage Enrichment Flow
+
+The V5 unified report supports a two-stage JaCoCo integration for the target API module, `mock-banking-api`:
+
+```
+V5 test execution
+        |
+        v
+write unified report with coverage=PENDING
+        |
+        v
+test JVM exits and JaCoCo writes test-runner/target/coverage/jacoco-v5.exec
+        |
+        v
+generate test-runner/target/coverage/jacoco/jacoco.xml and full HTML details
+        |
+        v
+parse top-level JaCoCo counters
+        |
+        v
+rewrite v5-execution-report.json/html/md with coverage=AVAILABLE
+```
+
+The coverage profile uses a dedicated JaCoCo exec file at `test-runner/target/coverage/jacoco-v5.exec` with append disabled, so V5 coverage is not mixed with `mock-banking-api` unit tests, other test-runner tests, or previous runs. The detailed JaCoCo site is generated under `test-runner/target/coverage/jacoco/`, and the unified report links to it with the relative path `coverage/jacoco/index.html`.
+
+If the coverage profile is not enabled, the report can omit coverage or keep it in a non-available state. The renderer displays `-` for line and branch coverage until JaCoCo XML is available; unavailable or errored coverage is not displayed as `0%`.
 
 ### Scenario Execution Flow
 
@@ -209,6 +240,7 @@ Sections:
 - `ConsistencySection` (🔍)
 - `ScenarioSection` (🎬)
 - `ApiSection` (⚡)
+- `CoverageSection` (📈)
 - `FailureAnalysisSection` (🤖)
 
 Empty sections (e.g. no scenarios in a V4 run) are hidden automatically; the navigation bar only shows sections with content.

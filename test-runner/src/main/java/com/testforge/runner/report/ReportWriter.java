@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.testforge.ai.analysis.FailureAnalysisResult;
 import com.testforge.runner.model.AssertionResult;
+import com.testforge.runner.model.CoverageMetric;
+import com.testforge.runner.model.CoverageStatus;
+import com.testforge.runner.model.CoverageSummary;
 import com.testforge.runner.model.ExecutionReport;
 import com.testforge.runner.model.ExecutionSummary;
 import com.testforge.runner.model.TestCaseResult;
@@ -124,7 +127,8 @@ public class ReportWriter {
         ExecutionSummary s = report.getSummary();
         out.println("# " + prefix.toUpperCase() + " Execution Report");
         out.println();
-        out.printf("Executed: %s | Duration: %dms%n", s.getExecutedAt(), s.getTotalDurationMs());
+        out.printf("Executed: %s | Duration: %dms%n",
+                ReportTimeFormatter.formatUtc(s.getExecutedAt()), s.getTotalDurationMs());
         out.println();
 
         // Section 1: Summary table grouped by endpoint
@@ -148,7 +152,10 @@ public class ReportWriter {
         out.printf("| **Total** | **%d** | **%d** | **%d** |%n", grandTotal, grandPassed, grandFailed);
         out.println();
 
-        // Section 2: Failure Categories
+        // Section 2: Target API Coverage
+        writeCoverageMarkdown(out, report.getCoverage());
+
+        // Section 3: Failure Categories
         out.println("## Failure Categories");
         out.println();
         out.println("| Category | Count |");
@@ -167,7 +174,7 @@ public class ReportWriter {
         }
         out.println();
 
-        // Section 3: Representative Failures (up to 3)
+        // Section 4: Representative Failures (up to 3)
         out.println("## Representative Failures");
         out.println();
 
@@ -195,13 +202,13 @@ public class ReportWriter {
             }
         }
 
-        // Section 4: V2 Prompt Improvement Targets
+        // Section 5: V2 Prompt Improvement Targets
         out.println("## V2 Prompt Improvement Targets");
         out.println();
         out.println(buildImprovementTargets(report, categoryCounts));
         out.println();
 
-        // Section 5: AI Failure Analysis
+        // Section 6: AI Failure Analysis
         List<FailureAnalysisResult> analyses = report.getFailureAnalysis();
         if (analyses != null && !analyses.isEmpty()) {
             out.println("## AI Failure Analysis");
@@ -226,6 +233,51 @@ public class ReportWriter {
         }
 
         return sw.toString();
+    }
+
+    private void writeCoverageMarkdown(PrintWriter out, CoverageSummary coverage) {
+        if (coverage == null) {
+            return;
+        }
+
+        out.println("## Target API Coverage");
+        out.println();
+        out.printf("Module: `%s`%n", coverage.getTargetModule());
+        out.println();
+        if (coverage.getStatus() != CoverageStatus.AVAILABLE) {
+            out.printf("Status: `%s`%n", coverage.getStatus());
+            out.println();
+            out.println(coverage.getMessage() != null ? coverage.getMessage() : "Coverage data is unavailable.");
+            out.println();
+            out.println("| Metric | Coverage |");
+            out.println("|---|---:|");
+            out.println("| Line | - |");
+            out.println("| Branch | - |");
+            out.println();
+            return;
+        }
+
+        out.println("| Metric | Covered | Missed | Total | Coverage |");
+        out.println("|---|---:|---:|---:|---:|");
+        writeCoverageMetric(out, "Line", coverage.getLine());
+        writeCoverageMetric(out, "Branch", coverage.getBranch());
+        writeCoverageMetric(out, "Instruction", coverage.getInstruction());
+        writeCoverageMetric(out, "Method", coverage.getMethod());
+        writeCoverageMetric(out, "Class", coverage.getClazz());
+        writeCoverageMetric(out, "Complexity", coverage.getComplexity());
+        out.println();
+        if (coverage.getDetailsPath() != null && !coverage.getDetailsPath().isBlank()) {
+            out.printf("[View detailed JaCoCo report](%s)%n%n", coverage.getDetailsPath());
+        }
+    }
+
+    private void writeCoverageMetric(PrintWriter out, String label, CoverageMetric metric) {
+        if (metric == null) {
+            out.printf("| %s | - | - | - | - |%n", label);
+            return;
+        }
+        out.printf("| %s | %d | %d | %d | %.1f%% |%n",
+                label, metric.getCovered(), metric.getMissed(), metric.getTotal(), metric.getPercentage());
     }
 
     private String buildImprovementTargets(ExecutionReport report, Map<String, Long> categoryCounts) {

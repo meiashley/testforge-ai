@@ -21,6 +21,7 @@ public class ExecutionReport {
     private AlignmentResult consistencyResult;
     private List<PlanExecutionResult> scenarioResults;
     private RequirementAnalysis requirementAnalysis;
+    private CoverageSummary coverage;
 
     @JsonCreator
     public ExecutionReport(@JsonProperty("summary") ExecutionSummary summary,

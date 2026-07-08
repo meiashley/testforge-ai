@@ -340,9 +340,26 @@ mvn test -pl test-runner -Dtest=V4BaselinePipelineTest
 # Run V5 pipeline (requirement + API + scenarios)
 mvn test -pl test-runner -Dtest=V5BaselinePipelineTest
 
+# Run V5 pipeline and enrich the unified report with JaCoCo coverage
+mvn -P v5-with-coverage -pl test-runner -am \
+  -Dtest=com.testforge.runner.V5BaselinePipelineTest \
+  -Dsurefire.failIfNoSpecifiedTests=false \
+  verify --batch-mode
+
 # View HTML report
 open test-runner/target/v5-execution-report.html
 ```
+
+### V5 Coverage Report
+
+The V5 coverage profile uses JaCoCo to measure the target API module, `mock-banking-api`, during generated-test execution. It does not report whole-project TestForge coverage.
+
+The unified report is written in two phases:
+
+1. V5 execution writes `test-runner/target/v5-execution-report.json`, `.html`, and `.md` with coverage status `PENDING`. Summary cards for Line Coverage and Branch Coverage display `-`.
+2. After the test JVM exits, JaCoCo writes a dedicated exec file at `test-runner/target/coverage/jacoco-v5.exec`, generates XML/CSV/full HTML detail output under `test-runner/target/coverage/jacoco/`, parses `jacoco.xml`, and rewrites the same unified report paths.
+
+Refresh `test-runner/target/v5-execution-report.html` after the Maven command completes to see the latest Line and Branch coverage. The coverage section links to the detailed JaCoCo report at `coverage/jacoco/index.html`. If coverage data is unavailable or fails to parse, the unified report keeps the test results and displays `-` instead of `0%`.
 
 ---
 
@@ -373,7 +390,7 @@ Cache hits are still revalidated through structural and contract checks. Warm ru
 - [x] API Gateway outcome fields for accepted results, rejected tests, warnings, and partial acceptance
 - [x] Architecture diagram and plugin-pattern reporting
 - [x] V5: requirement-driven pipeline with consistency checking and scenario execution
-- [ ] Embed JaCoCo metrics directly into the unified execution report
+- [x] Embed JaCoCo metrics directly into the unified execution report
 - [ ] Expose the complete V5 workflow through `api-gateway`
 - [ ] Add requirement-to-test provenance and traceability
 - [ ] Build an offline golden evaluation suite
